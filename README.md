@@ -1,6 +1,6 @@
 # WorkflowAi - No-code automation
-(Click on the banner to open demo video on Youtube)
-[![Watch the video](https://img.youtube.com/vi/yX6paB1F_5U/maxresdefault.jpg)](https://www.youtube.com/watch?v=yX6paB1F_5U)
+![image](https://github.com/user-attachments/assets/992a97ab-c12f-42ad-9d5d-e6aecd9282e0)
+
 
 ## Development Status 🧑‍💻
 
