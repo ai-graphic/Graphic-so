@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_actions/notion-connection";
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
 import axios from 'axios'; 
+import { useEditor } from "@/providers/editor-provider";
 
 type Props = {
   currentService: string;
@@ -78,29 +79,38 @@ const ActionButton = ({
   // ... existing code ...
 
   
-  const onAiSearch = useCallback(async () => {
+  const onAiSearch = useCallback(async (id : string) => {
+    console.log("AI Node:", id);
     try {
-      const response = await axios.post( (nodeConnection.aiNode.endpoint || 'https://api.openai.com/v1/chat/completions'), {
+      const messages =  [
+        {
+          role: "system",
+          content: "You are a helpful assistant."
+        },
+        {
+          role: "user",
+          content: nodeConnection.aiNode[id].prompt
+        }
+      ]
+      console.log("Messages:", messages);
+      const response = await axios.post( (nodeConnection.aiNode[id].endpoint || 'https://api.openai.com/v1/chat/completions'), {
         model: nodeConnection.aiNode.model || "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful assistant."
-          },
-          {
-            role: "user",
-            content: nodeConnection.aiNode.prompt
-          }
-        ]
+        messages: messages,
       }, {
         headers: {
-          'Authorization': `Bearer ${nodeConnection.aiNode.ApiKey}` // Use environment variable for the API key
+          'Authorization': `Bearer ${nodeConnection.aiNode[id].ApiKey}` // Use environment variable for the API key
         }
       });
       nodeConnection.setAINode((prev: any) => ({
         ...prev,
-        output: response.data.choices[0].message.content
-      })); // Clear the AI node after the search
+        output: {
+          ...(prev.output || {}), // Ensure prev.output is an object
+          [id]: [
+            ...(prev.output?.[id] || []), // Spread the existing array or an empty array if it doesn't exist
+            response.data.choices[0].message.content.trim() // Append the new content
+          ]
+        }
+      }));
       console.log("AI Response:", response.data);
     } catch (error) {
       console.error("Error during AI search:", error);
@@ -111,6 +121,7 @@ const ActionButton = ({
   // ...
   const onCreateLocalNodeTempate = useCallback(async () => {
     if (currentService === "AI") {
+      console.log("AI Node:", nodeConnection.aiNode);
         const aiNodeAsString = JSON.stringify(nodeConnection.aiNode);
       const response = await onCreateNodeTemplate(
         aiNodeAsString, // Assuming aiNode has a prompt property
@@ -164,6 +175,7 @@ const ActionButton = ({
   }, [nodeConnection, channels]);
 
   const renderActionButton = () => {
+    const { selectedNode } = useEditor().state.editor;
     switch (currentService) {
       case "Discord":
         return (
@@ -179,10 +191,10 @@ const ActionButton = ({
       case "AI":
         return (
           <>
-          <p>output : {nodeConnection.aiNode.output}</p>
+          output : {nodeConnection.aiNode[selectedNode.id]?.output ?? "submit to get an output"}
             <Button
               variant="outline"
-              onClick={onAiSearch}
+              onClick={() => onAiSearch(selectedNode.id)}
             >
               Test
             </Button>

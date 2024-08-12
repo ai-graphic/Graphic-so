@@ -16,7 +16,7 @@ import { onContentChange } from "@/lib/editor-utils";
 import GoogleFileDetails from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/google-file-details";
 import GoogleDriveFiles from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/google-drive-files";
 import ActionButton from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/action-button";
-import { useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import { getFileMetaData } from "@/app/(main)/(pages)/connections/_actions/google-connections";
 import axios from "axios";
 import { toast } from "sonner";
@@ -58,6 +58,11 @@ const ContentBasedOnTitle = ({
   // const [Template, setTemplate] = useState('');
   // const [isLoading, setIsLoading] = useState(false);
   // const pathName = usePathname();
+  const [showButtons, setShowButtons] = useState(false);
+  const [selectedOutput, setSelectedOutput] = useState<string | null>(null); // New state for selected output
+
+  console.log("btn", showButtons);
+  const { state } = useEditor();
 
   const { selectedNode } = newState.editor;
   const title = selectedNode.data.title;
@@ -99,6 +104,11 @@ const ContentBasedOnTitle = ({
               : ""
           }`
         ];
+        useEffect(() => {
+          if (selectedOutput) {
+            onContentChange(state, nodeConnection, title, { target: { value: selectedOutput } }, "prompt");
+          }
+        }, [selectedOutput]);
 
   return (
     <AccordionContent>
@@ -116,17 +126,45 @@ const ContentBasedOnTitle = ({
               <p>Enter Your Prompt Here</p>
               <Input
                 type="text"
-                value={nodeConnectionType.prompt}
-                onChange={(event) =>
-                  onContentChange(nodeConnection, title, event, "prompt")
-                } // Pass the new value directly
+                value={selectedOutput ?? nodeConnectionType.prompt}
+                onClick={() => {
+                  setShowButtons((prev) => !prev);
+                }}
+                onChange={(event) => {
+                  const newValue = event.target.value;
+                  setSelectedOutput(newValue);
+                  onContentChange(
+                    state,
+                    nodeConnection,
+                    title,
+                    event,
+                    "prompt"
+                  );
+                }}
               />
+              {showButtons &&
+                nodeConnection.aiNode.output &&
+                Object.entries(nodeConnection.aiNode.output).map(
+                  ([id, outputs]) =>
+                    outputs.map((output, index) => (
+                      <button
+                        key={`${id}-${index}`}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        onClick={() => {
+                          setSelectedOutput(String(output));
+                          setShowButtons((prev) => !prev);
+                        }}
+                      >
+                        {String(output)}
+                      </button>
+                    ))
+                )}
               <p>Enter Your ApiKey Here</p>
               <Input
                 type="text"
                 value={nodeConnectionType.ApiKey}
                 onChange={(event) =>
-                  onContentChange(nodeConnection, title, event, "ApiKey")
+                  onContentChange(state, nodeConnection, title, event, "ApiKey")
                 } // Pass the new value directly
               />
               <p>Enter Your endpoint Here</p>
@@ -134,7 +172,13 @@ const ContentBasedOnTitle = ({
                 type="text"
                 value={nodeConnectionType.endpoint}
                 onChange={(event) =>
-                  onContentChange(nodeConnection, title, event, "endpoint")
+                  onContentChange(
+                    state,
+                    nodeConnection,
+                    title,
+                    event,
+                    "endpoint"
+                  )
                 } // Pass the new value directly
               />
               <p>Enter Your model Here</p>
@@ -142,7 +186,7 @@ const ContentBasedOnTitle = ({
                 type="text"
                 value={nodeConnectionType.model}
                 onChange={(event) =>
-                  onContentChange(nodeConnection, title, event, "model")
+                  onContentChange(state, nodeConnection, title, event, "model")
                 } // Pass the new value directly
               />
             </div>
@@ -151,7 +195,7 @@ const ContentBasedOnTitle = ({
               type="text"
               value={nodeConnectionType.content}
               onChange={(event) =>
-                onContentChange(nodeConnection, title, event, "content")
+                onContentChange(state, nodeConnection, title, event, "content")
               } // Pass the new value directly
             />
           )}

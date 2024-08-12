@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
                 },
             })
             if (workflow) {
+                // TODO: HERE WITH FLOWPATH THE ID OF NODE SHOULD ALSO BE SAVED AS TO WHICH NODE IT IS TALKING ABOUT.
                 workflow.map(async (flow) => {
                     const flowPath = JSON.parse(flow.flowPath!)
                     let current = 0

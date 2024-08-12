@@ -42,11 +42,10 @@ const FlowInstance = ({ children, edges, nodes }: Props) => {
         connectedEdges.map((target) => {
             nodes.map((node) => {
                 if (node.id === target) {
-                    flows.push(node.type)
+                    flows.push(node.id , node.type)
                 }
             })
         })
-
         setIsFlow(flows)
     }
 
