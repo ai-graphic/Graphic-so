@@ -10,6 +10,16 @@ export type ConnectionProviderProps = {
         guildName: string
     }
     setDiscordNode: React.Dispatch<React.SetStateAction<any>>
+    aiNode: {
+        ApiKey: string
+        prompt: string
+        model: string
+        output: string
+        temperature: number
+        maxTokens: number
+        endpoint: string
+    }
+    setAINode: React.Dispatch<React.SetStateAction<any>>
     googleNode: {}[]
     setGoogleNode: React.Dispatch<React.SetStateAction<any>>
     notionNode: {
@@ -22,6 +32,7 @@ export type ConnectionProviderProps = {
         discord?: string
         notion?: string
         slack?: string
+        ai?: string 
     }
     setNotionNode: React.Dispatch<React.SetStateAction<any>>
     slackNode: {
@@ -40,6 +51,7 @@ export type ConnectionProviderProps = {
             discord?: string
             notion?: string
             slack?: string
+            ai?: string 
         }>
     >
     isLoading: boolean
@@ -64,10 +76,20 @@ const InitialValues: ConnectionProviderProps = {
         workspaceName: '',
         content: '',
     },
+    aiNode: {
+        ApiKey: "",
+        prompt: "",
+        model: "",
+        output: "",
+        temperature: 0,
+        maxTokens: 0,
+        endpoint: "",
+    },
     workflowTemplate: {
         discord: '',
         notion: '',
         slack: '',
+        ai: '',
     },
     slackNode: {
         appId: '',
@@ -86,6 +108,7 @@ const InitialValues: ConnectionProviderProps = {
     setSlackNode: () => undefined,
     setIsLoading: () => undefined,
     setWorkFlowTemplate: () => undefined,
+    setAINode: () => undefined,
 }
 
 const ConnectionsContext = createContext(InitialValues)
@@ -97,6 +120,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     const [notionNode, setNotionNode] = useState(InitialValues.notionNode)
     const [slackNode, setSlackNode] = useState(InitialValues.slackNode)
     const [isLoading, setIsLoading] = useState(InitialValues.isLoading)
+    const [aiNode, setAINode] = useState(InitialValues.aiNode)
     const [workflowTemplate, setWorkFlowTemplate] = useState(
         InitialValues.workflowTemplate
     )
@@ -114,6 +138,8 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
         setIsLoading,
         workflowTemplate,
         setWorkFlowTemplate,
+        aiNode, 
+        setAINode, 
     }
 
     return <Provider value={values}>{children}</Provider>

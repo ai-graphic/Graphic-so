@@ -121,6 +121,7 @@ const EditorCanvasSidebar = ({nodes}: Props) => {
                             />
                         </AccordionItem>
                     </Accordion>
+                    
                 </TabsContent>
             </Tabs>
         </aside>
