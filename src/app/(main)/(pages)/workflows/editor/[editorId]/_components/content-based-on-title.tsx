@@ -104,11 +104,18 @@ const ContentBasedOnTitle = ({
               : ""
           }`
         ];
-        useEffect(() => {
-          if (selectedOutput) {
-            onContentChange(state, nodeConnection, title, { target: { value: selectedOutput } }, "prompt");
-          }
-        }, [selectedOutput]);
+  useEffect(() => {
+    if (selectedOutput) {
+      const syntheticEvent = { target: { value: selectedOutput } } as React.ChangeEvent<HTMLInputElement>;
+      onContentChange(
+        state,
+        nodeConnection,
+        title,
+        syntheticEvent,
+        "prompt"
+      );
+    }
+  }, [selectedOutput]);
 
   return (
     <AccordionContent>
@@ -144,9 +151,16 @@ const ContentBasedOnTitle = ({
               />
               {showButtons &&
                 nodeConnection.aiNode.output &&
-                Object.entries(nodeConnection.aiNode.output).map(
-                  ([id, outputs]) =>
-                    outputs.map((output, index) => (
+                state.editor.edges && 
+                Object.entries(nodeConnection.aiNode.output)
+                  .filter(([id]) =>
+                    state.editor.edges.some(
+                      (edge) =>
+                        edge.target === selectedNode.id && edge.source === id
+                    )
+                  ) 
+                  .map(([id, outputs]) =>
+                    Array.isArray(outputs) && outputs.map((output, index) => (
                       <button
                         key={`${id}-${index}`}
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -158,7 +172,7 @@ const ContentBasedOnTitle = ({
                         {String(output)}
                       </button>
                     ))
-                )}
+                  )}
               <p>Enter Your ApiKey Here</p>
               <Input
                 type="text"

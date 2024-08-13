@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Option } from "./content-based-on-title";
 import { ConnectionProviderProps } from "@/providers/connections-providers";
 import { usePathname } from "next/navigation";
@@ -10,6 +10,7 @@ import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_act
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
 import axios from 'axios'; 
 import { useEditor } from "@/providers/editor-provider";
+import { SelectionMode } from "reactflow";
 
 type Props = {
   currentService: string;
@@ -124,7 +125,7 @@ const ActionButton = ({
       console.log("AI Node:", nodeConnection.aiNode);
         const aiNodeAsString = JSON.stringify(nodeConnection.aiNode);
       const response = await onCreateNodeTemplate(
-        aiNodeAsString, // Assuming aiNode has a prompt property
+        aiNodeAsString, 
         currentService,
         pathname.split("/").pop()!
       );
@@ -174,8 +175,17 @@ const ActionButton = ({
     }
   }, [nodeConnection, channels]);
 
+  const { selectedNode } = useEditor().state.editor;
+  const [aiOutput, setAiOutput] = useState<string[]>(["submit to get an output"]);
+
+  useEffect(() => {
+    if (nodeConnection.aiNode.output && selectedNode.id) {
+      setAiOutput((nodeConnection.aiNode.output as unknown as Record<string, string[]>)[selectedNode.id] || ["submit to get an output"]);
+    }
+  }, [nodeConnection.aiNode.output, selectedNode.id]);
+
+
   const renderActionButton = () => {
-    const { selectedNode } = useEditor().state.editor;
     switch (currentService) {
       case "Discord":
         return (
@@ -191,7 +201,9 @@ const ActionButton = ({
       case "AI":
         return (
           <>
-          output : {nodeConnection.aiNode[selectedNode.id]?.output ?? "submit to get an output"}
+                   <div>
+              Output: {aiOutput.join(", ")}
+            </div>
             <Button
               variant="outline"
               onClick={() => onAiSearch(selectedNode.id)}
