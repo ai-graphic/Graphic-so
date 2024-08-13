@@ -108,7 +108,6 @@ export const onCreateNodeTemplate = async (
             },
             data: {
                 AiTemplate: content,
-                aiAccessToken: accessToken,
             },
         });
 
