@@ -20,15 +20,11 @@ import { use, useEffect, useState } from "react";
 import { getFileMetaData } from "@/app/(main)/(pages)/connections/_actions/google-connections";
 import axios from "axios";
 import { toast } from "sonner";
-// import {useEffect, useState} from "react";
-// import {usePathname} from "next/navigation";
-// import {onGetNodeTemplate} from "@/app/(main)/(pages)/workflows/editor/[editorId]/_actions/workflow-connections";
 
 export interface Option {
   value: string;
   label: string;
   disable?: boolean;
-  /** fixed option that can't be removed. */
   fixed?: boolean;
 
   /** Group the options by providing key. */
@@ -124,7 +120,13 @@ const ContentBasedOnTitle = ({
           </CardHeader>
         )}
         <div className="flex flex-col gap-3 px-6 py-3 pb-20">
-          <p>{title === "Notion" ? "Values to be stored" : "Message"}</p>
+          <p>
+            {title === "Notion"
+              ? "Values to be stored"
+              : title === "Google Drive"
+              ? ""
+              : "Message"}
+          </p>
           {title === "AI" ? (
             <div className="gap-2 flex flex-col">
               <p className="block text-sm font-medium text-gray-300">
@@ -146,9 +148,11 @@ const ContentBasedOnTitle = ({
                 }}
                 className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
               >
-                <option disabled value="Select Model">Select Model</option>
+                <option disabled value="Select Model">
+                  Select Model
+                </option>
                 <option value="Openai">Openai</option>
-                <option value="flux-dev-lora">flux-dev-lora</option>
+                <option value="Replicate">Replicate</option>
               </select>
               <p className="block text-sm font-medium text-gray-300">
                 Enter Your Prompt Here
@@ -207,27 +211,45 @@ const ContentBasedOnTitle = ({
                   onContentChange(state, nodeConnection, title, event, "ApiKey")
                 }
               />
-              {model === "Openai" && (
+              <p className="block text-sm font-medium text-gray-300">
+                Enter Your localModel Here
+              </p>
+              <Input
+                type="text"
+                value={nodeConnectionType.localModel}
+                onChange={(event) =>
+                  onContentChange(
+                    state,
+                    nodeConnection,
+                    title,
+                    event,
+                    "localModel"
+                  )
+                }
+              />
+              {model === "Replicate" && (
                 <div>
                   <p className="block text-sm font-medium text-gray-300">
-                    Enter Your localModel Here
+                    Enter Your Endpoint Here
                   </p>
                   <Input
                     type="text"
-                    value={nodeConnectionType.localModel}
+                    value={nodeConnectionType.endpoint}
                     onChange={(event) =>
                       onContentChange(
                         state,
                         nodeConnection,
                         title,
                         event,
-                        "localModel"
+                        "endpoint"
                       )
                     }
                   />
                 </div>
               )}
             </div>
+          ) : title === "Google Drive" ? (
+            <div></div>
           ) : (
             <Input
               type="text"
@@ -253,12 +275,6 @@ const ContentBasedOnTitle = ({
               </CardContent>
             </Card>
           )}
-          {/*<p>{`Message`}</p>*/}
-          {/*<Input*/}
-          {/*    type="text"*/}
-          {/*    value={nodeConnectionType.content}*/}
-          {/*    onChange={(event) => onContentChange(nodeConnection, title, event)}*/}
-          {/*/>*/}
           {title === "Google Drive" && <GoogleDriveFiles />}
           <ActionButton
             currentService={title}
