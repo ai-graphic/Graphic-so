@@ -16,6 +16,7 @@ export type ConnectionProviderProps = {
       ApiKey: string;
       prompt: string;
       model: string;
+      localModel: string;
       output: string;
       temperature: number;
       maxTokens: number;
@@ -119,6 +120,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [slackNode, setSlackNode] = useState(InitialValues.slackNode);
   const [isLoading, setIsLoading] = useState(InitialValues.isLoading);
   const [aiNode, setAINode] = useState(InitialValues.aiNode);
+  const [output, setOutput] = useState(InitialValues.output);
   const [workflowTemplate, setWorkFlowTemplate] = useState(
     InitialValues.workflowTemplate
   );
@@ -137,6 +139,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     workflowTemplate,
     setWorkFlowTemplate,
     aiNode,
+    output,
     setAINode,
   };
 

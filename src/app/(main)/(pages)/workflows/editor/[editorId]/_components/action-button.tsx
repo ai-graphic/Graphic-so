@@ -8,9 +8,11 @@ import { onCreateNodeTemplate } from "@/app/(main)/(pages)/workflows/_actions/wo
 import { toast } from "sonner";
 import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_actions/notion-connection";
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
-import axios from 'axios'; 
+import axios from "axios";
 import { useEditor } from "@/providers/editor-provider";
 import { SelectionMode } from "reactflow";
+import { divMode } from "@tsparticles/engine";
+import Link from "next/link";
 
 type Props = {
   currentService: string;
@@ -79,53 +81,79 @@ const ActionButton = ({
   }, [nodeConnection.slackNode, channels]);
   // ... existing code ...
 
-  
-  const onAiSearch = useCallback(async (id : string) => {
-    console.log("AI Node:", id);
-    try {
-      const messages =  [
-        {
-          role: "system",
-          content: "You are a helpful assistant."
-        },
-        {
-          role: "user",
-          content: nodeConnection.aiNode[id].prompt
+  const onAiSearch = useCallback(
+    async (id: string) => {
+      console.log("AI Node:", id);
+      if (nodeConnection.aiNode[id].model === "Openai") {
+        try {
+          const messages = [
+            {
+              role: "system",
+              content: "You are a helpful assistant.",
+            },
+            {
+              role: "user",
+              content: nodeConnection.aiNode[id].prompt,
+            },
+          ];
+          console.log("Messages:", messages);
+          const response = await axios.post(
+            nodeConnection.aiNode[id].endpoint ||
+              "https://api.openai.com/v1/chat/completions",
+            {
+              model: nodeConnection.aiNode.localModel || "gpt-3.5-turbo",
+              messages: messages,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${nodeConnection.aiNode[id].ApiKey}`, // Use environment variable for the API key
+              },
+            }
+          );
+          nodeConnection.setAINode((prev: any) => ({
+            ...prev,
+            output: {
+              ...(prev.output || {}), // Ensure prev.output is an object
+              [id]: [
+                ...(prev.output?.[id] || []), // Spread the existing array or an empty array if it doesn't exist
+                response.data.choices[0].message.content.trim(), // Append the new content
+              ],
+            },
+          }));
+          console.log("AI Response:", response.data);
+        } catch (error) {
+          console.error("Error during AI search:", error);
         }
-      ]
-      console.log("Messages:", messages);
-      const response = await axios.post( (nodeConnection.aiNode[id].endpoint || 'https://api.openai.com/v1/chat/completions'), {
-        model: nodeConnection.aiNode.model || "gpt-3.5-turbo",
-        messages: messages,
-      }, {
-        headers: {
-          'Authorization': `Bearer ${nodeConnection.aiNode[id].ApiKey}` // Use environment variable for the API key
+      } else {
+        console.log("AI model:", nodeConnection.aiNode[id].model);
+        try {
+          const response = await axios.post("/api/AiResponse", {
+            prompt: nodeConnection.aiNode[id].prompt,
+            apiKey: nodeConnection.aiNode[id].ApiKey,
+          });
+          nodeConnection.setAINode((prev: any) => ({
+            ...prev,
+            output: {
+              ...(prev.output || {}),
+              [id]: [...(prev.output?.[id] || []), response.data[0]],
+            },
+          }));
+          console.log("Replicate API Response:", response.data[0]);
+        } catch (error) {
+          console.error("Error during Replicate API call:", error);
         }
-      });
-      nodeConnection.setAINode((prev: any) => ({
-        ...prev,
-        output: {
-          ...(prev.output || {}), // Ensure prev.output is an object
-          [id]: [
-            ...(prev.output?.[id] || []), // Spread the existing array or an empty array if it doesn't exist
-            response.data.choices[0].message.content.trim() // Append the new content
-          ]
-        }
-      }));
-      console.log("AI Response:", response.data);
-    } catch (error) {
-      console.error("Error during AI search:", error);
-    }
-  }, [nodeConnection.aiNode, pathname]);
+      }
+    },
+    [nodeConnection.aiNode, pathname]
+  );
 
-  
   // ...
   const onCreateLocalNodeTempate = useCallback(async () => {
     if (currentService === "AI") {
       console.log("AI Node:", nodeConnection.aiNode);
-        const aiNodeAsString = JSON.stringify(nodeConnection.aiNode);
+      const aiNodeAsString = JSON.stringify(nodeConnection.aiNode);
       const response = await onCreateNodeTemplate(
-        aiNodeAsString, 
+        aiNodeAsString,
         currentService,
         pathname.split("/").pop()!
       );
@@ -176,14 +204,18 @@ const ActionButton = ({
   }, [nodeConnection, channels]);
 
   const { selectedNode } = useEditor().state.editor;
-  const [aiOutput, setAiOutput] = useState<string[]>(["submit to get an output"]);
+  const [aiOutput, setAiOutput] = useState<string[]>([]);
+  console.log("aioutput:", aiOutput);
 
   useEffect(() => {
     if (nodeConnection.aiNode.output && selectedNode.id) {
-      setAiOutput((nodeConnection.aiNode.output as unknown as Record<string, string[]>)[selectedNode.id] || ["submit to get an output"]);
+      setAiOutput(
+        (nodeConnection.aiNode.output as unknown as Record<string, string[]>)[
+          selectedNode.id
+        ] || []
+      );
     }
   }, [nodeConnection.aiNode.output, selectedNode.id]);
-
 
   const renderActionButton = () => {
     switch (currentService) {
@@ -201,8 +233,22 @@ const ActionButton = ({
       case "AI":
         return (
           <>
-                   <div>
-              Output: {aiOutput.join(", ")}
+            <div>
+              Output:{" "}
+              {nodeConnection.aiNode[selectedNode.id]?.model === "Openai" ? (
+                aiOutput.join(", ")
+              ) : (
+                <div className="flex flex-col space-y-2">
+                {aiOutput.map((output, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                  <span className="font-medium text-sm">{index + 1}.</span>
+                  <Link target="_blank" href={output} className="text-blue-500 hover:text-blue-600">
+                    {output}
+                  </Link>
+                </div>
+                ))}
+              </div>
+              )}
             </div>
             <Button
               variant="outline"

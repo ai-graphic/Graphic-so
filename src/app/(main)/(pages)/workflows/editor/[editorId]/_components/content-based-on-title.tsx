@@ -59,7 +59,8 @@ const ContentBasedOnTitle = ({
   // const [isLoading, setIsLoading] = useState(false);
   // const pathName = usePathname();
   const [showButtons, setShowButtons] = useState(false);
-  const [selectedOutput, setSelectedOutput] = useState<string | null>(null); // New state for selected output
+  const [selectedOutput, setSelectedOutput] = useState<string | null>(null);
+  const [model, setModel] = useState<string>("Select Model");
 
   console.log("btn", showButtons);
   const { state } = useEditor();
@@ -106,14 +107,10 @@ const ContentBasedOnTitle = ({
         ];
   useEffect(() => {
     if (selectedOutput) {
-      const syntheticEvent = { target: { value: selectedOutput } } as React.ChangeEvent<HTMLInputElement>;
-      onContentChange(
-        state,
-        nodeConnection,
-        title,
-        syntheticEvent,
-        "prompt"
-      );
+      const syntheticEvent = {
+        target: { value: selectedOutput },
+      } as React.ChangeEvent<HTMLInputElement>;
+      onContentChange(state, nodeConnection, title, syntheticEvent, "prompt");
     }
   }, [selectedOutput]);
 
@@ -130,7 +127,32 @@ const ContentBasedOnTitle = ({
           <p>{title === "Notion" ? "Values to be stored" : "Message"}</p>
           {title === "AI" ? (
             <div className="gap-2 flex flex-col">
-              <p>Enter Your Prompt Here</p>
+              <p className="block text-sm font-medium text-gray-300">
+                Select Your model
+              </p>
+              <select
+                value={model}
+                onChange={(event) => {
+                  const newModel = event.target.value;
+                  setModel(newModel);
+
+                  onContentChange(
+                    state,
+                    nodeConnection,
+                    title,
+                    event as unknown as React.ChangeEvent<HTMLInputElement>,
+                    "model"
+                  );
+                }}
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              >
+                <option disabled value="Select Model">Select Model</option>
+                <option value="Openai">Openai</option>
+                <option value="flux-dev-lora">flux-dev-lora</option>
+              </select>
+              <p className="block text-sm font-medium text-gray-300">
+                Enter Your Prompt Here
+              </p>
               <Input
                 type="text"
                 value={selectedOutput ?? nodeConnectionType.prompt}
@@ -151,58 +173,60 @@ const ContentBasedOnTitle = ({
               />
               {showButtons &&
                 nodeConnection.aiNode.output &&
-                state.editor.edges && 
+                state.editor.edges &&
                 Object.entries(nodeConnection.aiNode.output)
                   .filter(([id]) =>
                     state.editor.edges.some(
                       (edge) =>
                         edge.target === selectedNode.id && edge.source === id
                     )
-                  ) 
-                  .map(([id, outputs]) =>
-                    Array.isArray(outputs) && outputs.map((output, index) => (
-                      <button
-                        key={`${id}-${index}`}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                        onClick={() => {
-                          setSelectedOutput(String(output));
-                          setShowButtons((prev) => !prev);
-                        }}
-                      >
-                        {String(output)}
-                      </button>
-                    ))
+                  )
+                  .map(
+                    ([id, outputs]) =>
+                      Array.isArray(outputs) &&
+                      outputs.map((output, index) => (
+                        <button
+                          key={`${id}-${index}`}
+                          className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                          onClick={() => {
+                            setSelectedOutput(String(output));
+                            setShowButtons((prev) => !prev);
+                          }}
+                        >
+                          {String(output)}
+                        </button>
+                      ))
                   )}
-              <p>Enter Your ApiKey Here</p>
+              <p className="block text-sm font-medium text-gray-300">
+                Enter Your ApiKey Here
+              </p>
               <Input
                 type="text"
                 value={nodeConnectionType.ApiKey}
                 onChange={(event) =>
                   onContentChange(state, nodeConnection, title, event, "ApiKey")
-                } // Pass the new value directly
+                }
               />
-              <p>Enter Your endpoint Here</p>
-              <Input
-                type="text"
-                value={nodeConnectionType.endpoint}
-                onChange={(event) =>
-                  onContentChange(
-                    state,
-                    nodeConnection,
-                    title,
-                    event,
-                    "endpoint"
-                  )
-                } // Pass the new value directly
-              />
-              <p>Enter Your model Here</p>
-              <Input
-                type="text"
-                value={nodeConnectionType.model}
-                onChange={(event) =>
-                  onContentChange(state, nodeConnection, title, event, "model")
-                } // Pass the new value directly
-              />
+              {model === "Openai" && (
+                <div>
+                  <p className="block text-sm font-medium text-gray-300">
+                    Enter Your localModel Here
+                  </p>
+                  <Input
+                    type="text"
+                    value={nodeConnectionType.localModel}
+                    onChange={(event) =>
+                      onContentChange(
+                        state,
+                        nodeConnection,
+                        title,
+                        event,
+                        "localModel"
+                      )
+                    }
+                  />
+                </div>
+              )}
             </div>
           ) : (
             <Input
@@ -210,7 +234,7 @@ const ContentBasedOnTitle = ({
               value={nodeConnectionType.content}
               onChange={(event) =>
                 onContentChange(state, nodeConnection, title, event, "content")
-              } // Pass the new value directly
+              }
             />
           )}
           {JSON.stringify(file) !== "{}" && title !== "Google Drive" && (

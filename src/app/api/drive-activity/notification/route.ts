@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
                       aiTemplate[nodeId].endpoint ||
                         "https://api.openai.com/v1/chat/completions",
                       {
-                        model: aiTemplate[nodeId].model || "gpt-3.5-turbo",
+                        model: aiTemplate[nodeId].localModel || "gpt-3.5-turbo",
                         messages: messages,
                       },
                       {
