@@ -61,12 +61,12 @@ const ContentBasedOnTitle = ({
     { locaModel: "alvdansen/frosting_lane_flux" },
     { ApiKey: "r8_BdC**********************************" },
     { prompt: "a beautiful castle frstingln illustration" },
-    { num_outputs: "1" },
+    { num_outputs: 1 },
     { aspect_ratio: "1:1" },
     { output_format: "webp" },
-    { guidance_scale: "3.5" },
-    { output_quality: "80" },
-    { num_inference_steps: "20" },
+    { guidance_scale: 3.5 },
+    { output_quality: 80 },
+    { num_inference_steps: 20 },
   ];
   const OpenaiOptions = [
     { locaModel: "gpt-3.5-turbo" },
