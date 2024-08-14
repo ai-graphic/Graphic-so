@@ -124,12 +124,20 @@ const ActionButton = ({
         } catch (error) {
           console.error("Error during AI search:", error);
         }
-      } else {
+      } else if (nodeConnection.aiNode[id].model === "FLUX-image") {
         console.log("AI model:", nodeConnection.aiNode[id].model);
         try {
-          const response = await axios.post("/api/AiResponse", {
+          const response = await axios.post("/api/AiResponse/FLUX-image", {
             prompt: nodeConnection.aiNode[id].prompt,
             apiKey: nodeConnection.aiNode[id].ApiKey,
+            temperature: nodeConnection.aiNode[id].temperature,
+            maxTokens: nodeConnection.aiNode[id].maxTokens,
+            num_outputs: nodeConnection.aiNode[id].num_outputs,
+            aspect_ratio: nodeConnection.aiNode[id].aspect_ratio,
+            output_format: nodeConnection.aiNode[id].output_format,
+            guidance_scale: nodeConnection.aiNode[id].guidance_scale,
+            output_quality: nodeConnection.aiNode[id].output_quality,
+            num_inference_steps: nodeConnection.aiNode[id].num_inference_steps,
           });
           nodeConnection.setAINode((prev: any) => ({
             ...prev,
@@ -142,6 +150,8 @@ const ActionButton = ({
         } catch (error) {
           console.error("Error during Replicate API call:", error);
         }
+      } else if (nodeConnection.aiNode[id].model === "train-LORA") {
+        console.log("AI model:", nodeConnection.aiNode[id].model);
       }
     },
     [nodeConnection.aiNode, pathname]

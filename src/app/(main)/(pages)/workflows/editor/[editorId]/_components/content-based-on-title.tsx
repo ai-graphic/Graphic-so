@@ -57,6 +57,44 @@ const ContentBasedOnTitle = ({
   const [showButtons, setShowButtons] = useState(false);
   const [selectedOutput, setSelectedOutput] = useState<string | null>(null);
   const [model, setModel] = useState<string>("Select Model");
+  const FluxOptions = [
+    { locaModel: "alvdansen/frosting_lane_flux" },
+    { ApiKey: "r8_BdC**********************************" },
+    { prompt: "a beautiful castle frstingln illustration" },
+    { num_outputs: "1" },
+    { aspect_ratio: "1:1" },
+    { output_format: "webp" },
+    { guidance_scale: "3.5" },
+    { output_quality: "80" },
+    { num_inference_steps: "20" },
+  ];
+  const OpenaiOptions = [
+    { locaModel: "gpt-3.5-turbo" },
+    { ApiKey: "sk-proj-***************************************" },
+    { prompt: "Enter your prompt" },
+    { temperature: "0.7" },
+    { max_tokens: "150" },
+  ];
+  // const LoraOptions = [
+  //   { images: "A zip/tar file containing the images that will be used for training. File names must be their captions: a_photo_of_TOK.png, etc. Min 12 images required." },
+  //   { locaModel: "defaultLoraModel" },
+  //   { endpoint: "https://api.lora.example.com" },
+  //   { ApiKey: "defaultLoraApiKey" },
+  //   { model_name: "LoraModel" },
+  //   { hf_token: "defaultHfToken" },
+  //   { steps: "10" },
+  //   { learning_rate: "0.01" },
+  //   { batch_size: "8" },
+  //   { resolution: "1024" },
+  //   { lora_linear: "true" },
+  //   { lora_linear_alpha: "0.1" },
+  //   { repo_id: "defaultRepoId" },
+  // ];
+  const modelOptionsMap: { [key: string]: any[] } = {
+    "FLUX-image": FluxOptions,
+    Openai: OpenaiOptions,
+    // "train-LORA": LoraOptions,
+  };
 
   console.log("btn", showButtons);
   const { state } = useEditor();
@@ -152,7 +190,8 @@ const ContentBasedOnTitle = ({
                   Select Model
                 </option>
                 <option value="Openai">Openai</option>
-                <option value="Replicate">Replicate</option>
+                <option value="FLUX-image">FLUX-image</option>
+                {/* <option value="train-LORA">train-LORA</option> */}
               </select>
               <p className="block text-sm font-medium text-gray-300">
                 Enter Your Prompt Here
@@ -201,52 +240,34 @@ const ContentBasedOnTitle = ({
                         </button>
                       ))
                   )}
-              <p className="block text-sm font-medium text-gray-300">
-                Enter Your ApiKey Here
-              </p>
-              <Input
-                type="text"
-                value={nodeConnectionType.ApiKey}
-                onChange={(event) =>
-                  onContentChange(state, nodeConnection, title, event, "ApiKey")
-                }
-              />
-              <p className="block text-sm font-medium text-gray-300">
-                Enter Your localModel Here
-              </p>
-              <Input
-                type="text"
-                value={nodeConnectionType.localModel}
-                onChange={(event) =>
-                  onContentChange(
-                    state,
-                    nodeConnection,
-                    title,
-                    event,
-                    "localModel"
-                  )
-                }
-              />
-              {model === "Replicate" && (
-                <div>
-                  <p className="block text-sm font-medium text-gray-300">
-                    Enter Your Endpoint Here
-                  </p>
-                  <Input
-                    type="text"
-                    value={nodeConnectionType.endpoint}
-                    onChange={(event) =>
-                      onContentChange(
-                        state,
-                        nodeConnection,
-                        title,
-                        event,
-                        "endpoint"
-                      )
-                    }
-                  />
-                </div>
-              )}
+              {modelOptionsMap[model]?.map((optionObj) => {
+                const optionKey = Object.keys(optionObj)[0];
+                if (optionKey === "prompt") return null;
+
+                return (
+                  <div key={optionKey}>
+                    <p className="block text-sm font-medium text-gray-300">
+                      Enter Your{" "}
+                      {optionKey.charAt(0).toUpperCase() + optionKey.slice(1)}{" "}
+                      Here
+                    </p>
+                    <Input
+                      type="text"
+                      placeholder={optionObj[optionKey]} // Use placeholder for default values
+                      value={nodeConnectionType[optionKey]}
+                      onChange={(event) =>
+                        onContentChange(
+                          state,
+                          nodeConnection,
+                          title,
+                          event,
+                          optionKey
+                        )
+                      }
+                    />
+                  </div>
+                );
+              })}
             </div>
           ) : title === "Google Drive" ? (
             <div></div>

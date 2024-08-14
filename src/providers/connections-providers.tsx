@@ -11,7 +11,7 @@ export type ConnectionProviderProps = {
   };
   setDiscordNode: React.Dispatch<React.SetStateAction<any>>;
   aiNode: {
-      [id: string]: {
+    [id: string]: {
       id: string;
       ApiKey: string;
       prompt: string;
@@ -21,6 +21,22 @@ export type ConnectionProviderProps = {
       temperature: number;
       maxTokens: number;
       endpoint: string;
+      num_outputs: number;
+      aspect_ratio: string; 
+      output_format: string;
+      guidance_scale: number;
+      output_quality: number; 
+      num_inference_steps: number;
+      model_name: string;
+      hf_token: string;
+      steps: number;
+      learning_rate: number;
+      batch_size: number;
+      resolution: string;
+      lora_linear: boolean;
+      lora_linear_alpha: number;
+      repo_id: string;
+      images: string;
     };
   };
   output: string[];
@@ -68,31 +84,30 @@ type ConnectionWithChildProps = {
 };
 
 const InitialValues: ConnectionProviderProps = {
-    discordNode: {
-        webhookURL: '',
-        content: '',
-        webhookName: '',
-        guildName: '',
-    },
-    googleNode: [],
-    notionNode: {
-        accessToken: '',
-        databaseId: '',
-        workspaceName: '',
-        content: '',
-    },
-    slackNode: {
-        appId: '',
-        authedUserId: '',
-        authedUserToken: '',
-        slackAccessToken: '',
-        botUserId: '',
-        teamId: '',
-        teamName: '',
-        content: '',
-    },
-  aiNode: {
+  discordNode: {
+    webhookURL: "",
+    content: "",
+    webhookName: "",
+    guildName: "",
   },
+  googleNode: [],
+  notionNode: {
+    accessToken: "",
+    databaseId: "",
+    workspaceName: "",
+    content: "",
+  },
+  slackNode: {
+    appId: "",
+    authedUserId: "",
+    authedUserToken: "",
+    slackAccessToken: "",
+    botUserId: "",
+    teamId: "",
+    teamName: "",
+    content: "",
+  },
+  aiNode: {},
   output: [],
   workflowTemplate: {
     discord: "",
