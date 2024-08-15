@@ -14,7 +14,6 @@ import {
 import { Option } from "@/components/ui/multiple-selector";
 import { Prompt } from "next/font/google";
 
-
 export const onDragStart = (
   event: any,
   nodeType: EditorCanvasCardType["type"]
@@ -33,22 +32,22 @@ export const onSlackContent = (
   }));
 };
 export const onAIContent = (
-  state : EditorState,
+  state: EditorState,
   nodeConnection: ConnectionProviderProps,
   event: React.ChangeEvent<HTMLInputElement>,
   content: string
 ) => {
-    const firstcontent = state.editor.selectedNode.id;
-    const finalcontent = firstcontent + "." + content;
-    const [id, key] = finalcontent.split('.');
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
 
-    nodeConnection.setAINode((prev: any) => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        [key]: event.target.value,
-      },
-    }));
+  nodeConnection.setAINode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
 };
 
 export const onDiscordContent = (
@@ -72,7 +71,7 @@ export const onNotionContent = (
 };
 
 export const onContentChange = (
-  state : EditorState,
+  state: EditorState,
   nodeConnection: ConnectionProviderProps,
   nodeType: string,
   event: React.ChangeEvent<HTMLInputElement>,
@@ -132,12 +131,11 @@ export const onConnections = async (
     if (connection) {
       nodeConnection.setDiscordNode((prev: any) => ({
         ...prev,
-        [editorState.editor.selectedNode.id]: {
-          webhookURL: connection.url,
-          content: "",
-          webhookName: connection.name,
-          guildName: connection.guildName,
-        },
+
+        webhookURL: connection.url,
+        content: "",
+        webhookName: connection.name,
+        guildName: connection.guildName,
       }));
     }
   }
@@ -146,15 +144,13 @@ export const onConnections = async (
     if (connection) {
       nodeConnection.setNotionNode((prev: any) => ({
         ...prev,
-        [editorState.editor.selectedNode.id]: {
-          accessToken: connection.accessToken,
-          databaseId: connection.databaseId,
-          workspaceName: connection.workspaceName,
-          content: {
-            name: googleFile.name,
-            kind: googleFile.kind,
-            type: googleFile.mimeType,
-          },
+        accessToken: connection.accessToken,
+        databaseId: connection.databaseId,
+        workspaceName: connection.workspaceName,
+        content: {
+          name: googleFile.name,
+          kind: googleFile.kind,
+          type: googleFile.mimeType,
         },
       }));
       if (nodeConnection.notionNode.databaseId !== "") {
@@ -170,17 +166,15 @@ export const onConnections = async (
     if (connection) {
       nodeConnection.setSlackNode((prev: any) => ({
         ...prev,
-        [editorState.editor.selectedNode.id]: {
-          appId: connection.appId,
-          authedUserId: connection.authedUserId,
-          authedUserToken: connection.authedUserToken,
-          slackAccessToken: connection.slackAccessToken,
-          botUserId: connection.botUserId,
-          teamId: connection.teamId,
-          teamName: connection.teamName,
-          userId: connection.userId,
-          content: "",
-        },
+        appId: connection.appId,
+        authedUserId: connection.authedUserId,
+        authedUserToken: connection.authedUserToken,
+        slackAccessToken: connection.slackAccessToken,
+        botUserId: connection.botUserId,
+        teamId: connection.teamId,
+        teamName: connection.teamName,
+        userId: connection.userId,
+        content: "",
       }));
     }
   }
