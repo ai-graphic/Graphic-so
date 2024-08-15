@@ -1,3 +1,4 @@
+export const maxDuration = 300;
 import Replicate from "replicate";
 
 export async function POST(req: Request, res: Response) {
