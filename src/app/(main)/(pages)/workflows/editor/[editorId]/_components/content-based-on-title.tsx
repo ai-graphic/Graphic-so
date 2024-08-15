@@ -98,14 +98,13 @@ const ContentBasedOnTitle = ({
 
 
   useEffect(() => {
-    if (!selectedOutput) return; // This is fine, it's an early return inside the effect
-  
-    const syntheticEvent = {
-      target: { value: selectedOutput },
-    } as React.ChangeEvent<HTMLInputElement>;
-    onContentChange(state, nodeConnection, title, syntheticEvent, "prompt");
-  }, [selectedOutput, nodeConnection, state, title]); // Dependencies remain unchanged
-
+    if (selectedOutput) {
+      const syntheticEvent = {
+        target: { value: selectedOutput },
+      } as React.ChangeEvent<HTMLInputElement>;
+      onContentChange(state, nodeConnection, title, syntheticEvent, "prompt");
+    }
+  }, [selectedOutput]);
 
   const modelOptionsMap: { [key: string]: any[] } = {
     "FLUX-image": FluxOptions,
@@ -120,7 +119,6 @@ const ContentBasedOnTitle = ({
         "/api/drive"
       );
       if (response) {
-        // Take only the first three files, if they exist
         const firstThreeFiles = response.data.message.files.slice(0, 3);
         console.log(firstThreeFiles);
         toast.success("Files fetched successfully");
