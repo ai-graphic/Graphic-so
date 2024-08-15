@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
               "https://api.cron-job.org/jobs",
               {
                 job: {
-                  url: `https://workflow-ai.vercel.app/?flow_id=${flow.id}`,
+                  url: `https://workflow-ai.vercel.app?flow_id=${flow.id}`,
                   enabled: "true",
                   schedule: {
                     timezone: "Asia/Kolkata",
