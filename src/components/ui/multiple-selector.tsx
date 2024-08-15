@@ -210,7 +210,7 @@ const MultipleSelector = React.forwardRef<
                 setSelected(newOptions)
                 onChange?.(newOptions)
             },
-            [selected]
+            [selected, onchange]
         )
 
         const handleKeyDown = React.useCallback(
@@ -228,7 +228,7 @@ const MultipleSelector = React.forwardRef<
                     }
                 }
             },
-            [selected]
+            [selected, handleUnselect]
         )
 
         useEffect(() => {
@@ -269,7 +269,7 @@ const MultipleSelector = React.forwardRef<
             }
 
             void exec()
-        }, [debouncedSearchTerm, open])
+        }, [debouncedSearchTerm, open, groupBy, onSearch, triggerSearchOnFocus])
 
         const CreatableItem = () => {
             if (!creatable) return undefined

@@ -23,7 +23,7 @@ const InfoBar = (props: Props) => {
 
     useEffect(() => {
         onGetPayment()
-    }, [])
+    }, [onGetPayment])
 
     return (
         <div className="flex flex-row justify-end gap-6

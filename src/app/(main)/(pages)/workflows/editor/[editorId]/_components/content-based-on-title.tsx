@@ -56,6 +56,11 @@ const ContentBasedOnTitle = ({
   // const pathName = usePathname();
   const [showButtons, setShowButtons] = useState(false);
   const [selectedOutput, setSelectedOutput] = useState<string | null>(null);
+  console.log("btn", showButtons);
+  const { state } = useEditor();
+
+  const { selectedNode } = newState.editor;
+  const title = selectedNode.data.title;
   const [model, setModel] = useState<string>("Select Model");
   const FluxOptions = [
     { locaModel: "alvdansen/frosting_lane_flux" },
@@ -90,17 +95,24 @@ const ContentBasedOnTitle = ({
   //   { lora_linear_alpha: "0.1" },
   //   { repo_id: "defaultRepoId" },
   // ];
+
+
+  useEffect(() => {
+    if (!selectedOutput) return; // This is fine, it's an early return inside the effect
+  
+    const syntheticEvent = {
+      target: { value: selectedOutput },
+    } as React.ChangeEvent<HTMLInputElement>;
+    onContentChange(state, nodeConnection, title, syntheticEvent, "prompt");
+  }, [selectedOutput, nodeConnection, state, title]); // Dependencies remain unchanged
+
+
   const modelOptionsMap: { [key: string]: any[] } = {
     "FLUX-image": FluxOptions,
     Openai: OpenaiOptions,
     // "train-LORA": LoraOptions,
   };
 
-  console.log("btn", showButtons);
-  const { state } = useEditor();
-
-  const { selectedNode } = newState.editor;
-  const title = selectedNode.data.title;
 
   useEffect(() => {
     const reqGoogle = async () => {
@@ -118,7 +130,7 @@ const ContentBasedOnTitle = ({
       }
     };
     reqGoogle();
-  }, []);
+  }, [setFile]); //
 
   //@ts-ignore
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]];
@@ -139,14 +151,6 @@ const ContentBasedOnTitle = ({
               : ""
           }`
         ];
-  useEffect(() => {
-    if (selectedOutput) {
-      const syntheticEvent = {
-        target: { value: selectedOutput },
-      } as React.ChangeEvent<HTMLInputElement>;
-      onContentChange(state, nodeConnection, title, syntheticEvent, "prompt");
-    }
-  }, [selectedOutput]);
 
   return (
     <AccordionContent>

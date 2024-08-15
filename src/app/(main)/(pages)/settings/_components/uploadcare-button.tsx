@@ -9,15 +9,22 @@ import Image from "next/image"; // Import useRouter from Next.js
 type Props = {
     onUpload: (e: string) => any
 }
+type FileItem = {
+    cdnUrl: string;
+    uuid: string;
+    // ... add other relevant properties
+};
+
 
 const UploadCareButton = ({ onUpload }: Props) => {
-    const [files, setFiles] = useState([]);
+    const [files, setFiles] = useState<FileItem[]>([]);
     const router = useRouter(); // Use Next.js router for navigation actions
 
     // Handler to process the file upload and execute the onUpload callback
-    const handleChangeEvent = (items: any) => {
-        const successfulFiles: any = items.allEntries.filter(file => file.status === 'success');
-        setFiles([...successfulFiles]);
+    const handleChangeEvent = (event: any) => {
+        const successfulFiles = event.successEntries.filter((file : any )=> file.status === 'success')
+            .map((file : any) => ({ cdnUrl: file.cdnUrl, uuid: file.uuid }));
+        setFiles(successfulFiles);
 
         successfulFiles.forEach(async (file: any) => {
             const result = await onUpload(file.cdnUrl);

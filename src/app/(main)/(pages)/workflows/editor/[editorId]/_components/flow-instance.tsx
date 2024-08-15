@@ -8,6 +8,7 @@ import {
     onFlowPublish,
 } from '../_actions/workflow-connections'
 import { toast } from 'sonner'
+import { on } from 'events';
 
 type Props = {
     children: React.ReactNode
@@ -29,12 +30,12 @@ const FlowInstance = ({ children, edges, nodes }: Props) => {
         )
 
         if (flow) toast.message(flow.message)
-    }, [nodeConnection])
+    }, [nodeConnection, isFlow, nodes, edges])
 
     const onPublishWorkflow = useCallback(async () => {
         const response = await onFlowPublish(pathname.split('/').pop()!, true)
         if (response) toast.message(response)
-    }, [])
+    }, [pathname])
 
     const onAutomateFlow = async () => {
         const flows: any = []
@@ -51,7 +52,7 @@ const FlowInstance = ({ children, edges, nodes }: Props) => {
 
     useEffect(() => {
         onAutomateFlow()
-    }, [edges])
+    }, [edges, onAutomateFlow])
 
     return (
         <div className="flex flex-col gap-2">

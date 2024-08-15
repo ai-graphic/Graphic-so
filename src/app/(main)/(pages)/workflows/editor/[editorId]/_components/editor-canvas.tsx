@@ -143,7 +143,7 @@ const EditorCanvas = (props: Props) => {
 
     useEffect(() => {
         dispatch({ type: 'LOAD_DATA', payload: { edges, elements: nodes } })
-    }, [nodes, edges])
+    }, [nodes, edges, dispatch])
 
     const nodeTypes = useMemo(
         () => ({
@@ -162,21 +162,21 @@ const EditorCanvas = (props: Props) => {
         }),
         []
     )
-
-    const onGetWorkFlow = async () => {
-        setIsWorkFlowLoading(true)
-        const response = await onGetNodesEdges(pathname.split('/').pop()!)
+    const onGetWorkFlow = useCallback(async () => {
+        setIsWorkFlowLoading(true);
+        const editorId = pathname.split('/').pop();
+        if (!editorId) return;
+        const response = await onGetNodesEdges(editorId);
         if (response) {
-            setEdges(JSON.parse(response.edges!))
-            setNodes(JSON.parse(response.nodes!))
-            setIsWorkFlowLoading(false)
+            setEdges(JSON.parse(response.edges!));
+            setNodes(JSON.parse(response.nodes!));
         }
-        setIsWorkFlowLoading(false)
-    }
-
+        setIsWorkFlowLoading(false);
+    }, [pathname]); 
+    
     useEffect(() => {
         onGetWorkFlow()
-    }, [])
+    }, [onGetWorkFlow])
 
     return (
         <ResizablePanelGroup direction="horizontal">

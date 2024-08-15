@@ -2,7 +2,7 @@ import { postContentToWebHook } from "@/app/(main)/(pages)/connections/_actions/
 import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_actions/notion-connection";
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
 import { db } from "@/lib/db";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
                 ];
                 console.log("Messages:", messages);
 
-                const makeRequest = async (retryCount = 0) => {
+                const makeRequest = async (retryCount = 0): Promise<AxiosResponse<any>> => {
                   const maxRetries = 5;
                   const baseWaitTime = 1000; // 1 second
 

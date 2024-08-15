@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Option } from "./content-based-on-title";
 import { ConnectionProviderProps } from "@/providers/connections-providers";
 import { usePathname } from "next/navigation";
@@ -29,48 +29,53 @@ const ActionButton = ({
 }: Props) => {
   const pathname = usePathname();
 
+  const nodeConnectionRef = useRef(nodeConnection);
+  // Update the ref whenever nodeConnection changes
+  useEffect(() => {
+    nodeConnectionRef.current = nodeConnection;
+  }, [nodeConnection]);
+
   const onSendDiscordMessage = useCallback(async () => {
     const response = await postContentToWebHook(
-      nodeConnection.discordNode.content,
-      nodeConnection.discordNode.webhookURL
+      nodeConnectionRef.current.discordNode.content,
+      nodeConnectionRef.current.discordNode.webhookURL
     );
 
     if (response.message == "success") {
-      nodeConnection.setDiscordNode((prev: any) => ({
+      nodeConnectionRef.current.setDiscordNode((prev: any) => ({
         ...prev,
         content: "",
       }));
     }
-  }, [nodeConnection.discordNode]);
+  }, []);
 
   const onStoreNotionContent = useCallback(async () => {
     console.log(
-      nodeConnection.notionNode.databaseId,
-      nodeConnection.notionNode.accessToken,
-      nodeConnection.notionNode.content
+      nodeConnectionRef.current.notionNode.databaseId,
+      nodeConnectionRef.current.notionNode.accessToken,
+      nodeConnectionRef.current.notionNode.content
     );
     const response = await onCreateNewPageInDatabase(
-      nodeConnection.notionNode.databaseId,
-      nodeConnection.notionNode.accessToken,
-      nodeConnection.notionNode.content
+      nodeConnectionRef.current.notionNode.databaseId,
+      nodeConnectionRef.current.notionNode.accessToken,
+      nodeConnectionRef.current.notionNode.content
     );
     if (response) {
-      nodeConnection.setNotionNode((prev: any) => ({
+      nodeConnectionRef.current.setNotionNode((prev: any) => ({
         ...prev,
         content: "",
       }));
     }
-  }, [nodeConnection.notionNode]);
-
+  }, [])
   const onStoreSlackContent = useCallback(async () => {
     const response = await postMessageToSlack(
-      nodeConnection.slackNode.slackAccessToken,
+      nodeConnectionRef.current.slackNode.slackAccessToken,
       channels!,
-      nodeConnection.slackNode.content
+      nodeConnectionRef.current.slackNode.content
     );
     if (response.message == "Success") {
       toast.success("Message sent successfully");
-      nodeConnection.setSlackNode((prev: any) => ({
+      nodeConnectionRef.current.setSlackNode((prev: any) => ({
         ...prev,
         content: "",
       }));
@@ -78,13 +83,13 @@ const ActionButton = ({
     } else {
       toast.error(response.message);
     }
-  }, [nodeConnection.slackNode, channels]);
+  }, [channels, setChannels]);
   // ... existing code ...
 
   const onAiSearch = useCallback(
     async (id: string) => {
       console.log("AI Node:", id);
-      if (nodeConnection.aiNode[id].model === "Openai") {
+      if (nodeConnectionRef.current.aiNode[id].model === "Openai") {
         try {
           const messages = [
             {
@@ -93,24 +98,24 @@ const ActionButton = ({
             },
             {
               role: "user",
-              content: nodeConnection.aiNode[id].prompt,
+              content: nodeConnectionRef.current.aiNode[id].prompt,
             },
           ];
           console.log("Messages:", messages);
           const response = await axios.post(
-            nodeConnection.aiNode[id].endpoint ||
+            nodeConnectionRef.current.aiNode[id].endpoint ||
               "https://api.openai.com/v1/chat/completions",
             {
-              model: nodeConnection.aiNode.localModel || "gpt-3.5-turbo",
+              model: nodeConnectionRef.current.aiNode.localModel || "gpt-3.5-turbo",
               messages: messages,
             },
             {
               headers: {
-                Authorization: `Bearer ${nodeConnection.aiNode[id].ApiKey}`, // Use environment variable for the API key
+                Authorization: `Bearer ${nodeConnectionRef.current.aiNode[id].ApiKey}`, // Use environment variable for the API key
               },
             }
           );
-          nodeConnection.setAINode((prev: any) => ({
+          nodeConnectionRef.current.setAINode((prev: any) => ({
             ...prev,
             output: {
               ...(prev.output || {}), // Ensure prev.output is an object
@@ -124,22 +129,22 @@ const ActionButton = ({
         } catch (error) {
           console.error("Error during AI search:", error);
         }
-      } else if (nodeConnection.aiNode[id].model === "FLUX-image") {
-        console.log("AI model:", nodeConnection.aiNode[id].model);
+      } else if (nodeConnectionRef.current.aiNode[id].model === "FLUX-image") {
+        console.log("AI model:", nodeConnectionRef.current.aiNode[id].model);
         try {
           const response = await axios.post("/api/AiResponse/FLUX-image", {
-            prompt: nodeConnection.aiNode[id].prompt,
-            apiKey: nodeConnection.aiNode[id].ApiKey,
-            temperature: nodeConnection.aiNode[id].temperature,
-            maxTokens: nodeConnection.aiNode[id].maxTokens,
-            num_outputs: nodeConnection.aiNode[id].num_outputs,
-            aspect_ratio: nodeConnection.aiNode[id].aspect_ratio,
-            output_format: nodeConnection.aiNode[id].output_format,
-            guidance_scale: nodeConnection.aiNode[id].guidance_scale,
-            output_quality: nodeConnection.aiNode[id].output_quality,
-            num_inference_steps: nodeConnection.aiNode[id].num_inference_steps,
+            prompt: nodeConnectionRef.current.aiNode[id].prompt,
+            apiKey: nodeConnectionRef.current.aiNode[id].ApiKey,
+            temperature: nodeConnectionRef.current.aiNode[id].temperature,
+            maxTokens: nodeConnectionRef.current.aiNode[id].maxTokens,
+            num_outputs: nodeConnectionRef.current.aiNode[id].num_outputs,
+            aspect_ratio: nodeConnectionRef.current.aiNode[id].aspect_ratio,
+            output_format: nodeConnectionRef.current.aiNode[id].output_format,
+            guidance_scale: nodeConnectionRef.current.aiNode[id].guidance_scale,
+            output_quality: nodeConnectionRef.current.aiNode[id].output_quality,
+            num_inference_steps: nodeConnectionRef.current.aiNode[id].num_inference_steps,
           });
-          nodeConnection.setAINode((prev: any) => ({
+          nodeConnectionRef.current.setAINode((prev: any) => ({
             ...prev,
             output: {
               ...(prev.output || {}),
@@ -150,18 +155,18 @@ const ActionButton = ({
         } catch (error) {
           console.error("Error during Replicate API call:", error);
         }
-      } else if (nodeConnection.aiNode[id].model === "train-LORA") {
-        console.log("AI model:", nodeConnection.aiNode[id].model);
+      } else if (nodeConnectionRef.current.aiNode[id].model === "train-LORA") {
+        console.log("AI model:", nodeConnectionRef.current.aiNode[id].model);
       }
     },
-    [nodeConnection.aiNode, pathname]
+    []
   );
 
   // ...
   const onCreateLocalNodeTempate = useCallback(async () => {
     if (currentService === "AI") {
-      console.log("AI Node:", nodeConnection.aiNode);
-      const aiNodeAsString = JSON.stringify(nodeConnection.aiNode);
+      console.log("AI Node:", nodeConnectionRef.current.aiNode);
+      const aiNodeAsString = JSON.stringify(nodeConnectionRef.current.aiNode);
       const response = await onCreateNodeTemplate(
         aiNodeAsString,
         currentService,
@@ -174,7 +179,7 @@ const ActionButton = ({
     }
     if (currentService === "Discord") {
       const response = await onCreateNodeTemplate(
-        nodeConnection.discordNode.content,
+        nodeConnectionRef.current.discordNode.content,
         currentService,
         pathname.split("/").pop()!
       );
@@ -185,11 +190,11 @@ const ActionButton = ({
     }
     if (currentService === "Slack") {
       const response = await onCreateNodeTemplate(
-        nodeConnection.slackNode.content,
+        nodeConnectionRef.current.slackNode.content,
         currentService,
         pathname.split("/").pop()!,
         channels,
-        nodeConnection.slackNode.slackAccessToken
+        nodeConnectionRef.current.slackNode.slackAccessToken
       );
 
       if (response) {
@@ -199,19 +204,19 @@ const ActionButton = ({
 
     if (currentService === "Notion") {
       const response = await onCreateNodeTemplate(
-        JSON.stringify(nodeConnection.notionNode.content),
+        JSON.stringify(nodeConnectionRef.current.notionNode.content),
         currentService,
         pathname.split("/").pop()!,
         [],
-        nodeConnection.notionNode.accessToken,
-        nodeConnection.notionNode.databaseId
+        nodeConnectionRef.current.notionNode.accessToken,
+        nodeConnectionRef.current.notionNode.databaseId
       );
 
       if (response) {
         toast.message(response);
       }
     }
-  }, [nodeConnection, channels]);
+  }, [currentService, pathname, channels]); 
 
   const { selectedNode } = useEditor().state.editor;
   const [aiOutput, setAiOutput] = useState<string[]>([]);

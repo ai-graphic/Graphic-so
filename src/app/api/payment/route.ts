@@ -4,7 +4,7 @@ import Stripe from 'stripe'
 export async function GET(req: NextRequest) {
     const stripe = new Stripe(process.env.STRIPE_SECRET!, {
         typescript: true,
-        apiVersion: '2023-10-16',
+        apiVersion: '2024-04-10',
     })
 
     const products = await stripe.prices.list({
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     const stripe = new Stripe(process.env.STRIPE_SECRET!, {
         typescript: true,
-        apiVersion: '2023-10-16',
+        apiVersion: '2024-04-10',
     })
     const data = await req.json()
     const session = await stripe.checkout.sessions.create({
