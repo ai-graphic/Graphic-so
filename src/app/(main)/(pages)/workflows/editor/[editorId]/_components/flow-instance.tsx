@@ -30,29 +30,29 @@ const FlowInstance = ({ children, edges, nodes }: Props) => {
         )
 
         if (flow) toast.message(flow.message)
-    }, [nodeConnection, isFlow, nodes, edges])
+    }, [nodeConnection])
 
     const onPublishWorkflow = useCallback(async () => {
         const response = await onFlowPublish(pathname.split('/').pop()!, true)
         if (response) toast.message(response)
     }, [pathname])
 
-    const onAutomateFlow = async () => {
+    const onAutomateFlow = useCallback(async () => {
         const flows: any = []
         const connectedEdges = edges.map((edge) => edge.target)
-        connectedEdges.map((target) => {
-            nodes.map((node) => {
+        connectedEdges.forEach((target) => {
+            nodes.forEach((node) => {
                 if (node.id === target) {
                     flows.push(node.id , node.type)
                 }
             })
         })
         setIsFlow(flows)
-    }
+    }, [edges, nodes])
 
     useEffect(() => {
         onAutomateFlow()
-    }, [edges, onAutomateFlow])
+    }, [onAutomateFlow]) 
 
     return (
         <div className="flex flex-col gap-2">
