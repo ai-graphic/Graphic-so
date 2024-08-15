@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
         data.append('grant_type', 'authorization_code')
         data.append(
             'redirect_uri',
-            'https://localhost:3000/api/auth/callback/discord'
+            `${process.env.NEXT_PUBLIC_URL}/api/auth/callback/discord`
         )
         data.append('code', code.toString())
 
@@ -41,10 +41,10 @@ export async function GET(req: NextRequest) {
             )
 
             return NextResponse.redirect(
-                `https://localhost:3000/connections?webhook_id=${output.data.webhook.id}&webhook_url=${output.data.webhook.url}&webhook_name=${output.data.webhook.name}&guild_id=${output.data.webhook.guild_id}&guild_name=${UserGuild[0].name}&channel_id=${output.data.webhook.channel_id}`
+                `${process.env.NEXT_PUBLIC_URL}/connections?webhook_id=${output.data.webhook.id}&webhook_url=${output.data.webhook.url}&webhook_name=${output.data.webhook.name}&guild_id=${output.data.webhook.guild_id}&guild_name=${UserGuild[0].name}&channel_id=${output.data.webhook.channel_id}`
             )
         }
 
-        return NextResponse.redirect('https://localhost:3000/connections')
+        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL}/connections`)
     }
 }
