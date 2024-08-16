@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { v4 as uuidv4 } from "uuid";
+import { getWorkflowInput } from "@/app/(main)/(pages)/connections/_actions/getWorkflowInputs";
+import Replicate from "replicate";
 
 export async function POST(req: NextRequest) {
   console.log("🔴 Changed", Date.now());
@@ -53,9 +55,15 @@ export async function POST(req: NextRequest) {
               },
             });
             if (discordMessage) {
+              const content = await getWorkflowInput(
+                flow,
+                flow.slackAccessToken!,
+                nodeId,
+                nodeType
+              );
               console.log(discordMessage.url);
               await postContentToWebHook(
-                flow.discordTemplate!,
+                content,
                 discordMessage.url
               );
               flowPath.splice(current, 2);
@@ -67,6 +75,12 @@ export async function POST(req: NextRequest) {
               console.log("AI Node:", nodeId);
               if (aiTemplate[nodeId].model === "Openai") {
                 try {
+                  const content = await getWorkflowInput(
+                    flow,
+                    aiTemplate[nodeId].prompt,
+                    nodeId,
+                    nodeType
+                  );
                   const messages = [
                     {
                       role: "system",
@@ -74,7 +88,7 @@ export async function POST(req: NextRequest) {
                     },
                     {
                       role: "user",
-                      content: aiTemplate[nodeId].prompt,
+                      content: content,
                     },
                   ];
                   console.log("Messages:", messages);
@@ -127,25 +141,70 @@ export async function POST(req: NextRequest) {
                     "AI Response:",
                     response.data.choices[0].message.content.trim()
                   );
+                  const aiResponseContent =
+                    response.data.choices[0].message.content.trim();
+                  const aiTemplateObj = JSON.parse(flow.AiTemplate!);
+                  aiTemplateObj.output[nodeId] = [aiResponseContent];
+                  const updatedAiTemplate = JSON.stringify(aiTemplateObj);
+                  await db.workflows.update({
+                    where: {
+                      id: flow.id,
+                    },
+                    data: {
+                      AiTemplate: updatedAiTemplate,
+                    },
+                  });
+                  flow.AiTemplate = updatedAiTemplate;
                 } catch (error: any) {
                   console.error("Error during AI search:", error.status);
                 }
-              } else if (aiTemplate[nodeId].model === "Flux-image") {
+              } else if (aiTemplate[nodeId].model === "FLUX-image") {
                 try {
-                  const response = await axios.post("/api/AiResponse/FLUX-image", {
-                    prompt: aiTemplate[nodeId].prompt,
-                    apiKey: aiTemplate[nodeId].ApiKey,
-                    temperature: aiTemplate[nodeId].temperature,
-                    maxTokens: aiTemplate[nodeId].maxTokens,
-                    num_outputs: aiTemplate[nodeId].num_outputs,
-                    aspect_ratio: aiTemplate[nodeId].aspect_ratio,
-                    output_format: aiTemplate[nodeId].output_format,
-                    guidance_scale: aiTemplate[nodeId].guidance_scale,
-                    output_quality: aiTemplate[nodeId].output_quality,
-                    num_inference_steps: aiTemplate[nodeId].num_inference_steps,
+                  const content = await getWorkflowInput(
+                    flow,
+                    aiTemplate[nodeId].prompt,
+                    nodeId,
+                    nodeType
+                  );
+                  const replicate = new Replicate({
+                    auth: aiTemplate[nodeId].ApiKey,
                   });
-                  console.log("AI Response:", response.data[0]);
-                  console.log("Replicate API Response:", response.data[0]);
+                  const guidanceScaleNumber = parseFloat(aiTemplate[nodeId].guidance_scale);
+                  const numInferenceStepsInt = parseInt(aiTemplate[nodeId].num_inference_steps, 10);
+                  const numOutputsInt = parseInt( aiTemplate[nodeId].num_outputs, 10);
+                  const outputQualityInt = parseInt(aiTemplate[nodeId].output_quality, 10);
+              
+                  const output = (await replicate.run(
+                    "lucataco/flux-dev-lora:d8773e816f78c40a77da50bb702ffd9ff2deca137a32801cbf84eb3cd642fa12",
+                    {
+                      input: {
+                        prompt: content,
+                        hf_lora: "alvdansen/frosting_lane_flux",
+                        temperature: aiTemplate[nodeId].temperature || 0.5,
+                        aspect_ratio: aiTemplate[nodeId].aspect_ratio || "1:1",
+                        output_format: aiTemplate[nodeId].output_format || "png",
+                        guidance_scale: guidanceScaleNumber || 3.5,
+                        num_inference_steps: numInferenceStepsInt || 20,
+                        num_outputs: numOutputsInt | 1,
+                        output_quality: outputQualityInt || 80,
+                      },
+                    }
+                  )) as any[]; 
+                  console.log("Flux output :", output);
+                  const aiResponseContent =
+                    output[0]
+                  const aiTemplateObj = JSON.parse(flow.AiTemplate!);
+                  aiTemplateObj.output[nodeId] = [aiResponseContent];
+                  const updatedAiTemplate = JSON.stringify(aiTemplateObj);
+                  await db.workflows.update({
+                    where: {
+                      id: flow.id,
+                    },
+                    data: {
+                      AiTemplate: updatedAiTemplate,
+                    },
+                  });
+                  flow.AiTemplate = updatedAiTemplate;
                 } catch (error) {
                   console.error("Error during Replicate API call:", error);
                 }
@@ -164,18 +223,30 @@ export async function POST(req: NextRequest) {
               };
             });
             console.log(flow.slackAccessToken);
+            const content = await getWorkflowInput(
+              flow,
+              flow.slackAccessToken!,
+              nodeId,
+              nodeType
+            );
             await postMessageToSlack(
               flow.slackAccessToken!,
               channels,
-              flow.slackTemplate!
+              content
             );
             flowPath.splice(current, 2);
           }
           if (nodeType == "Notion") {
+            const content = await getWorkflowInput(
+              flow,
+              flow.notionTemplate!,
+              nodeId,
+              nodeType
+            );
             await onCreateNewPageInDatabase(
               flow.notionDbId!,
               flow.notionAccessToken!,
-              JSON.parse(flow.notionTemplate!)
+              content
             );
             flowPath.splice(current, 2);
           }
