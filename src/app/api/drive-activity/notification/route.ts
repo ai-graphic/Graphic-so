@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
       },
     });
     if (workflow) {
-      // TODO: HERE WITH FLOWPATH THE ID OF NODE SHOULD ALSO BE SAVED AS TO WHICH NODE IT IS TALKING ABOUT.
       workflow.map(async (flow) => {
         const flowPath = JSON.parse(flow.flowPath!);
         console.log(flowPath);
@@ -66,69 +65,93 @@ export async function POST(req: NextRequest) {
             const aiTemplate = JSON.parse(flow.AiTemplate!);
             if (aiTemplate[nodeId]) {
               console.log("AI Node:", nodeId);
-              try {
-                const messages = [
-                  {
-                    role: "system",
-                    content: "You are a helpful assistant.",
-                  },
-                  {
-                    role: "user",
-                    content: aiTemplate[nodeId].prompt,
-                  },
-                ];
-                console.log("Messages:", messages);
+              if (aiTemplate[nodeId].model === "Openai") {
+                try {
+                  const messages = [
+                    {
+                      role: "system",
+                      content: "You are a helpful assistant.",
+                    },
+                    {
+                      role: "user",
+                      content: aiTemplate[nodeId].prompt,
+                    },
+                  ];
+                  console.log("Messages:", messages);
 
-                const makeRequest = async (retryCount = 0): Promise<AxiosResponse<any>> => {
-                  const maxRetries = 5;
-                  const baseWaitTime = 1000; // 1 second
+                  const makeRequest = async (
+                    retryCount = 0
+                  ): Promise<AxiosResponse<any>> => {
+                    const maxRetries = 5;
+                    const baseWaitTime = 1000; // 1 second
 
-                  try {
-                    const response = await axios.post(
-                      aiTemplate[nodeId].endpoint ||
-                        "https://api.openai.com/v1/chat/completions",
-                      {
-                        model: aiTemplate[nodeId].localModel || "gpt-3.5-turbo",
-                        messages: messages,
-                      },
-                      {
-                        headers: {
-                          Authorization: `Bearer ${aiTemplate[nodeId].ApiKey}`, // Use environment variable for the API key
+                    try {
+                      const response = await axios.post(
+                        aiTemplate[nodeId].endpoint ||
+                          "https://api.openai.com/v1/chat/completions",
+                        {
+                          model:
+                            aiTemplate[nodeId].localModel || "gpt-3.5-turbo",
+                          messages: messages,
                         },
+                        {
+                          headers: {
+                            Authorization: `Bearer ${aiTemplate[nodeId].ApiKey}`, // Use environment variable for the API key
+                          },
+                        }
+                      );
+                      return response;
+                    } catch (error: any) {
+                      if (
+                        error.response &&
+                        error.response.status === 429 &&
+                        retryCount < maxRetries
+                      ) {
+                        const waitTime = Math.pow(2, retryCount) * baseWaitTime; // Exponential backoff
+                        console.log(
+                          `Rate limit hit, retrying in ${
+                            waitTime / 1000
+                          } seconds...`
+                        );
+                        await new Promise((resolve) =>
+                          setTimeout(resolve, waitTime)
+                        );
+                        return makeRequest(retryCount + 1);
+                      } else {
+                        throw error;
                       }
-                    );
-                    return response;
-                  } catch (error: any) {
-                    if (
-                      error.response &&
-                      error.response.status === 429 &&
-                      retryCount < maxRetries
-                    ) {
-                      const waitTime = Math.pow(2, retryCount) * baseWaitTime; // Exponential backoff
-                      console.log(
-                        `Rate limit hit, retrying in ${
-                          waitTime / 1000
-                        } seconds...`
-                      );
-                      await new Promise((resolve) =>
-                        setTimeout(resolve, waitTime)
-                      );
-                      return makeRequest(retryCount + 1);
-                    } else {
-                      throw error;
                     }
-                  }
-                };
-
-                const response = await makeRequest();
-                console.log(
-                  "AI Response:",
-                  response.data.choices[0].message.content.trim()
-                );
-              } catch (error : any) {
-                console.error("Error during AI search:", error.status);
+                  };
+                  const response = await makeRequest();
+                  console.log(
+                    "AI Response:",
+                    response.data.choices[0].message.content.trim()
+                  );
+                } catch (error: any) {
+                  console.error("Error during AI search:", error.status);
+                }
+              } else if (aiTemplate[nodeId].model === "Flux-image") {
+                try {
+                  const response = await axios.post("/api/AiResponse/FLUX-image", {
+                    prompt: aiTemplate[nodeId].prompt,
+                    apiKey: aiTemplate[nodeId].ApiKey,
+                    temperature: aiTemplate[nodeId].temperature,
+                    maxTokens: aiTemplate[nodeId].maxTokens,
+                    num_outputs: aiTemplate[nodeId].num_outputs,
+                    aspect_ratio: aiTemplate[nodeId].aspect_ratio,
+                    output_format: aiTemplate[nodeId].output_format,
+                    guidance_scale: aiTemplate[nodeId].guidance_scale,
+                    output_quality: aiTemplate[nodeId].output_quality,
+                    num_inference_steps: aiTemplate[nodeId].num_inference_steps,
+                  });
+                  console.log("AI Response:", response.data[0]);
+                  console.log("Replicate API Response:", response.data[0]);
+                } catch (error) {
+                  console.error("Error during Replicate API call:", error);
+                }
               }
             }
+
             flowPath.splice(current, 2);
             continue;
           }
@@ -161,7 +184,7 @@ export async function POST(req: NextRequest) {
               "https://api.cron-job.org/jobs",
               {
                 job: {
-                  url: `https://workflow-ai.vercel.app?flow_id=${flow.id}`,
+                  url: `${process.env.NGROK_URI}?flow_id=${flow.id}`,
                   enabled: "true",
                   schedule: {
                     timezone: "Asia/Kolkata",
