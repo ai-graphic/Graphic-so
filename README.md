@@ -1,6 +1,9 @@
 # WorkflowAi - No-code automation
 ![image](https://github.com/user-attachments/assets/992a97ab-c12f-42ad-9d5d-e6aecd9282e0)
-
+<p float="left">
+  <img src="https://github.com/user-attachments/assets/abb21b23-1873-44ad-9a5e-a52aefe6f1ac" width="400" />
+  <img src="https://github.com/user-attachments/assets/1689423c-820f-47ac-8eaa-0d80463cc02a" width="400" />
+</p>
 
 ## Development Status 🧑‍💻
 
