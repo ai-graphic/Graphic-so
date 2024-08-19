@@ -166,11 +166,10 @@ const ContentBasedOnTitle = ({
   }, [setFile]); //
   const [selectedKey, setSelectedKey] = useState<string>("");
 
+
   //@ts-ignore
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]];
   console.log("Node Connection Type:", nodeConnectionType);
-  if (!nodeConnectionType) return <p>Not connected</p>;
-
   useEffect(() => {
     const modelKey = nodeConnectionType[selectedNode.id]?.model;
     if (modelKey) {
@@ -184,6 +183,10 @@ const ContentBasedOnTitle = ({
       });
     }
   }, [nodeConnectionType, selectedNode.id]);
+
+  if (!nodeConnectionType) return <p>Not connected</p>;
+
+ 
   console.log("Model Array:", modelArray);
 
   const isConnected =
