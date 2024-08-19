@@ -22,10 +22,10 @@ export type ConnectionProviderProps = {
       maxTokens: number;
       endpoint: string;
       num_outputs: number;
-      aspect_ratio: string; 
+      aspect_ratio: string;
       output_format: string;
       guidance_scale: number;
-      output_quality: number; 
+      output_quality: number;
       num_inference_steps: number;
       model_name: string;
       hf_token: string;
@@ -41,6 +41,7 @@ export type ConnectionProviderProps = {
   };
   output: string[];
   setAINode: React.Dispatch<React.SetStateAction<any>>;
+  addAINode: (id: string) => void; // Add this line
   googleNode: any[];
   setGoogleNode: React.Dispatch<React.SetStateAction<any>>;
   notionNode: {
@@ -75,6 +76,7 @@ export type ConnectionProviderProps = {
       ai?: string;
     }>
   >;
+  
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -123,10 +125,41 @@ const InitialValues: ConnectionProviderProps = {
   setIsLoading: () => undefined,
   setWorkFlowTemplate: () => undefined,
   setAINode: () => undefined,
+  addAINode: () => undefined,
 };
+const generateDefaultAINode = (id: string) => ({
+  id,
+  ApiKey: "",
+  prompt: "",
+  model: "",
+  localModel: "",
+  output: "",
+  temperature: 0,
+  maxTokens: 0,
+  endpoint: "",
+  num_outputs: 0,
+  aspect_ratio: "",
+  output_format: "",
+  guidance_scale: 0,
+  output_quality: 0,
+  num_inference_steps: 0,
+  model_name: "",
+  hf_token: "",
+  steps: 0,
+  learning_rate: 0,
+  batch_size: 0,
+  resolution: "",
+  lora_linear: false,
+  lora_linear_alpha: 0,
+  repo_id: "",
+  images: "",
+});
 
 const ConnectionsContext = createContext(InitialValues);
 const { Provider } = ConnectionsContext;
+
+
+
 
 export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [discordNode, setDiscordNode] = useState(InitialValues.discordNode);
@@ -139,7 +172,13 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [workflowTemplate, setWorkFlowTemplate] = useState(
     InitialValues.workflowTemplate
   );
-
+  const addAINode = (id: string) => {
+    setAINode((prev) => ({
+      ...prev,
+      [id]: generateDefaultAINode(id),
+    }));
+  };
+  
   const values = {
     discordNode,
     setDiscordNode,
@@ -156,6 +195,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     aiNode,
     output,
     setAINode,
+    addAINode,
   };
 
   return <Provider value={values}>{children}</Provider>;

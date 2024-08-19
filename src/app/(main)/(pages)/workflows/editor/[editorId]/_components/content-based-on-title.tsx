@@ -16,8 +16,7 @@ import { onContentChange } from "@/lib/editor-utils";
 import GoogleFileDetails from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/google-file-details";
 import GoogleDriveFiles from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/google-drive-files";
 import ActionButton from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/action-button";
-import { use, useEffect, useState } from "react";
-import { getFileMetaData } from "@/app/(main)/(pages)/connections/_actions/google-connections";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 
@@ -51,9 +50,6 @@ const ContentBasedOnTitle = ({
   selectedSlackChannels,
   setSelectedSlackChannels,
 }: Props) => {
-  // const [Template, setTemplate] = useState('');
-  // const [isLoading, setIsLoading] = useState(false);
-  // const pathName = usePathname();
   const [showButtons, setShowButtons] = useState(false);
   const [selectedOutput, setSelectedOutput] = useState<string | null>(null);
   console.log("btn", showButtons);
@@ -112,6 +108,30 @@ const ContentBasedOnTitle = ({
   //   { lora_linear_alpha: "0.1" },
   //   { repo_id: "defaultRepoId" },
   // ];
+  interface Model {
+    key: string;
+    name: string;
+  }
+  useEffect(() => {
+    // Check if the selectedNode has a model and update the state accordingly
+    const nodeModel = nodeConnectionType[selectedNode.id]?.model;
+    if (nodeModel) {
+      setModel(nodeModel);
+    } else {
+      // Reset to default "Select Model" if the new node does not have a model
+      setModel("Select Model");
+    }
+
+    const currentPrompt = nodeConnectionType[selectedNode.id]?.prompt;
+    if (currentPrompt) {
+      setSelectedOutput(currentPrompt);
+    } else {
+      // Reset selectedOutput if the new node does not have a prompt
+      setSelectedOutput(null);
+    }
+  }, [selectedNode.id]);
+
+  const [modelArray, setModelArray] = useState<Model[]>([]);
 
   useEffect(() => {
     if (selectedOutput) {
@@ -144,12 +164,27 @@ const ContentBasedOnTitle = ({
     };
     reqGoogle();
   }, [setFile]); //
+  const [selectedKey, setSelectedKey] = useState<string>("");
 
   //@ts-ignore
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]];
   console.log("Node Connection Type:", nodeConnectionType);
   if (!nodeConnectionType) return <p>Not connected</p>;
-  
+
+  useEffect(() => {
+    const modelKey = nodeConnectionType[selectedNode.id]?.model;
+    if (modelKey) {
+      const modelValue = localStorage.getItem(modelKey) || "";
+      const newModel = { key: modelKey, name: modelValue };
+      setModelArray((prevArray) => {
+        if (prevArray.some((model) => model.key === modelKey)) {
+          return prevArray;
+        }
+        return [...prevArray, newModel];
+      });
+    }
+  }, [nodeConnectionType, selectedNode.id]);
+  console.log("Model Array:", modelArray);
 
   const isConnected =
     title === "Google Drive"
@@ -216,7 +251,10 @@ const ContentBasedOnTitle = ({
               </p>
               <Input
                 type="text"
-                value={selectedOutput ?? nodeConnectionType.prompt}
+                placeholder="a beautiful castle frstingln illustration"
+                value={
+                  selectedOutput ?? nodeConnectionType[selectedNode.id]?.prompt
+                }
                 onClick={() => {
                   setShowButtons((prev) => !prev);
                 }}
@@ -258,35 +296,84 @@ const ContentBasedOnTitle = ({
                         </button>
                       ))
                   )}
-              {modelOptionsMap[model]?.map((optionObj) => {
-                const optionKey = Object.keys(optionObj)[0];
-                const optionValue = optionObj[optionKey];
-                if (optionKey === "prompt") return null;
 
-                return (
-                  <div key={optionKey}>
-                    <p className="block text-sm font-medium text-gray-300">
-                      Enter Your{" "}
-                      {optionKey.charAt(0).toUpperCase() + optionKey.slice(1)}{" "}
-                      here
-                    </p>
-                    <Input
-                      type={optionValue.type} // Use the type from the option object
-                      placeholder={optionValue.placeholder} // Use placeholder from the option object
-                      value={nodeConnectionType[optionKey]}
-                      onChange={(event) =>
-                        onContentChange(
-                          state,
-                          nodeConnection,
-                          title,
-                          event,
-                          optionKey
-                        )
-                      }
-                    />
-                  </div>
-                );
-              })}
+              <p className=" text-sm font-medium text-gray-300">
+                Enter Your ApiKey Here
+              </p>
+              <div className="flex justify-center items-center gap-2">
+                <Input
+                  type="text"
+                  placeholder="Click to select API Key"
+                  value={
+                    selectedKey ?? nodeConnectionType[selectedNode.id]?.apiKey
+                  }
+                  onChange={(event) => {
+                    const newValue = event.target.value;
+                    setSelectedKey(newValue);
+                    onContentChange(
+                      state,
+                      nodeConnection,
+                      title,
+                      event,
+                      "apiKey"
+                    );
+                  }}
+                />
+
+                {modelArray
+                  .filter((modelObj) => modelObj.key === model)
+                  .map((modelObj) => (
+                    <button
+                      key={modelObj.key}
+                      className="bg-gray-500 hover:bg-gray-300 hover:text-gray-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-xs"
+                      onClick={() => {
+                        console.log("model", modelObj);
+                        nodeConnectionType[selectedNode.id].ApiKey =
+                          modelObj.name;
+                        setSelectedKey(modelObj.name);
+                      }}
+                    >
+                      Load
+                    </button>
+                  ))}
+              </div>
+              {nodeConnectionType[selectedNode.id]?.model &&
+                modelOptionsMap[nodeConnectionType[selectedNode.id].model]?.map(
+                  (optionObj) => {
+                    const optionKey = Object.keys(optionObj)[0];
+                    const optionValue = optionObj[optionKey];
+                    if (optionKey === "prompt" || optionKey === "ApiKey")
+                      return null;
+
+                    return (
+                      <div key={optionKey}>
+                        <p className="block text-sm font-medium text-gray-300">
+                          Enter Your{" "}
+                          {optionKey.charAt(0).toUpperCase() +
+                            optionKey.slice(1)}{" "}
+                          here
+                        </p>
+                        <Input
+                          type={optionValue.type} // Use the type from the option object
+                          placeholder={optionValue.placeholder} // Use placeholder from the option object
+                          value={
+                            nodeConnectionType[selectedNode.id]?.[optionKey] ||
+                            ""
+                          } // Add optional chaining and default value
+                          onChange={(event) =>
+                            onContentChange(
+                              state,
+                              nodeConnection,
+                              title,
+                              event,
+                              optionKey
+                            )
+                          }
+                        />
+                      </div>
+                    );
+                  }
+                )}
             </div>
           ) : title === "Google Drive" ? (
             <div></div>
@@ -302,32 +389,6 @@ const ContentBasedOnTitle = ({
               }
             />
           )}
-          {showButtons &&
-            nodeConnection.aiNode.output &&
-            state.editor.edges &&
-            Object.entries(nodeConnection.aiNode.output)
-              .filter(([id]) =>
-                state.editor.edges.some(
-                  (edge) =>
-                    edge.target === selectedNode.id && edge.source === id
-                )
-              )
-              .map(
-                ([id, outputs]) =>
-                  Array.isArray(outputs) &&
-                  outputs.map((output, index) => (
-                    <button
-                      key={`${id}-${index}`}
-                      className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                      onClick={() => {
-                        setSelectedOutput(String(output));
-                        setShowButtons((prev) => !prev);
-                      }}
-                    >
-                      {String(output)}
-                    </button>
-                  ))
-              )}
 
           {JSON.stringify(file) !== "{}" && title !== "Google Drive" && (
             <Card className="w-full">

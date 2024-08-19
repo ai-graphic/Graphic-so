@@ -21,7 +21,7 @@ type Props = {};
 
 const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
   const { dispatch, state } = useEditor();
-  const { isLoading } = useLoading();
+  const {isLoading} = useLoading()
   const nodeId = useNodeId();
   const logo = useMemo(() => {
     return <EditorCanvasIconHelper type={data.type} />;
@@ -37,7 +37,7 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
     if (nodeId != null && outputsObject && outputsObject[nodeId]) {
       const outputsArray = outputsObject[nodeId];
       if (outputsArray.length > 0) {
-        setOutput(outputsArray[0]);
+        setOutput(outputsArray[outputsArray.length - 1]);
       }
     }
   }, [nodeConnection.aiNode.output, nodeId]);

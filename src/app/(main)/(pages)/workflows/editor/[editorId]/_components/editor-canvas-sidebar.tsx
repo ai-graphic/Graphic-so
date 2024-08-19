@@ -28,6 +28,7 @@ import RenderConnectionAccordion from "@/app/(main)/(pages)/workflows/editor/[ed
 import RenderOutputAccordion from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/render-output-accordion";
 import { useWorkflowAiStore } from "@/store";
 import { useEffect } from "react";
+import ApikeyCard from "@/components/ui/ApiKeys-card";
 
 type Props = {
   nodes: EditorNodeType[];
@@ -54,7 +55,7 @@ const EditorCanvasSidebar = ({ nodes }: Props) => {
 
   return (
     <aside>
-      {state.editor.selectedNode.data.title ? (
+
         <Tabs
           defaultValue="settings"
           className="h-screen overflow-scroll pb-24"
@@ -95,6 +96,7 @@ const EditorCanvasSidebar = ({ nodes }: Props) => {
                 </Card>
               ))}
           </TabsContent>
+          {state.editor.selectedNode.data.title ? (
           <TabsContent value="settings" className="-mt-20">
             <div className="px-2 py-4 text-center text-xl font-bold">
               <p>{state.editor.selectedNode.data.title}</p>
@@ -104,7 +106,12 @@ const EditorCanvasSidebar = ({ nodes }: Props) => {
             <Accordion type="multiple">
               <AccordionItem value="options" className="border-y-[1px] px-2">
                 {state.editor.selectedNode.data.title === "AI" ? (
-                  ""
+                  <div>
+                    <AccordionTrigger className="!no-underline">
+                      Account
+                    </AccordionTrigger>
+                     <AccordionContent><ApikeyCard /></AccordionContent>
+                     </div>
                 ) : (
                   <div>
                     <AccordionTrigger className="!no-underline">
@@ -133,12 +140,10 @@ const EditorCanvasSidebar = ({ nodes }: Props) => {
               </AccordionItem>
             </Accordion>
           </TabsContent>
+          ) : (<p className="text-gray-600 text-center mt-4">
+            Select a node to view settings
+          </p>)}
         </Tabs>
-      ) : (<p className="text-gray-600 text-center mt-4">
-        Select a node to view settings
-      </p>
-       
-      )}
     </aside>
   );
 };

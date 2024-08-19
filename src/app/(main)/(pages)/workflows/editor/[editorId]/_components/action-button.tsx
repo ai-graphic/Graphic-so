@@ -85,11 +85,11 @@ const ActionButton = ({
   const onAiSearch = useCallback(
     async (id: string) => {
       if (!nodeConnection.aiNode[id]) {
-        alert("Please select a model first");
+        toast.error("Please select a model first");
         return
       }
       if (!nodeConnection.aiNode[id].ApiKey && !nodeConnection.aiNode[id].prompt) {
-        alert("Please enter an API key and prompt first");
+        toast.error("Please enter an API key and prompt first");
         return
       }
       setIsLoading(true);

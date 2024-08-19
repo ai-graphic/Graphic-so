@@ -29,6 +29,7 @@ import{EditorCanvasDefaultCardTypes} from "@/lib/constants";
 import FlowInstance from './flow-instance'
 import EditorCanvasSidebar from './editor-canvas-sidebar'
 import{onGetNodesEdges} from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
+import { useNodeConnections } from '@/providers/connections-providers'
 
 type Props = {}
 
@@ -39,6 +40,8 @@ const initialEdges: { id: string; source: string; target: string }[] = []
 const EditorCanvas = (props: Props) => {
     const { dispatch, state } = useEditor()
     const [nodes, setNodes] = useState(initialNodes)
+    const { nodeConnection } = useNodeConnections();
+    const { addAINode } = nodeConnection;
     const [edges, setEdges] = useState(initialEdges)
     const [isWorkFlowLoading, setIsWorkFlowLoading] = useState<boolean>(false)
     const [reactFlowInstance, setReactFlowInstance] =
@@ -116,6 +119,7 @@ const EditorCanvas = (props: Props) => {
             }
             //@ts-ignore
             setNodes((nds) => nds.concat(newNode))
+            addAINode(newNode.id)
         },
         [reactFlowInstance, state]
     )
