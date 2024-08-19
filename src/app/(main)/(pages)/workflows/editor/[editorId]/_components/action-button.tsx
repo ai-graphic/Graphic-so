@@ -13,6 +13,7 @@ import { useEditor } from "@/providers/editor-provider";
 import { SelectionMode } from "reactflow";
 import { divMode } from "@tsparticles/engine";
 import Link from "next/link";
+import { useLoading } from "@/providers/loading-provider";
 
 type Props = {
   currentService: string;
@@ -28,7 +29,7 @@ const ActionButton = ({
   setChannels,
 }: Props) => {
   const pathname = usePathname();
-
+  const { isLoading, setIsLoading } = useLoading();
   const onSendDiscordMessage = useCallback(async () => {
     const response = await postContentToWebHook(
       nodeConnection.discordNode.content,
@@ -83,9 +84,19 @@ const ActionButton = ({
 
   const onAiSearch = useCallback(
     async (id: string) => {
+      if (!nodeConnection.aiNode[id]) {
+        alert("Please select a model first");
+        return
+      }
+      if (!nodeConnection.aiNode[id].ApiKey && !nodeConnection.aiNode[id].prompt) {
+        alert("Please enter an API key and prompt first");
+        return
+      }
+      setIsLoading(true);
       console.log("AI Node:", id);
       if (nodeConnection.aiNode[id].model === "Openai") {
         try {
+        
           const messages = [
             {
               role: "system",
@@ -123,7 +134,7 @@ const ActionButton = ({
           console.log("AI Response:", response.data);
         } catch (error) {
           console.error("Error during AI search:", error);
-        }
+        } 
       } else if (nodeConnection.aiNode[id].model === "FLUX-image") {
         console.log("AI model:", nodeConnection.aiNode[id].model);
         try {
@@ -153,6 +164,7 @@ const ActionButton = ({
       } else if (nodeConnection.aiNode[id].model === "train-LORA") {
         console.log("AI model:", nodeConnection.aiNode[id].model);
       }
+      setIsLoading(false);
     },
     [nodeConnection.aiNode, pathname]
   );
@@ -243,26 +255,41 @@ const ActionButton = ({
       case "AI":
         return (
           <>
-            <div>
-              Output:{" "}
-              {nodeConnection.aiNode[selectedNode.id]?.model === "Openai" ? (
-                aiOutput.join(", ")
-              ) : (
-                <div className="flex flex-col space-y-2">
-                {aiOutput.map((output, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                  <span className="font-medium text-sm">{index + 1}.</span>
-                  <Link target="_blank" href={output} className="text-blue-500 hover:text-blue-600">
-                    {output}
-                  </Link>
+            {isLoading ? (
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+            ) : (
+              <div>
+                {nodeConnection.aiNode[selectedNode.id]?.model === "Openai" ? (
+                  <div className="font-extralight">
+                  <p className="font-bold">Outputs</p>
+                  {aiOutput.map((output, index) => (
+                    <div key={index}>{index+1}. {output}</div> // Each output is wrapped in a div
+                  ))}
                 </div>
-                ))}
+                ) : (
+                  <div className="flex flex-col space-y-2">
+                    {aiOutput.map((output, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <span className="font-medium text-sm">
+                          {index + 1}.
+                        </span>
+                        <Link
+                          target="_blank"
+                          href={output}
+                          className="text-blue-500 hover:text-blue-600"
+                        >
+                          {output}
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              )}
-            </div>
+            )}
             <Button
               variant="outline"
               onClick={() => onAiSearch(selectedNode.id)}
+              disabled={isLoading} 
             >
               Test
             </Button>

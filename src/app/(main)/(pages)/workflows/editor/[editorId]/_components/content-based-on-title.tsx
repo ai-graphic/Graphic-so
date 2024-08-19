@@ -63,22 +63,39 @@ const ContentBasedOnTitle = ({
   const title = selectedNode.data.title;
   const [model, setModel] = useState<string>("Select Model");
   const FluxOptions = [
-    { locaModel: "alvdansen/frosting_lane_flux" },
-    { ApiKey: "r8_BdC**********************************" },
-    { prompt: "a beautiful castle frstingln illustration" },
-    { num_outputs: 1 },
-    { aspect_ratio: "1:1" },
-    { output_format: "webp" },
-    { guidance_scale: 3.5 },
-    { output_quality: 80 },
-    { num_inference_steps: 20 },
+    {
+      locaModel: { placeholder: "alvdansen/frosting_lane_flux", type: "text" },
+    },
+    {
+      ApiKey: {
+        placeholder: "r8_BdC**********************************",
+        type: "password",
+      },
+    },
+    {
+      prompt: {
+        placeholder: "a beautiful castle frstingln illustration",
+        type: "text",
+      },
+    },
+    { num_outputs: { placeholder: 1, type: "number" } },
+    { aspect_ratio: { placeholder: "1:1", type: "text" } },
+    { output_format: { placeholder: "webp", type: "text" } },
+    { guidance_scale: { placeholder: 3.5, type: "number" } },
+    { output_quality: { placeholder: 80, type: "number" } },
+    { num_inference_steps: { placeholder: 20, type: "number" } },
   ];
   const OpenaiOptions = [
-    { locaModel: "gpt-3.5-turbo" },
-    { ApiKey: "sk-proj-***************************************" },
-    { prompt: "Enter your prompt" },
-    { temperature: "0.7" },
-    { max_tokens: "150" },
+    { locaModel: { placeholder: "gpt-3.5-turbo", type: "text" } },
+    {
+      ApiKey: {
+        placeholder: "sk-proj-***************************************",
+        type: "password",
+      },
+    },
+    { prompt: { placeholder: "Enter your prompt", type: "text" } },
+    { temperature: { placeholder: 0.7, type: "number" } },
+    { max_tokens: { placeholder: 150, type: "number" } },
   ];
   // const LoraOptions = [
   //   { images: "A zip/tar file containing the images that will be used for training. File names must be their captions: a_photo_of_TOK.png, etc. Min 12 images required." },
@@ -132,6 +149,7 @@ const ContentBasedOnTitle = ({
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]];
   console.log("Node Connection Type:", nodeConnectionType);
   if (!nodeConnectionType) return <p>Not connected</p>;
+  
 
   const isConnected =
     title === "Google Drive"
@@ -242,6 +260,7 @@ const ContentBasedOnTitle = ({
                   )}
               {modelOptionsMap[model]?.map((optionObj) => {
                 const optionKey = Object.keys(optionObj)[0];
+                const optionValue = optionObj[optionKey];
                 if (optionKey === "prompt") return null;
 
                 return (
@@ -249,11 +268,11 @@ const ContentBasedOnTitle = ({
                     <p className="block text-sm font-medium text-gray-300">
                       Enter Your{" "}
                       {optionKey.charAt(0).toUpperCase() + optionKey.slice(1)}{" "}
-                      Here
+                      here
                     </p>
                     <Input
-                      type="text"
-                      placeholder={optionObj[optionKey]} // Use placeholder for default values
+                      type={optionValue.type} // Use the type from the option object
+                      placeholder={optionValue.placeholder} // Use placeholder from the option object
                       value={nodeConnectionType[optionKey]}
                       onChange={(event) =>
                         onContentChange(
@@ -276,39 +295,39 @@ const ContentBasedOnTitle = ({
               type="text"
               value={nodeConnectionType.content}
               onClick={() => {
-                  setShowButtons((prev) => !prev);
-                }}
+                setShowButtons((prev) => !prev);
+              }}
               onChange={(event) =>
                 onContentChange(state, nodeConnection, title, event, "content")
               }
             />
           )}
-            {showButtons &&
-              nodeConnection.aiNode.output &&
-              state.editor.edges &&
-              Object.entries(nodeConnection.aiNode.output)
-                .filter(([id]) =>
-                  state.editor.edges.some(
-                    (edge) =>
-                      edge.target === selectedNode.id && edge.source === id
-                  )
+          {showButtons &&
+            nodeConnection.aiNode.output &&
+            state.editor.edges &&
+            Object.entries(nodeConnection.aiNode.output)
+              .filter(([id]) =>
+                state.editor.edges.some(
+                  (edge) =>
+                    edge.target === selectedNode.id && edge.source === id
                 )
-                .map(
-                  ([id, outputs]) =>
-                    Array.isArray(outputs) &&
-                    outputs.map((output, index) => (
-                      <button
-                        key={`${id}-${index}`}
-                        className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                        onClick={() => {
-                          setSelectedOutput(String(output));
-                          setShowButtons((prev) => !prev);
-                        }}
-                      >
-                        {String(output)}
-                      </button>
-                    ))
-                )}
+              )
+              .map(
+                ([id, outputs]) =>
+                  Array.isArray(outputs) &&
+                  outputs.map((output, index) => (
+                    <button
+                      key={`${id}-${index}`}
+                      className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                      onClick={() => {
+                        setSelectedOutput(String(output));
+                        setShowButtons((prev) => !prev);
+                      }}
+                    >
+                      {String(output)}
+                    </button>
+                  ))
+              )}
 
           {JSON.stringify(file) !== "{}" && title !== "Google Drive" && (
             <Card className="w-full">

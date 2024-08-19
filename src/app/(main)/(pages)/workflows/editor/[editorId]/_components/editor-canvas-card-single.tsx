@@ -15,11 +15,13 @@ import {
 import clsx from "clsx";
 import { useNodeConnections } from "@/providers/connections-providers";
 import { set } from "zod";
+import { useLoading } from "@/providers/loading-provider";
 
 type Props = {};
 
 const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
   const { dispatch, state } = useEditor();
+  const { isLoading } = useLoading();
   const nodeId = useNodeId();
   const logo = useMemo(() => {
     return <EditorCanvasIconHelper type={data.type} />;
@@ -27,21 +29,18 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
   const { nodeConnection } = useNodeConnections();
   const [output, setOutput] = useState<any>("");
   type OutputType = {
-    [key: string]: any; // Replace 'any' with a more specific type if possible
+    [key: string]: any;
   };
 
   useEffect(() => {
-    // Cast nodeConnection.aodeConnection.aiNode.output to the defined type with an index signature
-  const outputsObject = nodeConnection.aiNode.output as OutputType;
-  if (nodeId != null && outputsObject && outputsObject[nodeId]) {
-    const outputsArray = outputsObject[nodeId];
-    // Assuming outputsArray is an array, check if it has elements
-    if (outputsArray.length > 0) {
-      // ... rest of your code to handle outputsArray ...
-      setOutput(outputsArray[0]); // Example of setting the first output to state
+    const outputsObject = nodeConnection.aiNode.output as OutputType;
+    if (nodeId != null && outputsObject && outputsObject[nodeId]) {
+      const outputsArray = outputsObject[nodeId];
+      if (outputsArray.length > 0) {
+        setOutput(outputsArray[0]);
+      }
     }
-  }
-}, [nodeConnection.aiNode.output, nodeId]);
+  }, [nodeConnection.aiNode.output, nodeId]);
   return (
     <>
       {data.type !== "Trigger" && data.type !== "Google Drive" && (
@@ -78,15 +77,15 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
                 <p>{data.description}</p>
               </CardDescription>
             </div>
-           
           </div>
-          {nodeConnection.aiNode[nodeId ?? ""]?.model &&
-            nodeConnection.aiNode[nodeId ?? ""]?.model === "FLUX-image" &&
+          {isLoading && nodeConnection.aiNode[nodeId ?? ""]?.model ? (
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+          ) : nodeConnection.aiNode[nodeId ?? ""]?.model === "FLUX-image" &&
             output ? (
-              <img src={output} alt="Model Output" />
-            ) : (
-              <p>{output}</p>
-            )} 
+            <img src={output} alt="Model Output" />
+          ) : (
+            <p>{output}</p>
+          )}
         </CardHeader>
         <Badge variant="secondary" className="absolute right-2 top-2">
           {nodeConnection.aiNode[nodeId ?? ""]?.model ? (
