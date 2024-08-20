@@ -2,35 +2,50 @@
 
 import React from "react";
 
-type LoadingProviderProps = {
-    isLoading: boolean;
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+// Define a type for tracking loading states by key
+type LoadingState = {
+    [key: string]: boolean;
 }
 
+// Update LoadingProviderProps to include the new loading state type
+type LoadingProviderProps = {
+    isLoading: LoadingState; // Changed from boolean to LoadingState
+    setIsLoading: (key: string, value: boolean) => void; // Updated to handle key-value pairs
+}
+
+// Adjust initialValues to match the updated type
 const initialValues: LoadingProviderProps = {
-    isLoading: false,
-    setIsLoading: () => undefined,
+    isLoading: {}, // Changed from boolean to an empty object
+    setIsLoading: (key: string, value: boolean) => undefined, // Placeholder function
 }
 
 type WithChildProps = {
-    children: React.ReactNode
+    children: React.ReactNode;
 }
 
 const context = React.createContext(initialValues);
-const {Provider} = context
+const { Provider } = context;
 
 export const LoadingProvider = ({ children }: WithChildProps) => {
-    const [isLoading, setIsLoading] = React.useState(initialValues.isLoading)
+    const [isLoading, setIsLoadingState] = React.useState(initialValues.isLoading);
+
+    // Update setIsLoading to handle a key and value, updating the specific loading state
+    const setIsLoading = (key: string, value: boolean) => {
+        setIsLoadingState(prevState => ({
+            ...prevState,
+            [key]: value,
+        }));
+    };
 
     const values = {
         isLoading,
         setIsLoading,
-    }
+    };
 
-    return <Provider value={values}>{children}</Provider>
+    return <Provider value={values}>{children}</Provider>;
 }
 
 export const useLoading = () => {
-    const state = React.useContext(context)
-    return state
+    const state = React.useContext(context);
+    return state;
 }

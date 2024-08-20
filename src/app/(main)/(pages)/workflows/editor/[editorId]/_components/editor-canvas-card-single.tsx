@@ -78,7 +78,7 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
               </CardDescription>
             </div>
           </div>
-          {isLoading && nodeConnection.aiNode[nodeId ?? ""]?.model ? (
+          {isLoading[nodeId ?? ""] && nodeConnection.aiNode[nodeId ?? ""]?.model ? (
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
           ) : nodeConnection.aiNode[nodeId ?? ""]?.model === "FLUX-image" &&
             output ? (

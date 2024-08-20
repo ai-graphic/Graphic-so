@@ -383,16 +383,43 @@ const ContentBasedOnTitle = ({
           ) : (
             <Input
               type="text"
-              value={nodeConnectionType.content}
+              value={selectedOutput ?? nodeConnectionType.content}
               onClick={() => {
                 setShowButtons((prev) => !prev);
               }}
-              onChange={(event) =>
-                onContentChange(state, nodeConnection, title, event, "content")
-              }
+              onChange={(event) => {
+                const newValue = event.target.value;
+                onContentChange(state, nodeConnection, title, event, "content");
+                nodeConnectionType.content = newValue; // Update the content in nodeConnectionType
+              }}
             />
           )}
-
+          {showButtons &&
+            nodeConnection.aiNode.output &&
+            state.editor.edges &&
+            Object.entries(nodeConnection.aiNode.output)
+              .filter(([id]) =>
+                state.editor.edges.some(
+                  (edge) =>
+                    edge.target === selectedNode.id && edge.source === id
+                )
+              )
+              .map(
+                ([id, outputs]) =>
+                  Array.isArray(outputs) &&
+                  outputs.map((output, index) => (
+                    <button
+                      key={`${id}-${index}`}
+                      className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                      onClick={() => {
+                        setSelectedOutput(String(output));
+                        setShowButtons((prev) => !prev);
+                      }}
+                    >
+                      {String(output)}
+                    </button>
+                  ))
+              )}
           {JSON.stringify(file) !== "{}" && title !== "Google Drive" && (
             <Card className="w-full">
               <CardContent className="px-2 py-3">

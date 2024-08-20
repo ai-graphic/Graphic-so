@@ -29,8 +29,7 @@ const CustomHandle = (props: Props) => {
 
                 if (targetFromHandleInState === 1) return false
                 if (sourceNode?.type === 'Condition') return true
-                if (sourcesFromHandleInState < 1) return true
-                return false
+                return true
             }}
             className="!-bottom-2 !h-4 !w-4 dark:bg-neutral-800"
         />

@@ -92,7 +92,7 @@ const ActionButton = ({
         toast.error("Please enter an API key and prompt first");
         return
       }
-      setIsLoading(true);
+      setIsLoading(id, true);
       console.log("AI Node:", id);
       if (nodeConnection.aiNode[id].model === "Openai") {
         try {
@@ -164,7 +164,7 @@ const ActionButton = ({
       } else if (nodeConnection.aiNode[id].model === "train-LORA") {
         console.log("AI model:", nodeConnection.aiNode[id].model);
       }
-      setIsLoading(false);
+      setIsLoading(id, false);
     },
     [nodeConnection.aiNode, pathname]
   );
@@ -255,7 +255,7 @@ const ActionButton = ({
       case "AI":
         return (
           <>
-            {isLoading ? (
+            {isLoading[selectedNode.id] ? (
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
             ) : (
               <div>
@@ -289,7 +289,7 @@ const ActionButton = ({
             <Button
               variant="outline"
               onClick={() => onAiSearch(selectedNode.id)}
-              disabled={isLoading} 
+              disabled={isLoading[selectedNode.id]} 
             >
               Test
             </Button>
