@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import clsx from "clsx";
 import { useNodeConnections } from "@/providers/connections-providers";
-import { set } from "zod";
 import { useLoading } from "@/providers/loading-provider";
 
 type Props = {};
@@ -31,6 +30,9 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
   type OutputType = {
     [key: string]: any;
   };
+  const isSelected = useMemo(() => {
+    return state.editor.selectedNode.id === nodeId;
+  }, [state.editor.elements, nodeId]);
 
   useEffect(() => {
     const outputsObject = nodeConnection.aiNode.output as OutputType;
@@ -62,7 +64,14 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
               },
             });
         }}
-        className="relative max-w-[400px] dark:border-muted-foreground/70"
+        className={clsx(
+          "relative max-w-[400px] dark:border-muted-foreground/70",
+          {
+            "shadow-xl": isSelected || isLoading[nodeId ?? ""],
+            "shadow-blue-500/50": isSelected && !isLoading[nodeId ?? ""],
+            "shadow-yellow-500/50": isLoading[nodeId ?? ""],
+          }
+        )}
       >
         <CardHeader className="flex flex-col items-center gap-4">
           <div className="flex flex-row items-center gap-4">
@@ -97,11 +106,11 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
           )}
         </Badge>
         <div
-          className={clsx("absolute left-3 top-4 h-2 w-2 rounded-full", {
-            "bg-green-500": Math.random() < 0.6,
-            "bg-orange-500": Math.random() >= 0.6 && Math.random() < 0.8,
-            "bg-red-500": Math.random() >= 0.8,
-          })}
+         className={clsx("absolute left-3 top-4 h-2 w-2 rounded-full", {
+          "bg-yellow-500": isLoading[nodeId ?? ""],
+          "bg-blue-500": isSelected,
+          "bg-green-500": !isSelected && !isLoading[nodeId ?? ""],
+        })}
         ></div>
       </Card>
       <CustomHandle type="source" position={Position.Bottom} id="a" />
