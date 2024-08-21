@@ -32,8 +32,9 @@ import ApikeyCard from "@/components/ui/ApiKeys-card";
 
 type Props = {
   nodes: EditorNodeType[];
+  addNodeAtPosition: (type: EditorCanvasTypes) => void;
 };
-const EditorCanvasSidebar = ({ nodes }: Props) => {
+const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
   const { googleFile, setSlackChannels } = useWorkflowAiStore();
@@ -55,52 +56,53 @@ const EditorCanvasSidebar = ({ nodes }: Props) => {
 
   return (
     <aside>
-
-        <Tabs
-          defaultValue="settings"
-          className="h-screen overflow-scroll pb-24"
-        >
-          <TabsList className="bg-transparent">
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-            <TabsTrigger value="actions">Actions</TabsTrigger>
-          </TabsList>
-          <Separator />
-          <TabsContent
-            value="actions"
-            className="flex flex-col gap-4 p-4 mb-16"
-          >
-            {Object.entries(EditorCanvasDefaultCardTypes)
-              .filter(
-                ([_, cardType]) =>
-                  (!nodes.length && cardType.type === "Trigger") ||
-                  (nodes.length && cardType.type === "Action")
-              )
-              .map(([cardKey, cardValue]) => (
-                <Card
-                  key={cardKey}
-                  draggable
-                  className="w-full cursor-grab border-black bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900"
-                  onDragStart={(event) =>
-                    onDragStart(event, cardKey as EditorCanvasTypes)
-                  }
-                >
-                  <CardHeader className="flex flex-row items-center gap-4 p-4">
-                    <EditorCanvasIconHelper
-                      type={cardKey as EditorCanvasTypes}
-                    />
-                    <CardTitle className="text-md">
-                      {cardKey}
-                      <CardDescription>{cardValue.description}</CardDescription>
-                    </CardTitle>
-                  </CardHeader>
-                </Card>
-              ))}
-          </TabsContent>
-          {state.editor.selectedNode.data.title ? (
+      <Tabs defaultValue="settings" className="h-screen overflow-scroll pb-24">
+        <TabsList className="bg-transparent">
+          <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="actions">Actions</TabsTrigger>
+        </TabsList>
+        <Separator />
+        <TabsContent value="actions" className="flex flex-col gap-4 p-4 mb-16">
+          {Object.entries(EditorCanvasDefaultCardTypes)
+            .filter(([_, cardType]) => {
+              const types = Array.isArray(cardType.type)
+                ? cardType.type
+                : [cardType.type];
+              return (
+                (!nodes.length && types.includes("Trigger")) ||
+                (nodes.length && types.includes("Action"))
+              );
+            })
+            .map(([cardKey, cardValue]) => (
+              <Card
+                key={cardKey}
+                draggable
+                className="w-full cursor-grab border-black bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900"
+                onDragStart={(event) =>
+                  onDragStart(event, cardKey as EditorCanvasTypes)
+                }
+                onClick={() => {
+                  console.log("Double click");
+                  addNodeAtPosition(cardKey as EditorCanvasTypes);
+                }}
+              >
+                <CardHeader className="flex flex-row items-center gap-4 p-4">
+                  <EditorCanvasIconHelper type={cardKey as EditorCanvasTypes} />
+                  <CardTitle className="text-md">
+                    {cardKey}
+                    <CardDescription>{cardValue.description}</CardDescription>
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+            ))}
+        </TabsContent>
+        {state.editor.selectedNode.data.title ? (
           <TabsContent value="settings" className="-mt-20">
             <div className="px-2 py-4 text-center text-xl font-bold">
               <p>{state.editor.selectedNode.data.title}</p>
-              <p className="block text-sm font-medium text-gray-500">{state.editor.selectedNode.id}</p>
+              <p className="block text-sm font-medium text-gray-500">
+                {state.editor.selectedNode.id}
+              </p>
             </div>
 
             <Accordion type="multiple">
@@ -110,8 +112,10 @@ const EditorCanvasSidebar = ({ nodes }: Props) => {
                     <AccordionTrigger className="!no-underline">
                       Account
                     </AccordionTrigger>
-                     <AccordionContent><ApikeyCard /></AccordionContent>
-                     </div>
+                    <AccordionContent>
+                      <ApikeyCard />
+                    </AccordionContent>
+                  </div>
                 ) : (
                   <div>
                     <AccordionTrigger className="!no-underline">
@@ -140,10 +144,12 @@ const EditorCanvasSidebar = ({ nodes }: Props) => {
               </AccordionItem>
             </Accordion>
           </TabsContent>
-          ) : (<p className="text-gray-600 text-center mt-4">
+        ) : (
+          <p className="text-gray-600 text-center mt-4">
             Select a node to view settings
-          </p>)}
-        </Tabs>
+          </p>
+        )}
+      </Tabs>
     </aside>
   );
 };

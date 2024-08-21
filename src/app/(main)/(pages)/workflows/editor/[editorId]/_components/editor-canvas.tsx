@@ -123,6 +123,43 @@ const EditorCanvas = (props: Props) => {
         },
         [reactFlowInstance, state]
     )
+    const addNodeAtPosition = useCallback(
+        (type: EditorCanvasCardType['type']) => {
+            if (!reactFlowInstance) return;
+
+            const triggerAlreadyExists = state.editor.elements.find(
+                (node) => node.type === 'Trigger'
+            );
+
+            if (type === 'Trigger' && triggerAlreadyExists) {
+                toast('Only one trigger can be added to automations at the moment');
+                return;
+            }
+            const lastNode = state.editor.elements[state.editor.elements.length - 1];
+            const position = lastNode
+                ? { x: lastNode.position.x, y: lastNode.position.y + 200 } // Position below the last node
+                : { x: 100, y: 100 }; // Default position if no nodes exist
+    
+
+            const newNode = {
+                id: v4(),
+                type,
+                position,
+                data: {
+                    title: type,
+                    description: EditorCanvasDefaultCardTypes[type].description,
+                    completed: false,
+                    current: false,
+                    metadata: {},
+                    type: type,
+                },
+            };
+            //@ts-ignore
+            setNodes((nds) => nds.concat(newNode));
+            addAINode(newNode.id);
+        },
+        [reactFlowInstance, state]
+    );
 
     const handleClickCanvas = () => {
         dispatch({
@@ -271,7 +308,7 @@ const EditorCanvas = (props: Props) => {
                         edges={edges}
                         nodes={nodes}
                     >
-                        <EditorCanvasSidebar nodes={nodes} />
+                        <EditorCanvasSidebar nodes={nodes} addNodeAtPosition={addNodeAtPosition} />
                     </FlowInstance>
                 )}
             </ResizablePanel>

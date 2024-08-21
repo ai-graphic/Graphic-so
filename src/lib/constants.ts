@@ -113,7 +113,7 @@ export const EditorCanvasDefaultCardTypes = {
     AI: {
         description:
             'Use the power of AI to summarize, respond, create and much more.',
-        type: 'Action',
+        type: ['Action', 'Trigger'],
     },
     Slack: { description: 'Send a notification to slack', type: 'Action' },
     'Google Drive': {
