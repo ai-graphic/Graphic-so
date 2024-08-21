@@ -47,6 +47,16 @@ const EditorCanvas = (props: Props) => {
     const [reactFlowInstance, setReactFlowInstance] =
         useState<ReactFlowInstance>()
     const pathname = usePathname()
+    const [isPanelOpen, setIsPanelOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth);
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth);
+    }, [window.innerWidth]); 
+
+    const togglePanel = () => {
+        setIsPanelOpen(!isPanelOpen);
+    };
 
     const onDragOver = useCallback((event: any) => {
         event.preventDefault()
@@ -120,6 +130,7 @@ const EditorCanvas = (props: Props) => {
             //@ts-ignore
             setNodes((nds) => nds.concat(newNode))
             addAINode(newNode.id)
+            toast('Node added successfully');
         },
         [reactFlowInstance, state]
     )
@@ -157,6 +168,7 @@ const EditorCanvas = (props: Props) => {
             //@ts-ignore
             setNodes((nds) => nds.concat(newNode));
             addAINode(newNode.id);
+            toast('Node added successfully');
         },
         [reactFlowInstance, state]
     );
@@ -227,7 +239,7 @@ const EditorCanvas = (props: Props) => {
                         style={{ width: '100%', height: '100%', paddingBottom: '70px' }}
                         className="relative"
                     >
-                        {isWorkFlowLoading ? (
+                        {isWorkFlowLoading && isPanelOpen && isMobile > 726 ? (
                             <div className="absolute flex h-full w-full items-center justify-center">
                                 <svg
                                     aria-hidden="true"
@@ -280,9 +292,17 @@ const EditorCanvas = (props: Props) => {
                 </div>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel
-                defaultSize={40}
-                className="relative sm:block"
+            {isMobile < 726 && (
+                <button
+                    onClick={togglePanel}
+                    className="absolute bottom-0 z-50 m-2 p-2 bg-black text-white rounded"
+                >
+                    {isPanelOpen ? 'Close Panel' : 'Open Panel'}
+                </button>
+            )}
+             <ResizablePanel
+                defaultSize={isMobile < 726 ? 5000 : 30}
+                className={`relative sm:block ${isMobile < 726 && !isPanelOpen ? 'hidden' : ''}`}
             >
                 {isWorkFlowLoading ? (
                     <div className="absolute flex h-full w-full items-center justify-center">
