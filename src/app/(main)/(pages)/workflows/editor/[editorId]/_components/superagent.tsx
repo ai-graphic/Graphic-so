@@ -57,25 +57,12 @@ const SuperAgent = () => {
   }
 
   const findWorkflow = () => {
-    const url = `https://api.spaceship.im/api/v1/workflows/${inputValue}`;
-    const options = {
-      headers: {
-        accept: "application/json",
-        Authorization:
-        `Bearer ${process.env.SUPERAGENT_API}`,
-      },
-    };
-
-    axios
-      .get(url, options)
-      .then((response) => {
-        console.log(response.data);
-        setWorkflowId(response.data.data.id);
-        setWorkflow(response.data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data: ", error);
-      });
+    axios.post("/api/AiResponse/superagent/getworkflow", {
+        workflowId: inputValue,
+         }).then((res) => {
+            setWorkflow(res.data.data)
+            setWorkflowId(res.data.data.id)
+         })
   };
   console.log(workflow);
   console.log(workflowId);
