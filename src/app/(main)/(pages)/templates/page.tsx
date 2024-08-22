@@ -42,7 +42,6 @@ const TemplatePage = () => {
           <iframe
           className="border-2 rounded-xl m-3  "
             src={rxc}
-            frameborder="0"
             width="100%"
             height="100%%"
           ></iframe>
