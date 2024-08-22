@@ -19,6 +19,7 @@ import ActionButton from "@/app/(main)/(pages)/workflows/editor/[editorId]/_comp
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import SuperAgent from "./superagent";
 
 export interface Option {
   value: string;
@@ -185,8 +186,8 @@ const ContentBasedOnTitle = ({
   }, [nodeConnectionType, selectedNode.id]);
 
   if (!nodeConnectionType) return <p>Not connected</p>;
+  
 
- 
   console.log("Model Array:", modelArray);
 
   const isConnected =
@@ -247,99 +248,112 @@ const ContentBasedOnTitle = ({
                 </option>
                 <option value="Openai">Openai</option>
                 <option value="FLUX-image">FLUX-image</option>
+                <option value="SuperAgent">SuperAgent</option>
                 {/* <option value="train-LORA">train-LORA</option> */}
               </select>
-              <p className="block text-sm font-medium text-gray-300">
-                Enter Your Prompt Here
-              </p>
-              <Input
-                type="text"
-                placeholder="a beautiful castle frstingln illustration"
-                value={
-                  selectedOutput ?? nodeConnectionType[selectedNode.id]?.prompt
-                }
-                onClick={() => {
-                  setShowButtons((prev) => !prev);
-                }}
-                onChange={(event) => {
-                  const newValue = event.target.value;
-                  setSelectedOutput(newValue);
-                  onContentChange(
-                    state,
-                    nodeConnection,
-                    title,
-                    event,
-                    "prompt"
-                  );
-                }}
-              />
-              {showButtons &&
-                nodeConnection.aiNode.output &&
-                state.editor.edges &&
-                Object.entries(nodeConnection.aiNode.output)
-                  .filter(([id]) =>
-                    state.editor.edges.some(
-                      (edge) =>
-                        edge.target === selectedNode.id && edge.source === id
-                    )
-                  )
-                  .map(
-                    ([id, outputs]) =>
-                      Array.isArray(outputs) &&
-                      outputs.map((output, index) => (
-                        <button
-                          key={`${id}-${index}`}
-                          className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                          onClick={() => {
-                            setSelectedOutput(String(output));
-                            setShowButtons((prev) => !prev);
-                          }}
-                        >
-                          {String(output)}
-                        </button>
-                      ))
-                  )}
-
-              <p className=" text-sm font-medium text-gray-300">
-                Enter Your ApiKey Here
-              </p>
-              <div className="flex justify-center items-center gap-2">
-                <Input
-                  type="text"
-                  placeholder="Click to select API Key"
-                  value={
-                    selectedKey ?? nodeConnectionType[selectedNode.id]?.apiKey
-                  }
-                  onChange={(event) => {
-                    const newValue = event.target.value;
-                    setSelectedKey(newValue);
-                    onContentChange(
-                      state,
-                      nodeConnection,
-                      title,
-                      event,
-                      "apiKey"
-                    );
-                  }}
-                />
-
-                {modelArray
-                  .filter((modelObj) => modelObj.key === model)
-                  .map((modelObj) => (
-                    <button
-                      key={modelObj.key}
-                      className="bg-gray-500 hover:bg-gray-300 hover:text-gray-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-xs"
+              {nodeConnectionType[selectedNode.id]?.model === "SuperAgent" && (
+                <SuperAgent />
+              )}
+              {nodeConnectionType[selectedNode.id]?.model
+              && !(nodeConnectionType[selectedNode.id]?.model=== "SuperAgent") && (
+                  <div>
+                    <p className="block text-sm font-medium text-gray-300">
+                      Enter Your Prompt Here
+                    </p>
+                    <Input
+                      type="text"
+                      placeholder="a beautiful castle frstingln illustration"
+                      value={
+                        selectedOutput ??
+                        nodeConnectionType[selectedNode.id]?.prompt
+                      }
                       onClick={() => {
-                        console.log("model", modelObj);
-                        nodeConnectionType[selectedNode.id].ApiKey =
-                          modelObj.name;
-                        setSelectedKey(modelObj.name);
+                        setShowButtons((prev) => !prev);
                       }}
-                    >
-                      Load
-                    </button>
-                  ))}
-              </div>
+                      onChange={(event) => {
+                        const newValue = event.target.value;
+                        setSelectedOutput(newValue);
+                        onContentChange(
+                          state,
+                          nodeConnection,
+                          title,
+                          event,
+                          "prompt"
+                        );
+                      }}
+                    />
+                    {showButtons &&
+                      nodeConnection.aiNode.output &&
+                      state.editor.edges &&
+                      Object.entries(nodeConnection.aiNode.output)
+                        .filter(([id]) =>
+                          state.editor.edges.some(
+                            (edge) =>
+                              edge.target === selectedNode.id &&
+                              edge.source === id
+                          )
+                        )
+                        .map(
+                          ([id, outputs]) =>
+                            Array.isArray(outputs) &&
+                            outputs.map((output, index) => (
+                              <button
+                                key={`${id}-${index}`}
+                                className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                onClick={() => {
+                                  setSelectedOutput(String(output));
+                                  setShowButtons((prev) => !prev);
+                                }}
+                              >
+                                {String(output)}
+                              </button>
+                            ))
+                        )}
+
+                    <p className=" text-sm font-medium text-gray-300">
+                      Enter Your ApiKey Here
+                    </p>
+                    <div className="flex justify-center items-center gap-2">
+                      <Input
+                        type="text"
+                        placeholder="Click to select API Key"
+                        value={
+                          selectedKey ??
+                          nodeConnectionType[selectedNode.id]?.apiKey
+                        }
+                        onChange={(event) => {
+                          const newValue = event.target.value;
+                          setSelectedKey(newValue);
+                          onContentChange(
+                            state,
+                            nodeConnection,
+                            title,
+                            event,
+                            "apiKey"
+                          );
+                        }}
+                      />
+
+                      {modelArray
+                        .filter((modelObj) => modelObj.key === model)
+                        .map((modelObj) => (
+                          <button
+                            key={modelObj.key}
+                            className="bg-gray-500 hover:bg-gray-300 hover:text-gray-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-xs"
+                            onClick={() => {
+                              console.log("model", modelObj);
+                              nodeConnectionType[selectedNode.id].ApiKey =
+                                modelObj.name;
+                              setSelectedKey(modelObj.name);
+                            }}
+                          >
+                            Load
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
               {nodeConnectionType[selectedNode.id]?.model &&
                 modelOptionsMap[nodeConnectionType[selectedNode.id].model]?.map(
                   (optionObj) => {

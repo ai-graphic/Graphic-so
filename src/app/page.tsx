@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Navbar from "@/components/global/navbar";
 import {ContainerScroll} from "@/components/global/container-scroll-animation";
@@ -9,10 +10,15 @@ import {LampComponent} from "@/components/global/lamp";
 import {CardBody, CardContainer, CardItem} from "@/components/global/3d-card";
 import {CheckIcon} from "lucide-react";
 
+
+
 export default function Home() {
+
+
     return (
         <main>
             <Navbar/>
+
             <section
                 className="h-screen w-full bg-neutral-950 rounded-md
                 !overflow-visible relative flex flex-col items-center antialiased"
