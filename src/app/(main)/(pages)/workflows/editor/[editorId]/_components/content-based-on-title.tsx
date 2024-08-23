@@ -59,6 +59,8 @@ const ContentBasedOnTitle = ({
   const { selectedNode } = newState.editor;
   const title = selectedNode.data.title;
   const [model, setModel] = useState<string>("Select Model");
+  const [showSuperAgent, setShowSuperAgent] = useState(false);
+
   const FluxOptions = [
     {
       locaModel: { placeholder: "alvdansen/frosting_lane_flux", type: "text" },
@@ -113,24 +115,6 @@ const ContentBasedOnTitle = ({
     key: string;
     name: string;
   }
-  useEffect(() => {
-    // Check if the selectedNode has a model and update the state accordingly
-    const nodeModel = nodeConnectionType[selectedNode.id]?.model;
-    if (nodeModel) {
-      setModel(nodeModel);
-    } else {
-      // Reset to default "Select Model" if the new node does not have a model
-      setModel("Select Model");
-    }
-
-    const currentPrompt = nodeConnectionType[selectedNode.id]?.prompt;
-    if (currentPrompt) {
-      setSelectedOutput(currentPrompt);
-    } else {
-      // Reset selectedOutput if the new node does not have a prompt
-      setSelectedOutput(null);
-    }
-  }, [selectedNode.id]);
 
   const [modelArray, setModelArray] = useState<Model[]>([]);
 
@@ -169,6 +153,31 @@ const ContentBasedOnTitle = ({
 
   //@ts-ignore
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]];
+  useEffect(() => {
+    // Check if the selectedNode has a model and update the state accordingly
+    const nodeModel = nodeConnectionType[selectedNode.id]?.model;
+    if (nodeModel) {
+      setModel(nodeModel);
+    } else {
+      // Reset to default "Select Model" if the new node does not have a model
+      setModel("Select Model");
+    }
+
+    const currentPrompt = nodeConnectionType[selectedNode.id]?.prompt;
+    if (currentPrompt) {
+      setSelectedOutput(currentPrompt);
+    } else {
+      // Reset selectedOutput if the new node does not have a prompt
+      setSelectedOutput(null);
+    }
+  }, [selectedNode.id, nodeConnectionType]);
+  useEffect(() => {
+    // Update showSuperAgent based on the model whenever selectedNode changes
+    const isSuperAgent =
+      nodeConnectionType[selectedNode.id]?.model === "SuperAgent";
+    setShowSuperAgent(isSuperAgent);
+  }, [selectedNode.id, nodeConnectionType]); // Add dependencies that could affect SuperAgent visibility
+
   console.log("Node Connection Type:", nodeConnectionType);
   useEffect(() => {
     const modelKey = nodeConnectionType[selectedNode.id]?.model;
@@ -249,10 +258,8 @@ const ContentBasedOnTitle = ({
                 <option value="SuperAgent">SuperAgent</option>
                 {/* <option value="train-LORA">train-LORA</option> */}
               </select>
-              {nodeConnectionType[selectedNode.id]?.model === "SuperAgent" && (
-                <SuperAgent node={nodeConnectionType} />
-              )}
-              {nodeConnectionType[selectedNode.id]?.model && (
+              {showSuperAgent && <SuperAgent node={nodeConnectionType} />}
+              {nodeConnectionType[selectedNode.id]?.model ==="SuperAgent" && (
                 <div>
                   <p className="block text-sm font-medium text-gray-300">
                     Enter Your Prompt Here
@@ -406,7 +413,7 @@ const ContentBasedOnTitle = ({
               onChange={(event) => {
                 const newValue = event.target.value;
                 onContentChange(state, nodeConnection, title, event, "content");
-                nodeConnectionType.content = newValue; // Update the content in nodeConnectionType
+                nodeConnectionType.content = newValue;
               }}
             />
           )}

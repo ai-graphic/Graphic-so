@@ -1,27 +1,18 @@
 import axios from "axios";
 
 export const maxDuration = 300;
-
-async function fetchWithRetry(url : string, options : any, retries = 3, backoff = 300) {
-  try {
-    const response = await axios.get(url, options);
-    return response;
-  } catch (error) {
-    if (retries > 0) {
-      console.log(`Retrying... ${retries} attempts left`);
-      await new Promise((resolve) => setTimeout(resolve, backoff));
-      return fetchWithRetry(url, options, retries - 1, backoff * 2);
-    } else throw error;
-  }
-}
 export async function POST(req: Request, res: Response) {
 
   try {
     const {
-       workflowId
+       name, description
     } = await req.json();
 
-    const url = `https://api.spaceship.im/api/v1/workflows/${workflowId}`;
+    const url = `https://api.spaceship.im/api/v1/workflows`;
+    const data = {
+        name: name,
+        description: description,
+    }
     const options = {
         headers: {
           accept: "application/json",
@@ -29,8 +20,8 @@ export async function POST(req: Request, res: Response) {
           `Bearer ${process.env.SUPERAGENT_API}`,
         },
     }
-    // Usage inside your POST function
-    const response = await fetchWithRetry(url, options);
+
+    const response = await axios.post(url,data, options);
     const final = JSON.stringify(response.data);
     return new Response(final, {
         status: 200,
