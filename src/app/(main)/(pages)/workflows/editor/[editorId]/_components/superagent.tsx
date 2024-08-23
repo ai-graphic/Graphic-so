@@ -179,7 +179,7 @@ const SuperAgent = ({ node }: { node: any }) => {
                 variant="outline"
                 onClick={() => settoggleAgents((prev) => !prev)}
               >
-                Dont have a Agent? Create one!
+                Don{"'"}t have a Agent? Create one!
               </Button>
             </div>
           ) : (
@@ -263,7 +263,7 @@ const SuperAgent = ({ node }: { node: any }) => {
                 variant="outline"
                 onClick={() => settoggleWorkflow((prev) => !prev)}
               >
-                Don't have a workflow? Create one!
+                Don{"'"}t have a workflow? Create one!
               </Button>
             </div>
           ) : (
