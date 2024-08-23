@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useEditor } from "@/providers/editor-provider";
 import { useForm, FormProvider } from "react-hook-form";
 import { FormItem, FormField } from "@/components/ui/form";
+import { set } from "zod";
 // 09d09171-2ff7-407f-8fd5-f5e8c3fe62bb
 
 const SuperAgent = ({ node }: { node: any }) => {
@@ -13,6 +14,16 @@ const SuperAgent = ({ node }: { node: any }) => {
     defaultValues: {
       name: "",
       description: "",
+    },
+  });
+  const agentsMethod = useForm({
+    defaultValues: {
+      name: "",
+      description: "",
+      initialMessage: "",
+      prompt: "",
+      llmProvider: "OPENAI", 
+      llmModel: "GPT_4_O"
     },
   });
   interface Step {
@@ -37,7 +48,8 @@ const SuperAgent = ({ node }: { node: any }) => {
   const [workflowId, setWorkflowId] = useState(node[selectedNode.id]?.id);
   const [Agents, setAgents] = useState("");
   const [prompt, setPrompt] = useState("");
-  const [toggle, settoggle] = useState(false);
+  const [toggleWorkflow, settoggleWorkflow] = useState(false);
+  const [toggleAgents, settoggleAgents] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e: any) => {
@@ -49,13 +61,15 @@ const SuperAgent = ({ node }: { node: any }) => {
   const handlepromptchange = (e: any) => {
     setPrompt(e.target.value);
   };
-  const createSteps = () => {
+  const AddAgents = () => {
     setLoading(true);
     axios
-      .post("/api/AiResponse/superagent/getsteps", {
+      .post("/api/AiResponse/superagent/addAgents", {
         workflowId: workflowId,
         Agents: Agents,
-        steps: node[selectedNode.id].steps? node[selectedNode.id].steps.length : 0,
+        steps: node[selectedNode.id].steps
+          ? node[selectedNode.id].steps.length
+          : 0,
       })
       .then((res) => {
         console.log(res.data);
@@ -64,7 +78,29 @@ const SuperAgent = ({ node }: { node: any }) => {
       });
   };
 
-  const findWorkflow = (id : string) => {
+  const CreateAgents = agentsMethod.handleSubmit((data) => {
+    console.log("data", data);
+    const { name, description, initialMessage, prompt } = data;
+    setLoading(true);
+    axios
+      .post("/api/AiResponse/superagent/createAgents", {
+          name: name,
+          description: description,
+          initialMessage: initialMessage,
+          prompt: prompt,
+          llmProvider: "OPENAI",
+          llmModel: "GPT_4_O"
+      })
+      .then((res) => {
+        setAgents(res.data.data.id);
+        console.log(res.data.data.id);
+        console.log(Agents)
+        AddAgents();
+        setLoading(false);
+      });
+  });
+
+  const findWorkflow = (id: string) => {
     setLoading(true);
     axios
       .post("/api/AiResponse/superagent/getworkflow", {
@@ -79,7 +115,7 @@ const SuperAgent = ({ node }: { node: any }) => {
   };
   const CreateWorkflow = methods.handleSubmit((data) => {
     console.log("data", data);
-      setLoading(true);
+    setLoading(true);
     const { name, description } = data;
     axios
       .post("/api/AiResponse/superagent/createWorkflow", {
@@ -97,56 +133,119 @@ const SuperAgent = ({ node }: { node: any }) => {
   return (
     <div className="flex flex-col gap-3 px-6 py-3">
       {workflowId ? (
-        node[selectedNode.id] && node[selectedNode.id].steps && node[selectedNode.id].steps[0] ? (
-          <div>
-            {node[selectedNode.id].steps.map((step : Step, index: number) => (
-              <div key={step.id} className="mb-4">
-                <div>Step {index + 1}</div>
-                <div>ID: {step.id}</div>
-                <div>Order: {step.order}</div>
-                <div>Agent ID: {step.agentId}</div>
-                <div>Agent Name: {step.agent.name}</div>
-                <div>Agent Type: {step.agent.type}</div>
-                <div>Description: {step.agent.description}</div>
-              </div>
-            ))}
-            <Input
-              placeholder="AgentId"
-              type="text"
-              value={Agents}
-              onChange={handleAgentChange}
-            />
-            <Button className="mt-2" variant="outline" onClick={createSteps}>
-              {" "}
-              Create Step
-            </Button>
-          </div>
-        ) : (
-          <div className="flex gap-2 flex-col">
-            {node[selectedNode.id] && (
+        <>
+          {node[selectedNode.id] && (
+            <div>
+              <p className="font-bold text-lg">{node[selectedNode.id].name}</p>
+              <p className="text-sm from-neutral-300 font-regular">
+                {node[selectedNode.id].description}
+              </p>
+              <p>Id : {node[selectedNode.id].id}</p>
+            </div>
+          )}
+          {node[selectedNode.id] &&
+            node[selectedNode.id].steps &&
+            node[selectedNode.id].steps.length > 0 && (
               <div>
-                <p>node Name: {node[selectedNode.id].name}</p>
-                <p>Description: {node[selectedNode.id].description}</p>
-                <p>node ID: {node[selectedNode.id].id}</p>
+                {node[selectedNode.id].steps.map(
+                  (step: Step, index: number) => (
+                    <div key={step.id} className="mb-4">
+                      <div>Step: {step.order}</div>
+                      <div>ID: {step.id}</div>
+
+                      <div>Agent ID: {step.agentId}</div>
+                      <div>Agent Name: {step.agent.name}</div>
+                      <div>Agent Type: {step.agent.type}</div>
+                      <div>Description: {step.agent.description}</div>
+                    </div>
+                  )
+                )}
               </div>
             )}
-            <p className="text-orange-400">No Agents found in your workflow</p>
 
-            <Input
-              placeholder="AgentId"
-              type="text"
-              value={Agents}
-              onChange={handleAgentChange}
-            />
-            <Button variant="outline" onClick={createSteps}>
-              {" "}
-              Add Agent
-            </Button>
-          </div>
-        )
+          {!toggleAgents ? (
+            <div className="flex flex-col ">
+              <Input
+                placeholder="AgentId"
+                type="text"
+                value={Agents}
+                onChange={handleAgentChange}
+              />
+              <Button className="mt-2" variant="outline" onClick={AddAgents}>
+                Add Agent
+              </Button>
+              <Button
+                className="mt-2"
+                variant="outline"
+                onClick={() => settoggleAgents((prev) => !prev)}
+              >
+                Dont have a Agent? Create one!
+              </Button>
+            </div>
+          ) : (
+            <FormProvider {...agentsMethod}>
+              <form className="flex flex-col gap-2" onSubmit={CreateAgents}>
+                <FormItem>
+                  <FormField
+                    name="name"
+                    render={({ field }) => (
+                      <Input {...field} required placeholder="Enter Name" />
+                    )}
+                  />
+                </FormItem>
+                <FormItem>
+                  <FormField
+                    name="description"
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        required
+                        placeholder="Enter Description"
+                      />
+                    )}
+                  />
+                </FormItem>
+                <FormItem>
+                  <FormField
+                    name="prompt"
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        required
+                        placeholder="Enter prompt"
+                      />
+                    )}
+                  />
+                </FormItem>
+                <FormItem>
+                  <FormField
+                    name="initialMessage"
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        required
+                        placeholder="Enter initialMessage"
+                      />
+                    )}
+                  />
+                </FormItem>
+                <Button onClick={CreateAgents} type="submit">
+                  Add Agents
+                </Button>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => settoggleAgents((prev) => !prev)}
+                >
+                  Go Back
+                </Button>
+              </form>
+            </FormProvider>
+          )}
+        </>
       ) : (
         <div>
-          {!toggle ? (
+          {!toggleWorkflow ? (
             <div className="flex flex-col gap-2">
               <Input
                 placeholder="Enter workflow ID"
@@ -154,14 +253,17 @@ const SuperAgent = ({ node }: { node: any }) => {
                 value={inputValue}
                 onChange={handleInputChange}
               />
-              <Button variant="outline" onClick={() => findWorkflow(inputValue)}>
+              <Button
+                variant="outline"
+                onClick={() => findWorkflow(inputValue)}
+              >
                 Add
               </Button>
               <Button
                 variant="outline"
-                onClick={() => settoggle((prev) => !prev)}
+                onClick={() => settoggleWorkflow((prev) => !prev)}
               >
-                Dont have a workflow? Create one!!
+                Don't have a workflow? Create one!
               </Button>
             </div>
           ) : (
@@ -187,22 +289,24 @@ const SuperAgent = ({ node }: { node: any }) => {
                     )}
                   />
                 </FormItem>
-                <Button type="submit" variant="outline">
-                  Create new
+                <Button type="submit">
+                  Create New
                 </Button>
                 <Button
                   variant="outline"
-                  type="button" // Explicitly set as type button to prevent form submission
-                  onClick={() => settoggle((prev) => !prev)}
+                  type="button"
+                  onClick={() => settoggleWorkflow((prev) => !prev)}
                 >
-                  go back
+                  Go Back
                 </Button>
               </form>
             </FormProvider>
           )}
         </div>
       )}
-      {loading && (<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>)}
+      {loading && (
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+      )}
     </div>
   );
 };
