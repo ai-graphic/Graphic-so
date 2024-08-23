@@ -86,17 +86,19 @@ const ActionButton = ({
     async (id: string) => {
       if (!nodeConnection.aiNode[id]) {
         toast.error("Please select a model first");
-        return
+        return;
       }
-      if (!nodeConnection.aiNode[id].ApiKey && !nodeConnection.aiNode[id].prompt) {
+      if (
+        !nodeConnection.aiNode[id].ApiKey &&
+        !nodeConnection.aiNode[id].prompt
+      ) {
         toast.error("Please enter an API key and prompt first");
-        return
+        return;
       }
       setIsLoading(id, true);
       console.log("AI Node:", id);
       if (nodeConnection.aiNode[id].model === "Openai") {
         try {
-        
           const messages = [
             {
               role: "system",
@@ -134,7 +136,7 @@ const ActionButton = ({
           console.log("AI Response:", response.data);
         } catch (error) {
           console.error("Error during AI search:", error);
-        } 
+        }
       } else if (nodeConnection.aiNode[id].model === "FLUX-image") {
         console.log("AI model:", nodeConnection.aiNode[id].model);
         try {
@@ -161,8 +163,27 @@ const ActionButton = ({
         } catch (error) {
           console.error("Error during Replicate API call:", error);
         }
-      } else if (nodeConnection.aiNode[id].model === "train-LORA") {
+      } else if (nodeConnection.aiNode[id].model === "SuperAgent") {
         console.log("AI model:", nodeConnection.aiNode[id].model);
+        try {
+          const response = await axios.post(
+            "/api/AiResponse/superagent/getoutput",
+            {
+              prompt: nodeConnection.aiNode[id].prompt,
+              workflowId: nodeConnection.aiNode[id].id,
+            }
+          );
+          console.log(response.data);
+          nodeConnection.setAINode((prev: any) => ({
+            ...prev,
+            output: {
+              ...(prev.output || {}),
+              [id]: [...(prev.output?.[id] || []), response.data.output],
+            },
+          }));
+        } catch (error) {
+          console.error("Error during superAgent API call:", error);
+        }
       }
       setIsLoading(id, false);
     },
@@ -261,11 +282,13 @@ const ActionButton = ({
               <div>
                 {nodeConnection.aiNode[selectedNode.id]?.model === "Openai" ? (
                   <div className="font-extralight">
-                  <p className="font-bold">Outputs</p>
-                  {aiOutput.map((output, index) => (
-                    <div key={index}>{index+1}. {output}</div> // Each output is wrapped in a div
-                  ))}
-                </div>
+                    <p className="font-bold">Outputs</p>
+                    {aiOutput.map((output, index) => (
+                      <div key={index}>
+                        {index + 1}. {output}
+                      </div> // Each output is wrapped in a div
+                    ))}
+                  </div>
                 ) : (
                   <div className="flex flex-col space-y-2">
                     {aiOutput.map((output, index) => (
@@ -289,7 +312,7 @@ const ActionButton = ({
             <Button
               variant="outline"
               onClick={() => onAiSearch(selectedNode.id)}
-              disabled={isLoading[selectedNode.id]} 
+              disabled={isLoading[selectedNode.id]}
             >
               Test
             </Button>

@@ -2,27 +2,31 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useEditor } from "@/providers/editor-provider";
 // 09d09171-2ff7-407f-8fd5-f5e8c3fe62bb
 
-const SuperAgent = () => {
-    interface Workflow {
-        id: string;
-        steps: Array<{
-          id: string;
-          order: number;
-          agentId: string;
-          agent: {
-            name: string;
-            type: string;
-            description: string;
-          };
-        }>;
-      }
+const SuperAgent = ({ node }: { node: any }) => {
+  const { selectedNode } = useEditor().state.editor;
+  interface Workflow {
+    id: string;
+    steps: Array<{
+      id: string;
+      order: number;
+      agentId: string;
+      agent: {
+        name: string;
+        type: string;
+        description: string;
+      };
+    }>;
+  }
   const [inputValue, setInputValue] = useState("");
-  const [workflow, setWorkflow] = useState<Workflow | null>(null);  const [workflowId, setWorkflowId] = useState("");
+  const [workflow, setWorkflow] = useState<Workflow | null>(
+    node[selectedNode.id]
+  );
+  const [workflowId, setWorkflowId] = useState(node[selectedNode.id].id);
   const [Agents, setAgents] = useState("");
   const [prompt, setPrompt] = useState("");
-  const [output, setOutput] = useState("");
 
   const handleInputChange = (e: any) => {
     setInputValue(e.target.value);
@@ -34,46 +38,39 @@ const SuperAgent = () => {
     setPrompt(e.target.value);
   };
   const createSteps = () => {
-    axios.post("/api/AiResponse/superagent/getsteps", {
+    axios
+      .post("/api/AiResponse/superagent/getsteps", {
         workflowId: inputValue,
         Agents: Agents,
-        }).then((res) => {
-            console.log(res.data);
-            findWorkflow()
-            
-
-   })
+      })
+      .then((res) => {
+        console.log(res.data);
+        findWorkflow();
+      });
   };
-  console.log(output);
-  const test = () => {
-    axios.post("/api/AiResponse/superagent/getoutput", {
-       prompt: prompt,
-       workflowId
-        }).then((res) => {
-            console.log(res.data);
-            setOutput(res.data.output)
-            findWorkflow()
-   })
-  }
 
   const findWorkflow = () => {
-    axios.post("/api/AiResponse/superagent/getworkflow", {
+    axios
+      .post("/api/AiResponse/superagent/getworkflow", {
         workflowId: inputValue,
-         }).then((res) => {
-            setWorkflow(res.data.data)
-            setWorkflowId(res.data.data.id)
-         })
+      })
+      .then((res) => {
+        setWorkflow(res.data.data);
+        node[selectedNode.id] = res.data.data;
+        setWorkflowId(res.data.data.id);
+      });
   };
+  console.log(node);
   console.log(workflow);
   console.log(workflowId);
 
   const executeFunctionTwo = () => {};
 
   return (
-    <div className="flex flex-col gap-3 px-6 py-3 pb-20">
+    <div className="flex flex-col gap-3 px-6 py-3">
       {workflowId ? (
         workflow && workflow.steps && workflow.steps[0] ? (
-            <div>
+          <div>
             {workflow.steps.map((step, index) => (
               <div key={step.id} className="mb-4">
                 <div>Step {index + 1}</div>
@@ -83,26 +80,25 @@ const SuperAgent = () => {
                 <div>Agent Name: {step.agent.name}</div>
                 <div>Agent Type: {step.agent.type}</div>
                 <div>Description: {step.agent.description}</div>
-                
               </div>
             ))}
             <Input
-              placeholder="Enter Your Prompt"
+              placeholder="AgentId"
               type="text"
-              value={prompt}
-              onChange={handlepromptchange}
+              value={Agents}
+              onChange={handleAgentChange}
             />
-            <Button variant="outline" onClick={test}>
+            <Button
+            className="mt-2" variant="outline" onClick={createSteps}>
               {" "}
-              Test
+              Create Step
             </Button>
-            {output && <div>{output}</div>}
           </div>
         ) : (
           <div className="flex gap-2 flex-col">
             <p>No steps found in your workflow</p>
             <Input
-              placeholder="Enter workflow ID"
+              placeholder="AgentId"
               type="text"
               value={Agents}
               onChange={handleAgentChange}
