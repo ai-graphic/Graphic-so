@@ -10,6 +10,11 @@ export type ConnectionProviderProps = {
     guildName: string;
   };
   setDiscordNode: React.Dispatch<React.SetStateAction<any>>;
+  triggerNode: {
+    triggerType: string;
+    triggerValue: string;
+  }
+  setTriggerNode: React.Dispatch<React.SetStateAction<any>>;
   aiNode: {
     [id: string]: {
       id: string;
@@ -38,6 +43,7 @@ export type ConnectionProviderProps = {
       repo_id: string;
       images: string;
     };
+    
   };
   output: string[];
   setAINode: React.Dispatch<React.SetStateAction<any>>;
@@ -92,6 +98,10 @@ const InitialValues: ConnectionProviderProps = {
     webhookName: "",
     guildName: "",
   },
+  triggerNode: {
+    triggerType: "",
+    triggerValue: "",
+  },
   googleNode: [],
   notionNode: {
     accessToken: "",
@@ -119,6 +129,7 @@ const InitialValues: ConnectionProviderProps = {
   },
   isLoading: false,
   setGoogleNode: () => undefined,
+  setTriggerNode: () => undefined,
   setDiscordNode: () => undefined,
   setNotionNode: () => undefined,
   setSlackNode: () => undefined,
@@ -169,6 +180,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [isLoading, setIsLoading] = useState(InitialValues.isLoading);
   const [aiNode, setAINode] = useState(InitialValues.aiNode);
   const [output, setOutput] = useState(InitialValues.output);
+  const [triggerNode, setTriggerNode] = useState(InitialValues.triggerNode);
   const [workflowTemplate, setWorkFlowTemplate] = useState(
     InitialValues.workflowTemplate
   );
@@ -196,6 +208,8 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     output,
     setAINode,
     addAINode,
+    triggerNode,
+    setTriggerNode,
   };
 
   return <Provider value={values}>{children}</Provider>;

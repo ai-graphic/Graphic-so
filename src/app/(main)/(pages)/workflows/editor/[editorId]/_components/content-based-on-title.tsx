@@ -96,21 +96,6 @@ const ContentBasedOnTitle = ({
     { temperature: { placeholder: 0.7, type: "number" } },
     { max_tokens: { placeholder: 150, type: "number" } },
   ];
-  // const LoraOptions = [
-  //   { images: "A zip/tar file containing the images that will be used for training. File names must be their captions: a_photo_of_TOK.png, etc. Min 12 images required." },
-  //   { locaModel: "defaultLoraModel" },
-  //   { endpoint: "https://api.lora.example.com" },
-  //   { ApiKey: "defaultLoraApiKey" },
-  //   { model_name: "LoraModel" },
-  //   { hf_token: "defaultHfToken" },
-  //   { steps: "10" },
-  //   { learning_rate: "0.01" },
-  //   { batch_size: "8" },
-  //   { resolution: "1024" },
-  //   { lora_linear: "true" },
-  //   { lora_linear_alpha: "0.1" },
-  //   { repo_id: "defaultRepoId" },
-  // ];
   interface Model {
     key: string;
     name: string;
@@ -130,7 +115,6 @@ const ContentBasedOnTitle = ({
   const modelOptionsMap: { [key: string]: any[] } = {
     "FLUX-image": FluxOptions,
     Openai: OpenaiOptions,
-    // "train-LORA": LoraOptions,
   };
 
   useEffect(() => {
@@ -142,7 +126,7 @@ const ContentBasedOnTitle = ({
         const firstThreeFiles = response.data.message.files.slice(0, 3);
         console.log(firstThreeFiles);
         toast.success("Files fetched successfully");
-        setFile(firstThreeFiles); // Update state with the new files
+        setFile(firstThreeFiles); 
       } else {
         toast.error("Something went wrong");
       }
@@ -153,13 +137,14 @@ const ContentBasedOnTitle = ({
 
   //@ts-ignore
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]];
+  const [triggerValue, setTriggerValue] = useState(
+    nodeConnectionType.triggerValue
+  );
   useEffect(() => {
-    // Check if the selectedNode has a model and update the state accordingly
     const nodeModel = nodeConnectionType[selectedNode.id]?.model;
     if (nodeModel) {
       setModel(nodeModel);
     } else {
-      // Reset to default "Select Model" if the new node does not have a model
       setModel("Select Model");
     }
 
@@ -167,16 +152,14 @@ const ContentBasedOnTitle = ({
     if (currentPrompt) {
       setSelectedOutput(currentPrompt);
     } else {
-      // Reset selectedOutput if the new node does not have a prompt
       setSelectedOutput(null);
     }
   }, [selectedNode.id, nodeConnectionType]);
   useEffect(() => {
-    // Update showSuperAgent based on the model whenever selectedNode changes
     const isSuperAgent =
       nodeConnectionType[selectedNode.id]?.model === "SuperAgent";
     setShowSuperAgent(isSuperAgent);
-  }, [selectedNode.id, nodeConnectionType]); // Add dependencies that could affect SuperAgent visibility
+  }, [selectedNode.id, nodeConnectionType]);
 
   console.log("Node Connection Type:", nodeConnectionType);
   useEffect(() => {
@@ -256,10 +239,9 @@ const ContentBasedOnTitle = ({
                 <option value="Openai">Openai</option>
                 <option value="FLUX-image">FLUX-image</option>
                 <option value="SuperAgent">SuperAgent</option>
-                {/* <option value="train-LORA">train-LORA</option> */}
               </select>
               {showSuperAgent && <SuperAgent node={nodeConnectionType} />}
-              {nodeConnectionType[selectedNode.id]?.model ==="SuperAgent" && (
+              {nodeConnectionType[selectedNode.id]?.model && (
                 <div>
                   <p className="block text-sm font-medium text-gray-300">
                     Enter Your Prompt Here
@@ -380,12 +362,12 @@ const ContentBasedOnTitle = ({
                           here
                         </p>
                         <Input
-                          type={optionValue.type} // Use the type from the option object
-                          placeholder={optionValue.placeholder} // Use placeholder from the option object
+                          type={optionValue.type} 
+                          placeholder={optionValue.placeholder} 
                           value={
                             nodeConnectionType[selectedNode.id]?.[optionKey] ||
                             ""
-                          } // Add optional chaining and default value
+                          }
                           onChange={(event) =>
                             onContentChange(
                               state,
@@ -403,46 +385,74 @@ const ContentBasedOnTitle = ({
             </div>
           ) : title === "Google Drive" ? (
             <div></div>
+          ) : title === "Trigger" ? (
+            <div>
+              <Input
+                type="text"
+                value={triggerValue ?? nodeConnectionType.triggerValue}
+                onChange={(event) => {
+                  const newValue = event.target.value;
+                  setTriggerValue(newValue);
+                  onContentChange(
+                    state,
+                    nodeConnection,
+                    title,
+                    event,
+                    "triggerValue"
+                  );
+                  nodeConnectionType.triggerValue = newValue;
+                }}
+              />
+            </div>
           ) : (
-            <Input
-              type="text"
-              value={selectedOutput ?? nodeConnectionType.content}
-              onClick={() => {
-                setShowButtons((prev) => !prev);
-              }}
-              onChange={(event) => {
-                const newValue = event.target.value;
-                onContentChange(state, nodeConnection, title, event, "content");
-                nodeConnectionType.content = newValue;
-              }}
-            />
+            <div>
+              <Input
+                type="text"
+                value={selectedOutput ?? nodeConnectionType.content}
+                onClick={() => {
+                  setShowButtons((prev) => !prev);
+                }}
+                onChange={(event) => {
+                  const newValue = event.target.value;
+                  onContentChange(
+                    state,
+                    nodeConnection,
+                    title,
+                    event,
+                    "content"
+                  );
+                  nodeConnectionType.content = newValue;
+                }}
+              />
+              {showButtons &&
+                nodeConnection.aiNode.output &&
+                state.editor.edges &&
+                Object.entries(nodeConnection.aiNode.output)
+                  .filter(([id]) =>
+                    state.editor.edges.some(
+                      (edge) =>
+                        edge.target === selectedNode.id && edge.source === id
+                    )
+                  )
+                  .map(
+                    ([id, outputs]) =>
+                      Array.isArray(outputs) &&
+                      outputs.map((output, index) => (
+                        <button
+                          key={`${id}-${index}`}
+                          className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                          onClick={() => {
+                            setSelectedOutput(String(output));
+                            setShowButtons((prev) => !prev);
+                          }}
+                        >
+                          {String(output)}
+                        </button>
+                      ))
+                  )}
+            </div>
           )}
-          {showButtons &&
-            nodeConnection.aiNode.output &&
-            state.editor.edges &&
-            Object.entries(nodeConnection.aiNode.output)
-              .filter(([id]) =>
-                state.editor.edges.some(
-                  (edge) =>
-                    edge.target === selectedNode.id && edge.source === id
-                )
-              )
-              .map(
-                ([id, outputs]) =>
-                  Array.isArray(outputs) &&
-                  outputs.map((output, index) => (
-                    <button
-                      key={`${id}-${index}`}
-                      className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                      onClick={() => {
-                        setSelectedOutput(String(output));
-                        setShowButtons((prev) => !prev);
-                      }}
-                    >
-                      {String(output)}
-                    </button>
-                  ))
-              )}
+
           {JSON.stringify(file) !== "{}" && title !== "Google Drive" && (
             <Card className="w-full">
               <CardContent className="px-2 py-3">

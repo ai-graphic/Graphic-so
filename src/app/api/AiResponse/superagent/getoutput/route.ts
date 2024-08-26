@@ -16,11 +16,12 @@ export async function POST(req: Request, res: Response) {
     const options = {
       headers: {
         accept: "application/json",
+        'Content-Type': 'application/json', // Explicitly setting Content-Type
         Authorization:
         `Bearer ${process.env.SUPERAGENT_API}`,
       },
+      timeout: 10000,
     };
-
     const response = await axios.post(url, data, options);
     const final = JSON.stringify(response.data.data);
     return new Response(final, {

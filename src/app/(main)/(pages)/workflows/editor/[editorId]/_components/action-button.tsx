@@ -10,8 +10,6 @@ import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_act
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
 import axios from "axios";
 import { useEditor } from "@/providers/editor-provider";
-import { SelectionMode } from "reactflow";
-import { divMode } from "@tsparticles/engine";
 import Link from "next/link";
 import { useLoading } from "@/providers/loading-provider";
 
@@ -99,6 +97,7 @@ const ActionButton = ({
       console.log("AI Node:", id);
       if (nodeConnection.aiNode[id].model === "Openai") {
         try {
+          setIsLoading(id, true);
           const messages = [
             {
               role: "system",
@@ -119,27 +118,30 @@ const ActionButton = ({
             },
             {
               headers: {
-                Authorization: `Bearer ${nodeConnection.aiNode[id].ApiKey}`, // Use environment variable for the API key
+                Authorization: `Bearer ${nodeConnection.aiNode[id].ApiKey}`, 
               },
             }
           );
           nodeConnection.setAINode((prev: any) => ({
             ...prev,
             output: {
-              ...(prev.output || {}), // Ensure prev.output is an object
+              ...(prev.output || {}),
               [id]: [
-                ...(prev.output?.[id] || []), // Spread the existing array or an empty array if it doesn't exist
-                response.data.choices[0].message.content.trim(), // Append the new content
+                ...(prev.output?.[id] || []), 
+                response.data.choices[0].message.content.trim(), 
               ],
             },
           }));
           console.log("AI Response:", response.data);
         } catch (error) {
           console.error("Error during AI search:", error);
+        } finally {
+          setIsLoading(id, false);
         }
       } else if (nodeConnection.aiNode[id].model === "FLUX-image") {
         console.log("AI model:", nodeConnection.aiNode[id].model);
         try {
+          setIsLoading(id, true);
           const response = await axios.post("/api/AiResponse/FLUX-image", {
             prompt: nodeConnection.aiNode[id].prompt,
             apiKey: nodeConnection.aiNode[id].ApiKey,
@@ -162,10 +164,13 @@ const ActionButton = ({
           console.log("Replicate API Response:", response.data[0]);
         } catch (error) {
           console.error("Error during Replicate API call:", error);
+        } finally {
+          setIsLoading(id, false);
         }
       } else if (nodeConnection.aiNode[id].model === "SuperAgent") {
         console.log("AI model:", nodeConnection.aiNode[id].model);
         try {
+          setIsLoading(id, true);
           const response = await axios.post(
             "/api/AiResponse/superagent/getoutput",
             {
@@ -183,9 +188,11 @@ const ActionButton = ({
           }));
         } catch (error) {
           console.error("Error during superAgent API call:", error);
+        } finally{
+          setIsLoading(id, false);
         }
       }
-      setIsLoading(id, false);
+
     },
     [nodeConnection.aiNode, pathname]
   );

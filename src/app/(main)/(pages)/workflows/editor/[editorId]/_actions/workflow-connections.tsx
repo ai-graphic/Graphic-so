@@ -124,6 +124,18 @@ export const onCreateNodeTemplate = async (
     }
 }
 
+export const getworkflow = async (workflowId: string) => {
+    const workflow = await db.workflows.findUnique({
+        where: {
+            id: workflowId,
+        },
+    })
+
+    if (workflow) {
+        return workflow
+    }
+}
+
 // export const onGetNodeTemplate = async (
 //     type: string,
 //     workflowId: string,
