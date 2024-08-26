@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,8 @@ import { useEditor } from "@/providers/editor-provider";
 import { useForm, FormProvider } from "react-hook-form";
 import { FormItem, FormField } from "@/components/ui/form";
 import { set } from "zod";
+import { getworkflow } from "../_actions/workflow-connections";
+import { toast } from "sonner";
 // 09d09171-2ff7-407f-8fd5-f5e8c3fe62bb
 
 const SuperAgent = ({ node }: { node: any }) => {
@@ -22,8 +24,8 @@ const SuperAgent = ({ node }: { node: any }) => {
       description: "",
       initialMessage: "",
       prompt: "",
-      llmProvider: "OPENAI", 
-      llmModel: "GPT_4_O"
+      llmProvider: "OPENAI",
+      llmModel: "GPT_4_O",
     },
   });
   interface Step {
@@ -51,6 +53,7 @@ const SuperAgent = ({ node }: { node: any }) => {
   const [toggleWorkflow, settoggleWorkflow] = useState(false);
   const [toggleAgents, settoggleAgents] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedTool, setSelectedTool] = useState("");
 
   const handleInputChange = (e: any) => {
     setInputValue(e.target.value);
@@ -77,24 +80,34 @@ const SuperAgent = ({ node }: { node: any }) => {
         setLoading(false);
       });
   };
+  const [tools, setTools] = useState([]);
 
+  useEffect(() => {
+    const gettools = async () => {
+      const response = await axios.get("/api/AiResponse/superagent/tools");
+      setTools(response.data.data);
+    };
+
+    gettools();
+  }, []);
+  console.log(tools);
   const CreateAgents = agentsMethod.handleSubmit((data) => {
     console.log("data", data);
     const { name, description, initialMessage, prompt } = data;
     setLoading(true);
     axios
       .post("/api/AiResponse/superagent/createAgents", {
-          name: name,
-          description: description,
-          initialMessage: initialMessage,
-          prompt: prompt,
-          llmProvider: "OPENAI",
-          llmModel: "GPT_4_O"
+        name: name,
+        description: description,
+        initialMessage: initialMessage,
+        prompt: prompt,
+        llmProvider: "OPENAI",
+        llmModel: "GPT_4_O",
       })
       .then((res) => {
         setAgents(res.data.data.id);
         console.log(res.data.data.id);
-        console.log(Agents)
+        console.log(Agents);
         AddAgents();
         setLoading(false);
       });
@@ -111,6 +124,7 @@ const SuperAgent = ({ node }: { node: any }) => {
         node[selectedNode.id] = { ...node[selectedNode.id], ...res.data.data };
         setWorkflowId(res.data.data.id);
         setLoading(false);
+        console.log(res.data.data);
       });
   };
   const CreateWorkflow = methods.handleSubmit((data) => {
@@ -129,6 +143,27 @@ const SuperAgent = ({ node }: { node: any }) => {
         setLoading(false);
       });
   });
+  const gettools = async (agent: string) => {
+    try {
+      const response = await axios.post("/api/AiResponse/superagent/tools", {
+        toolId: selectedTool,
+        agentId: agent,
+      });
+      console.log("addtools", response.data);
+      setTools(response.data.data);
+      toast.success("Tools Added");
+    } catch (error) {
+      console.log(error);
+      toast.error("Error adding tools or tool already added");
+    }
+  };
+  const addtools = (agent: string) => {
+    setLoading(true);
+    console.log(selectedTool);
+
+    gettools(agent);
+    setLoading(false);
+  };
 
   return (
     <div className="flex flex-col gap-3 px-6 py-3">
@@ -157,6 +192,23 @@ const SuperAgent = ({ node }: { node: any }) => {
                       <div>Agent Name: {step.agent.name}</div>
                       <div>Agent Type: {step.agent.type}</div>
                       <div>Description: {step.agent.description}</div>
+                      <select
+                        name="tools"
+                        id="tools"
+                        onChange={(e) => setSelectedTool(e.target.value)}
+                      >
+                        {tools?.map((tool: { id: string; name: string }) => (
+                          <option key={tool.id} value={tool.id}>
+                            {tool.name}
+                          </option>
+                        ))}
+                      </select>
+                      <Button
+                        onClick={() => addtools(step.agentId)}
+                        variant="outline"
+                      >
+                        Add Tools
+                      </Button>
                     </div>
                   )
                 )}
@@ -209,11 +261,7 @@ const SuperAgent = ({ node }: { node: any }) => {
                   <FormField
                     name="prompt"
                     render={({ field }) => (
-                      <Input
-                        {...field}
-                        required
-                        placeholder="Enter prompt"
-                      />
+                      <Input {...field} required placeholder="Enter prompt" />
                     )}
                   />
                 </FormItem>
@@ -289,9 +337,7 @@ const SuperAgent = ({ node }: { node: any }) => {
                     )}
                   />
                 </FormItem>
-                <Button type="submit">
-                  Create New
-                </Button>
+                <Button type="submit">Create New</Button>
                 <Button
                   variant="outline"
                   type="button"
