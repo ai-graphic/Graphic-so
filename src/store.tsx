@@ -10,7 +10,7 @@ export interface Option {
     [key: string]: string | boolean | undefined
 }
 
-type WorkflowAiStore = {
+type graphicStore = {
     googleFile: any
     setGoogleFile: (googleFile: any) => void
     slackChannels: Option[]
@@ -19,7 +19,7 @@ type WorkflowAiStore = {
     setSelectedSlackChannels: (selectedSlackChannels: Option[]) => void
 }
 
-export const useWorkflowAiStore = create<WorkflowAiStore>()((set) => ({
+export const usegraphicStore = create<graphicStore>()((set) => ({
     googleFile: {},
     setGoogleFile: (googleFile: any) => set({ googleFile }),
     slackChannels: [],

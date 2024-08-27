@@ -49,7 +49,7 @@ export default function Home() {
                                 <h1 className="text-5xl md:text-8xl  bg-clip-text text-transparent
                                 bg-gradient-to-b from-white to-neutral-600 font-sans font-bold"
                                 >
-                                    Smart no-code business automation
+                                    Graphic : Future of Automation
                                 </h1>
                             </div>
                         }

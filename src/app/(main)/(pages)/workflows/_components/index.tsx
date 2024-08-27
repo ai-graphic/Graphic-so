@@ -16,7 +16,7 @@ const Workflows = async (props: Props) => {
                     />
                 )) : (
                     <div className="mt-28 text-muted-foreground flex items-center justify-center">
-                        No workflows yet? Start orchestrating your business automation by creating your first WorkflowAi now!
+                        No workflows yet? Start orchestrating your business automation by creating your first graphic now!
                     </div>
                 )}
             </section>

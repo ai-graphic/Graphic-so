@@ -6,7 +6,7 @@ import MultipleSelector from '@/components/ui/multiple-selector'
 import { Connection } from '@/lib/types'
 import {useNodeConnections} from "@/providers/connections-providers";
 import { EditorState } from '@/providers/editor-provider'
-import {useWorkflowAiStore} from "@/store";
+import {usegraphicStore} from "@/store";
 import {
     Command,
     CommandEmpty,
@@ -65,7 +65,7 @@ const RenderConnectionAccordion = ({
 
     const { nodeConnection } = useNodeConnections()
     const { slackChannels, selectedSlackChannels, setSelectedSlackChannels } =
-        useWorkflowAiStore()
+        usegraphicStore()
 
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState('')

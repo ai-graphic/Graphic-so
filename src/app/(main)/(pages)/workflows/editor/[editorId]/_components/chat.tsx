@@ -143,6 +143,7 @@ const Chat = () => {
               type="text"
               disabled={load}
               value={nodeConnection.triggerNode.triggerValue ?? message}
+              placeholder="ENter your message here ..."
               onChange={(event) => {
                 const newValue = event.target.value;
                 setMessage(newValue);

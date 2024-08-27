@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/accordion";
 import RenderConnectionAccordion from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/render-connection-accordion";
 import RenderOutputAccordion from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/render-output-accordion";
-import { useWorkflowAiStore } from "@/store";
+import { usegraphicStore } from "@/store";
 import { useEffect } from "react";
 import ApikeyCard from "@/components/ui/ApiKeys-card";
 import Chat from "./chat";
@@ -38,7 +38,7 @@ type Props = {
 const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
-  const { googleFile, setSlackChannels } = useWorkflowAiStore();
+  const { googleFile, setSlackChannels } = usegraphicStore();
 
   useEffect(() => {
     if (state) {

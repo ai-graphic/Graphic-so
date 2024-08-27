@@ -1,6 +1,6 @@
 import { ConnectionProviderProps} from "@/providers/connections-providers";
 import { EditorState } from '@/providers/editor-provider'
-import { useWorkflowAiStore } from '@/store'
+import { usegraphicStore } from '@/store'
 import React from 'react'
 import ContentBasedOnTitle from './content-based-on-title'
 
@@ -15,7 +15,7 @@ const RenderOutputAccordion = ({ state, nodeConnection }: Props) => {
         setGoogleFile,
         selectedSlackChannels,
         setSelectedSlackChannels,
-    } = useWorkflowAiStore()
+    } = usegraphicStore()
     return (
         <ContentBasedOnTitle
             nodeConnection={nodeConnection}

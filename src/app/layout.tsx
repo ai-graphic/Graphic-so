@@ -10,8 +10,8 @@ import {BillingProvider} from "@/providers/billing-provider";
 const font = DM_Sans({subsets: ["latin"]});
 
 export const metadata: Metadata = {
-    title: "WorkflowAi: AI-Powered Workflow Automation",
-    description: "WorkflowAi empowers users to automate workflows and leverage a suite of AI tools. Ideal for building low-code chatbots and integration platforms for efficient task management and enhanced customer support."
+    title: "graphic : AI-Powered Workflow Automation",
+    description: "graphic.so empowers users to automate workflows and leverage a suite of AI tools. Ideal for building low-code chatbots and integration platforms for efficient task management and enhanced customer support."
 };
 
 export default function RootLayout({

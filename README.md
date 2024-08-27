@@ -1,4 +1,4 @@
-# WorkflowAi - No-code automation
+# graphic.so - No-code automation
 ![image](https://github.com/user-attachments/assets/992a97ab-c12f-42ad-9d5d-e6aecd9282e0)
 <p float="left">
   <img src="https://github.com/user-attachments/assets/abb21b23-1873-44ad-9a5e-a52aefe6f1ac" width="400" />
@@ -7,7 +7,7 @@
 
 ## Development Status 🧑‍💻
 
-Please note that WorkflowAi is currently in the development phase and has not been commercialized. The repository and its contents are intended for developmental use and are not yet available for public release. This stage allows us to refine functionalities and ensure robust integration across various platforms before a broader deployment. Stakeholders and potential contributors should be aware that the project's features and codebase are subject to change as we enhance and expand its capabilities.
+Please note that graphic.so is currently in the development phase and has not been commercialized. The repository and its contents are intended for developmental use and are not yet available for public release. This stage allows us to refine functionalities and ensure robust integration across various platforms before a broader deployment. Stakeholders and potential contributors should be aware that the project's features and codebase are subject to change as we enhance and expand its capabilities.
 
 
 ## Table of Contents 📃
@@ -20,7 +20,7 @@ Please note that WorkflowAi is currently in the development phase and has not be
 
 ## Motivation and Need 📌
 
-WorkflowAi is being developed to streamline complex workflows in marketing, sales, operations, and IT with a powerful, no-code platform. 
+graphic.so is being developed to streamline complex workflows in marketing, sales, operations, and IT with a powerful, no-code platform. 
 - Leveraging AI technologies, it aims to make automation more accessible and cost-effective compared to established competitors like Zapier and Make. 
 - Our vision is to democratize automation, allowing organizations of all sizes to enhance efficiency without the hefty price tag. 
 - Join us in shaping a tool that simplifies technology adoption and fosters innovation across industries. 🚀
@@ -28,7 +28,7 @@ WorkflowAi is being developed to streamline complex workflows in marketing, sale
 
 ## Overview 🔭
 
-**WorkflowAi**  is a cutting-edge no-code automation tool designed to streamline and simplify complex workflows through seamless AI integration. It empowers users to create sophisticated automation systems with ease, merging AI technologies like GPT and Gemini to enhance efficiency and productivity across various applications.
+**graphic.so**  is a cutting-edge no-code automation tool designed to streamline and simplify complex workflows through seamless AI integration. It empowers users to create sophisticated automation systems with ease, merging AI technologies like GPT and Gemini to enhance efficiency and productivity across various applications.
 
 ### Key Features ⚡
 
@@ -39,9 +39,9 @@ WorkflowAi is being developed to streamline complex workflows in marketing, sale
 
 ### How It Works ✅
 
-WorkflowAi leverages Google Drive as an action trigger (for now, click here to see future integrations being developed) to initiate workflows that integrate seamlessly with other applications like Discord, Slack, and Notion. 
+graphic.so leverages Google Drive as an action trigger (for now, click here to see future integrations being developed) to initiate workflows that integrate seamlessly with other applications like Discord, Slack, and Notion. 
 When a specified event occurs in Google Drive, such as a new file upload or update, 
-WorkflowAi activates the designated actions in the connected services to facilitate real-time responses and automate tasks efficiently.
+graphic.so activates the designated actions in the connected services to facilitate real-time responses and automate tasks efficiently.
 
 ### Setting Up Your First Workflow ⭕
 
@@ -77,7 +77,7 @@ WorkflowAi activates the designated actions in the connected services to facilit
 
 
 ## How to Run
-- **Get Started Easily:** Setting up WorkflowAi locally involves a few detailed steps due to its comprehensive integrations and features. To ensure a smooth setup, please [open an issue](https://github.com/ai-spaceship/WorkflowAi/issues) in the repository, and we'll provide you with detailed, customized guidance for your environment. This will help streamline your installation process and get you up and running quickly!
+- **Get Started Easily:** Setting up graphic.so locally involves a few detailed steps due to its comprehensive integrations and features. To ensure a smooth setup, please [open an issue](https://github.com/ai-spaceship/graphic.so/issues) in the repository, and we'll provide you with detailed, customized guidance for your environment. This will help streamline your installation process and get you up and running quickly!
 
 ## Contributing
 

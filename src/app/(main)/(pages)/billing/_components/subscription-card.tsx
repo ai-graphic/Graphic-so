@@ -36,7 +36,7 @@ export const SubscriptionCard = ({ onPayment, products, tier }: Props) => {
                                     : product.nickname == 'Pro'
                                         ? 'Experience a monthly surge of credits to supercharge your automation efforts. Ideal for small to medium-sized projects seeking consistent support.'
                                         : product.nickname == 'Free' &&
-                                        "Get a monthly wave of credits to automate your tasks with ease. Perfect for starters looking to dip their toes into WorkflowAi's automation capabilities."}
+                                        "Get a monthly wave of credits to automate your tasks with ease. Perfect for starters looking to dip their toes into graphic's automation capabilities."}
                             </CardDescription>
                             <div className="flex justify-between">
                                 <p>

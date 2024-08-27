@@ -29,7 +29,7 @@ import { useWorkflow } from "@/providers/workflow-providers";
 
 type Props = {};
 type LatestOutputsType = {
-  [key: string]: string; 
+  [key: string]: string;
 };
 
 const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
@@ -61,7 +61,7 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
       }
     }
   }, [nodeConnection.aiNode.output, nodeId]);
-  const {runWorkFlow} = useWorkflow()
+  const { runWorkFlow } = useWorkflow();
 
   return (
     <>
@@ -145,7 +145,11 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
               </Button>
               <Button
                 onClick={() => {
-                  runWorkFlow(pathname.split("/").pop()!, nodeConnection, setIsLoading);
+                  runWorkFlow(
+                    pathname.split("/").pop()!,
+                    nodeConnection,
+                    setIsLoading
+                  );
                 }}
                 variant="outline"
               >
@@ -158,12 +162,10 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
           ) : nodeConnection.aiNode[nodeId ?? ""]?.model === "FLUX-image" &&
             output ? (
             <img src={output} alt="Model Output" />
+          ) : /https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(output) ? (
+            <img src={output} alt="Model Output" />
           ) : (
-            /https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(output) ? (
-              <img src={output}alt="Model Output"/>
-            ) : (
-              <p>{output}</p>
-            )
+            <p>{output}</p>
           )}
         </CardHeader>
         <Badge variant="secondary" className="absolute right-2 top-2">
