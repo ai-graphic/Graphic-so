@@ -33,7 +33,7 @@ export type EditorCanvasTypes =
     | 'Custom Webhook'
     | 'Google Calendar'
     | 'Trigger'
-    | 'Action'
+    | 'Chat'
     | 'Wait'
 
 export type EditorCanvasCardType = {
@@ -90,5 +90,6 @@ export const nodeMapper: Record<string, string> = {
     Discord: 'discordNode',
     'Google Drive': 'googleNode',
     AI : 'aiNode',
-    Trigger : 'triggerNode'
+    Trigger : 'triggerNode',
+    Chat : 'chatNode'
 }

@@ -200,7 +200,7 @@ const EditorCanvas = (props: Props) => {
 
   const nodeTypes = useMemo(
     () => ({
-      Action: EditorCanvasCardSingle,
+      Chat: EditorCanvasCardSingle,
       Trigger: EditorCanvasCardSingle,
       Email: EditorCanvasCardSingle,
       Condition: EditorCanvasCardSingle,

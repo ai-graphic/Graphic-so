@@ -32,6 +32,7 @@ export default function RootLayout({
                 disableTransitionOnChange
             >
                 
+                
                     <ModalProvider>
                         {children}
                         <Toaster/>

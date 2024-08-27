@@ -117,22 +117,22 @@ const ContentBasedOnTitle = ({
     Openai: OpenaiOptions,
   };
 
-  useEffect(() => {
-    const reqGoogle = async () => {
-      const response: { data: { message: { files: any } } } = await axios.get(
-        "/api/drive"
-      );
-      if (response) {
-        const firstThreeFiles = response.data.message.files.slice(0, 3);
-        console.log(firstThreeFiles);
-        toast.success("Files fetched successfully");
-        setFile(firstThreeFiles); 
-      } else {
-        toast.error("Something went wrong");
-      }
-    };
-    reqGoogle();
-  }, [setFile]); //
+  // useEffect(() => {
+  //   const reqGoogle = async () => {
+  //     const response: { data: { message: { files: any } } } = await axios.get(
+  //       "/api/drive"
+  //     );
+  //     if (response) {
+  //       const firstThreeFiles = response.data.message.files.slice(0, 3);
+  //       console.log(firstThreeFiles);
+  //       toast.success("Files fetched successfully");
+  //       setFile(firstThreeFiles); 
+  //     } else {
+  //       toast.error("Something went wrong");
+  //     }
+  //   };
+  //   reqGoogle();
+  // }, [setFile]); //
   const [selectedKey, setSelectedKey] = useState<string>("");
 
   //@ts-ignore

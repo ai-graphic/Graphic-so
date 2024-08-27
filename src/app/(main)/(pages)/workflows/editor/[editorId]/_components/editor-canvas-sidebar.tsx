@@ -29,6 +29,7 @@ import RenderOutputAccordion from "@/app/(main)/(pages)/workflows/editor/[editor
 import { useWorkflowAiStore } from "@/store";
 import { useEffect } from "react";
 import ApikeyCard from "@/components/ui/ApiKeys-card";
+import Chat from "./chat";
 
 type Props = {
   nodes: EditorNodeType[];
@@ -98,51 +99,69 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
         </TabsContent>
         {state.editor.selectedNode.data.title ? (
           <TabsContent value="settings" className="-mt-20">
-            <div className="px-2 py-4 text-center text-xl font-bold">
-              <p>{state.editor.selectedNode.data.title}</p>
-              <p className="block text-sm font-medium text-gray-500">
-                {state.editor.selectedNode.id}
-              </p>
-            </div>
+            {state.editor.selectedNode.data.title === "Chat" ? (
+              <Accordion type="multiple" className="h-full">
+                <AccordionItem value="options" className="h-full px-2">
+                  <AccordionTrigger className="!no-underline">
+                    <p className="block text-sm font-medium text-gray-500">
+                    <span className="text-md font-bold text-gray-300">Chat{" "}</span> : {state.editor.selectedNode.id}
+                    </p>
+                  </AccordionTrigger>
+                  <Chat />
+                </AccordionItem>
+              </Accordion>
+            ) : (
+              <div>
+                <div className="px-2 py-4 text-center text-xl font-bold">
+                  <p>{state.editor.selectedNode.data.title}</p>
+                  <p className="block text-sm font-medium text-gray-500">
+                    {state.editor.selectedNode.id}
+                  </p>
+                </div>
 
-            <Accordion type="multiple">
-              <AccordionItem value="options" className="border-y-[1px] px-2">
-                {state.editor.selectedNode.data.title === "AI" ? (
-                  <div>
+                <Accordion type="multiple">
+                  <AccordionItem
+                    value="options"
+                    className="border-y-[1px] px-2"
+                  >
+                    {state.editor.selectedNode.data.title === "AI" ? (
+                      <div>
+                        <AccordionTrigger className="!no-underline">
+                          Account
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <ApikeyCard />
+                        </AccordionContent>
+                      </div>
+                    ) : (
+                      <div>
+                        <AccordionTrigger className="!no-underline">
+                          Account
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          {CONNECTIONS.map((connection) => (
+                            <RenderConnectionAccordion
+                              key={connection.title}
+                              state={state}
+                              connection={connection}
+                            />
+                          ))}
+                        </AccordionContent>
+                      </div>
+                    )}
+                  </AccordionItem>
+                  <AccordionItem value="Expected Output" className="px-2">
                     <AccordionTrigger className="!no-underline">
-                      Account
+                      Action
                     </AccordionTrigger>
-                    <AccordionContent>
-                      <ApikeyCard />
-                    </AccordionContent>
-                  </div>
-                ) : (
-                  <div>
-                    <AccordionTrigger className="!no-underline">
-                      Account
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      {CONNECTIONS.map((connection) => (
-                        <RenderConnectionAccordion
-                          key={connection.title}
-                          state={state}
-                          connection={connection}
-                        />
-                      ))}
-                    </AccordionContent>
-                  </div>
-                )}
-              </AccordionItem>
-              <AccordionItem value="Expected Output" className="px-2">
-                <AccordionTrigger className="!no-underline">
-                  Action
-                </AccordionTrigger>
-                <RenderOutputAccordion
-                  state={state}
-                  nodeConnection={nodeConnection}
-                />
-              </AccordionItem>
-            </Accordion>
+                    <RenderOutputAccordion
+                      state={state}
+                      nodeConnection={nodeConnection}
+                    />
+                  </AccordionItem>
+                </Accordion>
+              </div>
+            )}
           </TabsContent>
         ) : (
           <p className="text-gray-600 text-center mt-4">

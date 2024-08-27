@@ -15,6 +15,13 @@ export type ConnectionProviderProps = {
     triggerValue: string;
   }
   setTriggerNode: React.Dispatch<React.SetStateAction<any>>;
+  chatNode: {
+    chatType: string;
+    chatid: string;
+    chatHistory: string[];
+    chatinput: string;
+  }
+  setChatNode: React.Dispatch<React.SetStateAction<any>>;
   aiNode: {
     [id: string]: {
       id: string;
@@ -92,6 +99,13 @@ type ConnectionWithChildProps = {
 };
 
 const InitialValues: ConnectionProviderProps = {
+  chatNode: {
+    chatType: "",
+    chatid: "",
+    chatHistory: [],
+    chatinput: "",
+  },
+
   discordNode: {
     webhookURL: "",
     content: "",
@@ -135,6 +149,7 @@ const InitialValues: ConnectionProviderProps = {
   setSlackNode: () => undefined,
   setIsLoading: () => undefined,
   setWorkFlowTemplate: () => undefined,
+  setChatNode: () => undefined,
   setAINode: () => undefined,
   addAINode: () => undefined,
 };
@@ -180,6 +195,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [isLoading, setIsLoading] = useState(InitialValues.isLoading);
   const [aiNode, setAINode] = useState(InitialValues.aiNode);
   const [output, setOutput] = useState(InitialValues.output);
+  const [chatNode, setChatNode] = useState(InitialValues.chatNode);
   const [triggerNode, setTriggerNode] = useState(InitialValues.triggerNode);
   const [workflowTemplate, setWorkFlowTemplate] = useState(
     InitialValues.workflowTemplate
@@ -210,6 +226,8 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     addAINode,
     triggerNode,
     setTriggerNode,
+    chatNode,
+    setChatNode,
   };
 
   return <Provider value={values}>{children}</Provider>;

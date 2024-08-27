@@ -13,6 +13,7 @@ import {
     Timer,
     Webhook,
     Zap,
+    MessageCircle
 } from 'lucide-react'
 import { EditorCanvasTypes } from '@/lib/types'
 
@@ -83,9 +84,9 @@ const EditorCanvasIconHelper = ({ type }: Props) => {
                     size={30}
                 />
             )
-        case 'Action':
+        case 'Chat':
             return (
-                <Zap
+                <MessageCircle
                     className="flex-shrink-0"
                     size={30}
                 />
