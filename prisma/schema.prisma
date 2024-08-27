@@ -111,4 +111,6 @@ model Workflows {
   description       String
   userId            String
   User              User     @relation(fields: [userId], references: [clerkId])
+  chatTemplate      String?
+  chatHistory       String[]
 }

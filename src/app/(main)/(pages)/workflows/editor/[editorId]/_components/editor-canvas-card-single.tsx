@@ -138,7 +138,6 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
                       ],
                     },
                   }));
-                  console.log("hah",nodeConnection.aiNode);
                 }}
                 variant="outline"
               >

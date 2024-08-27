@@ -9,8 +9,6 @@ import { getworkflow } from "@/app/(main)/(pages)/workflows/editor/[editorId]/_a
 import { postContentToWebHook } from "@/app/(main)/(pages)/connections/_actions/discord-connection";
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
 import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_actions/notion-connection";
-import { useLoading } from "@/providers/loading-provider";
-import { useNodeConnections } from "./connections-providers";
 import axios, { AxiosResponse } from "axios";
 
 type WorkflowContextType = {
@@ -324,6 +322,9 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               workflow.notionAccessToken!,
               content
             );
+            flowPath.splice(current, 2);
+          }
+          if (nodeType == "Chat") {
             flowPath.splice(current, 2);
           }
         }
