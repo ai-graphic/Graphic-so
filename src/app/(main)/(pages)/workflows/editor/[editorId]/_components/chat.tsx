@@ -51,7 +51,7 @@ const Chat = () => {
         }
       } catch (error) {
         console.error("Error parsing chatHistory:", error);
-        setHistory([]); // Default to an empty array in case of error
+        setHistory([]);
       }
     };
 
@@ -66,6 +66,8 @@ const Chat = () => {
   const onsubmit = async () => {
     setLoad(true);
     await runWorkFlow(workflow.id, nodeConnection, setIsLoading, setHistory);
+    setMessage("");
+    nodeConnection.triggerNode.triggerValue = "";
     setLoad(false);
   };
   console.log("history", history);
@@ -139,6 +141,7 @@ const Chat = () => {
             <div></div>
             <Input
               type="text"
+              disabled={load}
               value={nodeConnection.triggerNode.triggerValue ?? message}
               onChange={(event) => {
                 const newValue = event.target.value;

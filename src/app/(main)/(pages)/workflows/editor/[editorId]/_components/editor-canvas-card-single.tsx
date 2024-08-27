@@ -159,7 +159,11 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
             output ? (
             <img src={output} alt="Model Output" />
           ) : (
-            <p>{output}</p>
+            /https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(output) ? (
+              <img src={output}alt="Model Output"/>
+            ) : (
+              <p>{output}</p>
+            )
           )}
         </CardHeader>
         <Badge variant="secondary" className="absolute right-2 top-2">
