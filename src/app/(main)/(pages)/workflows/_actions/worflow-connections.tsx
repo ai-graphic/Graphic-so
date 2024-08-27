@@ -160,3 +160,28 @@ export const onGetNodesEdges = async (flowId: string) => {
     })
     if (nodesEdges?.nodes && nodesEdges?.edges) return nodesEdges
 }
+
+export const onUpdateChatHistory = async (workflowId: string, chatHistory : any) => {
+    const currentData = await db.workflows.findUnique({
+        where: {
+            id: workflowId,
+        }, 
+    });
+    chatHistory = JSON.stringify(chatHistory);
+    let updatedHistory;
+    if (currentData && currentData.chatHistory) {
+        updatedHistory = [...currentData.chatHistory, chatHistory]; 
+    } else {
+        updatedHistory = [chatHistory];
+    }
+    const published = await db.workflows.update({
+        where: {
+            id: workflowId,
+        },
+        data: {
+            chatHistory: updatedHistory,
+        },
+    });
+
+    if (published) return updatedHistory;
+}

@@ -10,12 +10,15 @@ import { postContentToWebHook } from "@/app/(main)/(pages)/connections/_actions/
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
 import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_actions/notion-connection";
 import axios, { AxiosResponse } from "axios";
+import { db } from "@/lib/db";
+import { onUpdateChatHistory } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
 
 type WorkflowContextType = {
   runWorkFlow: (
     workflowId: string,
     nodeConnection: any,
-    setIsLoading: any
+    setIsLoading: any,
+    setHistory?: any
   ) => Promise<void>;
 };
 
@@ -38,7 +41,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const runWorkFlow = useCallback(
-    async (workflowId: string, nodeConnection: any, setIsLoading: any) => {
+    async (workflowId: string, nodeConnection: any, setIsLoading: any, setHistory?: any) => {
       async function updateAINodeOutput(
         idNode: string,
         aiResponseContent: string
@@ -69,6 +72,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
         console.log(flowPath);
         let current = 0;
         let latestOutputs: LatestOutputsType = {};
+        let chatHistory: any = { user: "", bot: "" };
         while (current < flowPath.length) {
           const idNode = flowPath[current];
           const nodeType = flowPath[current + 1];
@@ -101,6 +105,22 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             const aiTemplate = JSON.parse(workflow.AiTemplate!);
             if (aiTemplate[idNode]) {
               console.log("AI Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              if (node.type === "Trigger") {
+                const output = nodeConnection.aiNode.output as unknown as {
+                  [key: string]: any[];
+                };
+                const contentarr = output[node.id];
+                content = contentarr[contentarr.length - 1];
+                chatHistory.user = content;
+              } else {
+                content =
+                  latestOutputs[node.id] || "default content if not found";
+              }
               if (aiTemplate[idNode].model === "Openai") {
                 try {
                   setIsLoading(idNode, true);
@@ -200,21 +220,6 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               } else if (aiTemplate[idNode].model === "FLUX-image") {
                 try {
                   setIsLoading(idNode, true);
-                  const edgesArray = JSON.parse(workflow.edges || "[]");
-                  const nodeArray = JSON.parse(workflow.nodes || "[]");
-                  const edge = edgesArray.find((e: any) => e.target === idNode);
-                  const node = nodeArray.find((n: any) => n.id === edge.source);
-                  let content;
-                  if (node.type === "Trigger") {
-                    const output = nodeConnection.aiNode.output as unknown as {
-                      [key: string]: any[];
-                    };
-                    const contentarr = output[node.id];
-                    content = contentarr[contentarr.length - 1];
-                  } else {
-                    content =
-                      latestOutputs[node.id] || "default content if not found";
-                  }
 
                   const output = await axios.post(
                     "/api/AiResponse/FLUX-image",
@@ -242,21 +247,6 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               } else if (aiTemplate[idNode].model === "SuperAgent") {
                 try {
                   setIsLoading(idNode, true);
-                  const edgesArray = JSON.parse(workflow.edges || "[]");
-                  const nodeArray = JSON.parse(workflow.nodes || "[]");
-                  const edge = edgesArray.find((e: any) => e.target === idNode);
-                  const node = nodeArray.find((n: any) => n.id === edge.source);
-                  let content;
-                  if (node.type === "Trigger") {
-                    const output = nodeConnection.aiNode.output as unknown as {
-                      [key: string]: any[];
-                    };
-                    const contentarr = output[node.id];
-                    content = contentarr[contentarr.length - 1];
-                  } else {
-                    content =
-                      latestOutputs[node.id] || "default content if not found";
-                  }
 
                   const response = await axios.post(
                     "/api/AiResponse/superagent/getoutput",
@@ -283,9 +273,19 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 }
               }
             }
-
+            console.log("flow", flowPath, chatHistory);
+            const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
-
+            const isNextNotAI = nextNodeType !== "AI";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published =  await onUpdateChatHistory(workflowId, chatHistory);
+              const history = published?.map((item: string) => JSON.parse(item));
+              setHistory(history);
+            }
             continue;
           }
           if (nodeType == "Slack") {

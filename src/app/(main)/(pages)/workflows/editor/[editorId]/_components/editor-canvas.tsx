@@ -303,7 +303,7 @@ const EditorCanvas = (props: Props) => {
         <ResizableHandle />
       )}
       <ResizablePanel
-        defaultSize={isMobile < 726 ? 5000 : 30}
+        defaultSize={isMobile < 726 ? 5000 : 50}
         className={`relative sm:block ${
           isMobile < 726 && !isPanelOpen ? "hidden" : ""
         }`}
