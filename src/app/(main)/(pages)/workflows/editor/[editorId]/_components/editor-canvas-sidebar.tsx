@@ -64,15 +64,60 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
         </TabsList>
         <Separator />
         <TabsContent value="actions" className="flex flex-col gap-4 p-4 mb-16">
+          <h1>Triggers</h1>
           {Object.entries(EditorCanvasDefaultCardTypes)
             .filter(([_, cardType]) => {
               const types = Array.isArray(cardType.type)
                 ? cardType.type
                 : [cardType.type];
+              return types.includes("Trigger");
+            })
+            .map(([cardKey, cardValue]) => {
+              const isDisabled = nodes.some((node) => node.type === cardKey);
               return (
-                (!nodes.length && types.includes("Trigger")) ||
-                (nodes.length && types.includes("Action"))
+                <Card
+                  key={cardKey}
+                  draggable={!isDisabled} 
+                  className={`w-full cursor-${
+                    isDisabled ? "not-allowed" : "grab"
+                  } border-black bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900 ${
+                    isDisabled ? "opacity-50" : ""
+                  }`}
+                  onDragStart={(event) => {
+                    if (!isDisabled) {
+                      onDragStart(event, cardKey as EditorCanvasTypes);
+                    }
+                  }}
+                  onClick={() => {
+                    if (!isDisabled) {
+                      console.log("Adding node:", cardKey);
+                      addNodeAtPosition(cardKey as EditorCanvasTypes);
+                    } else {
+                      console.log(
+                        "This type of element is already in the nodes, thus disabled."
+                      );
+                    }
+                  }}
+                >
+                  <CardHeader className="flex flex-row items-center gap-4 p-4">
+                    <EditorCanvasIconHelper
+                      type={cardKey as EditorCanvasTypes}
+                    />
+                    <CardTitle className="text-md">
+                      {cardKey}
+                      <CardDescription>{cardValue.description}</CardDescription>
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
               );
+            })}
+          <h1>Actions</h1>
+          {Object.entries(EditorCanvasDefaultCardTypes)
+            .filter(([_, cardType]) => {
+              const types = Array.isArray(cardType.type)
+                ? cardType.type
+                : [cardType.type];
+              return types.includes("Action");
             })
             .map(([cardKey, cardValue]) => (
               <Card
@@ -82,10 +127,7 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
                 onDragStart={(event) =>
                   onDragStart(event, cardKey as EditorCanvasTypes)
                 }
-                onClick={() => {
-                  console.log("Double click");
-                  addNodeAtPosition(cardKey as EditorCanvasTypes);
-                }}
+                onClick={() => addNodeAtPosition(cardKey as EditorCanvasTypes)}
               >
                 <CardHeader className="flex flex-row items-center gap-4 p-4">
                   <EditorCanvasIconHelper type={cardKey as EditorCanvasTypes} />
@@ -100,11 +142,18 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
         {state.editor.selectedNode.data.title ? (
           <TabsContent value="settings" className="-mt-20">
             {state.editor.selectedNode.data.title === "Chat" ? (
-           <Accordion type="multiple" className="h-full" defaultValue={["options"]}>
+              <Accordion
+                type="multiple"
+                className="h-full"
+                defaultValue={["options"]}
+              >
                 <AccordionItem value="options" className="h-full px-2">
                   <AccordionTrigger className="!no-underline">
                     <p className="block text-sm font-medium text-gray-500">
-                    <span className="text-md font-bold text-gray-300">Chat{" "}</span> : {state.editor.selectedNode.id}
+                      <span className="text-md font-bold text-gray-300">
+                        Chat{" "}
+                      </span>{" "}
+                      : {state.editor.selectedNode.id}
                     </p>
                   </AccordionTrigger>
                   <Chat />
@@ -119,7 +168,13 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
                   </p>
                 </div>
 
-                <Accordion type="multiple" className="h-full" defaultValue={["Expected Output"]}>                  <AccordionItem
+                <Accordion
+                  type="multiple"
+                  className="h-full"
+                  defaultValue={["Expected Output"]}
+                >
+                  {" "}
+                  <AccordionItem
                     value="options"
                     className="border-y-[1px] px-2"
                   >
@@ -149,7 +204,7 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
                       </div>
                     )}
                   </AccordionItem>
-                  <AccordionItem  value="Expected Output" className="px-2">
+                  <AccordionItem value="Expected Output" className="px-2">
                     <AccordionTrigger className="!no-underline">
                       Action
                     </AccordionTrigger>

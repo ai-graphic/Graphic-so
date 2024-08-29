@@ -105,7 +105,11 @@ export const menuOptions = [
 ]
 
 export const EditorCanvasDefaultCardTypes = {
-    Email: { description: 'Send and email to a user', type: 'Action' },
+    'Google Drive': {
+        description:
+            'Connect with Google drive to trigger actions or to create files and folders.',
+        type: 'Trigger',
+    },
     AI: {
         description:
             'Use the power of AI to summarize, respond, create and much more.',
@@ -116,17 +120,7 @@ export const EditorCanvasDefaultCardTypes = {
         type: 'Action',
     },
     Slack: { description: 'Send a notification to slack', type: 'Action' },
-    'Google Drive': {
-        description:
-            'Connect with Google drive to trigger actions or to create files and folders.',
-        type: 'Trigger',
-    },
     Notion: { description: 'Create entries directly in notion.', type: 'Action' },
-    'Custom Webhook': {
-        description:
-            'Connect any app that has an API key and send data to your applicaiton.',
-        type: 'Action',
-    },
     Discord: {
         description: 'Post messages to your discord server',
         type: 'Action',
@@ -135,10 +129,16 @@ export const EditorCanvasDefaultCardTypes = {
         description: 'Create a calendar invite.',
         type: 'Action',
     },
+    'Custom Webhook': {
+        description:
+            'Connect any app that has an API key and send data to your applicaiton.',
+        type: 'Action',
+    },
     Trigger: {
         description: 'An event that starts the workflow.',
         type: 'Trigger',
     },
+    Email: { description: 'Send and email to a user', type: 'Action' },
     Wait: {
         description: 'Delay the next action step by using the wait timer.',
         type: 'Action',
