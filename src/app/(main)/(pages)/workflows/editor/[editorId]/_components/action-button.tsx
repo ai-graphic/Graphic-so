@@ -118,7 +118,7 @@ const ActionButton = ({
             },
             {
               headers: {
-                Authorization: `Bearer ${nodeConnection.aiNode[id].ApiKey}`, 
+                Authorization: `Bearer ${nodeConnection.aiNode[id].ApiKey}`,
               },
             }
           );
@@ -127,8 +127,8 @@ const ActionButton = ({
             output: {
               ...(prev.output || {}),
               [id]: [
-                ...(prev.output?.[id] || []), 
-                response.data.choices[0].message.content.trim(), 
+                ...(prev.output?.[id] || []),
+                response.data.choices[0].message.content.trim(),
               ],
             },
           }));
@@ -188,11 +188,10 @@ const ActionButton = ({
           }));
         } catch (error) {
           console.error("Error during superAgent API call:", error);
-        } finally{
+        } finally {
           setIsLoading(id, false);
         }
       }
-
     },
     [nodeConnection.aiNode, pathname]
   );
