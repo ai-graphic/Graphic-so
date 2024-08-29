@@ -47,7 +47,7 @@ const SuperAgent = ({ node }: { node: any }) => {
   const [workflow, setWorkflow] = useState<Workflow | null>(
     node[selectedNode.id]
   );
-  const [workflowId, setWorkflowId] = useState(node[selectedNode.id]?.id);
+  const [workflowId, setWorkflowId] = useState();
   const [Agents, setAgents] = useState("");
   const [prompt, setPrompt] = useState("");
   const [toggleWorkflow, settoggleWorkflow] = useState(false);
@@ -64,19 +64,23 @@ const SuperAgent = ({ node }: { node: any }) => {
   const handlepromptchange = (e: any) => {
     setPrompt(e.target.value);
   };
-  const AddAgents = () => {
+  const AddAgents = (agentId : string) => {
     setLoading(true);
     axios
       .post("/api/AiResponse/superagent/addAgents", {
         workflowId: workflowId,
-        Agents: Agents,
+        Agents: agentId,
         steps: node[selectedNode.id].steps
           ? node[selectedNode.id].steps.length
           : 0,
       })
       .then((res) => {
         console.log(res.data);
-        findWorkflow(workflowId);
+        if (workflowId) {
+          findWorkflow(workflowId);
+        } else {
+          toast.error("Please create a workflow first");
+        }
         setLoading(false);
       });
   };
@@ -108,7 +112,7 @@ const SuperAgent = ({ node }: { node: any }) => {
         setAgents(res.data.data.id);
         console.log(res.data.data.id);
         console.log(Agents);
-        AddAgents();
+        AddAgents(res.data.data.id);
         setLoading(false);
       });
   });
@@ -223,8 +227,8 @@ const SuperAgent = ({ node }: { node: any }) => {
                 value={Agents}
                 onChange={handleAgentChange}
               />
-              <Button className="mt-2" variant="outline" onClick={AddAgents}>
-                Add Agent
+              <Button className="mt-2" variant="outline" onClick={() => AddAgents(Agents)}>
+                Add Agents
               </Button>
               <Button
                 className="mt-2"
