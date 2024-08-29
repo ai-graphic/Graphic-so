@@ -50,7 +50,6 @@ const EditorCanvas = (props: Props) => {
   const pathname = usePathname();
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth);
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsMobile(window.innerWidth);
@@ -64,17 +63,14 @@ const EditorCanvas = (props: Props) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
   }, []);
-  
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
       //@ts-ignore
       setNodes((nds) => applyNodeChanges(changes, nds));
-      
     },
     [setNodes]
   );
-
 
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) =>
@@ -149,8 +145,8 @@ const EditorCanvas = (props: Props) => {
       }
       const lastNode = state.editor.elements[state.editor.elements.length - 1];
       const position = lastNode
-        ? { x: lastNode.position.x, y: lastNode.position.y + 200 } 
-        : { x: 100, y: 100 }; 
+        ? { x: lastNode.position.x, y: lastNode.position.y + 200 }
+        : { x: 100, y: 100 };
 
       const newNode = {
         id: v4(),
@@ -273,17 +269,24 @@ const EditorCanvas = (props: Props) => {
                 onClick={handleClickCanvas}
                 nodeTypes={nodeTypes}
               >
-                <Controls position="top-left" />
-                <MiniMap
-                  position="bottom-left"
-                  className="!bg-background"
-                  zoomable
-                  pannable
-                />
+                {isMobile < 726 ? (
+                  <Controls position="bottom-right" />
+                ) : (
+                  <Controls position="top-right" />
+                )}
+                {!(isMobile < 726) && (
+                  <MiniMap
+                    position="bottom-left"
+                    className="!bg-background"
+                    zoomable
+                    pannable
+                  />
+                )}
+
                 <Background
                   //@ts-ignore
                   variant="dots"
-                  gap={12}
+                  gap={30}
                   size={1}
                 />
               </ReactFlow>

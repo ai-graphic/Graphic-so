@@ -403,6 +403,7 @@ const ContentBasedOnTitle = ({
                   nodeConnectionType.triggerValue = newValue;
                 }}
               />
+              
             </div>
           ) : (
             <div>

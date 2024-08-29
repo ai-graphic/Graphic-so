@@ -284,7 +284,9 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (chatHistory.user && chatHistory.bot) {
               const published =  await onUpdateChatHistory(workflowId, chatHistory);
               const history = published?.map((item: string) => JSON.parse(item));
-              setHistory(history);
+              if(setHistory) {
+                setHistory(history);
+              }
             }
             continue;
           }

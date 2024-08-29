@@ -20,7 +20,7 @@ export async function POST(req: Request, res: Response) {
         Authorization:
         `Bearer ${process.env.SUPERAGENT_API}`,
       },
-      timeout: 10000,
+      timeout: 20000,
     };
     const response = await axios.post(url, data, options);
     const final = JSON.stringify(response.data.data);

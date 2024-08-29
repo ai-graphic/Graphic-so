@@ -100,7 +100,7 @@ const Chat = () => {
   }, [requestUpdate, nodeConnection, nodeId]);
 
   return (
-    <AccordionContent className="h-[65vh] overflow-scroll">
+    <AccordionContent className="h-[75vh] overflow-scroll">
       {workflow?.name ? (
         <Card className="flex flex-col w-full h-full items-center justify-between">
           <CardHeader className="flex flex-col">

@@ -56,7 +56,7 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
   }, [nodeConnection]);
 
   return (
-    <aside>
+    <aside className="overflow-hidden">
       <Tabs defaultValue="settings" className="h-screen overflow-scroll pb-24">
         <TabsList className="bg-transparent">
           <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -100,7 +100,7 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
         {state.editor.selectedNode.data.title ? (
           <TabsContent value="settings" className="-mt-20">
             {state.editor.selectedNode.data.title === "Chat" ? (
-              <Accordion type="multiple" className="h-full">
+           <Accordion type="multiple" className="h-full" defaultValue={["options"]}>
                 <AccordionItem value="options" className="h-full px-2">
                   <AccordionTrigger className="!no-underline">
                     <p className="block text-sm font-medium text-gray-500">
@@ -119,8 +119,7 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
                   </p>
                 </div>
 
-                <Accordion type="multiple">
-                  <AccordionItem
+                <Accordion type="multiple" className="h-full" defaultValue={["Expected Output"]}>                  <AccordionItem
                     value="options"
                     className="border-y-[1px] px-2"
                   >
@@ -150,7 +149,7 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
                       </div>
                     )}
                   </AccordionItem>
-                  <AccordionItem value="Expected Output" className="px-2">
+                  <AccordionItem  value="Expected Output" className="px-2">
                     <AccordionTrigger className="!no-underline">
                       Action
                     </AccordionTrigger>

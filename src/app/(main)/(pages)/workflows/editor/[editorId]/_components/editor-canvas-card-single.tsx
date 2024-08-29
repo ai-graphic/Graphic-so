@@ -19,12 +19,7 @@ import { Input } from "@/components/ui/input";
 import { onContentChange } from "@/lib/editor-utils";
 import { Button } from "@/components/ui/button";
 import { MousePointerClickIcon } from "lucide-react";
-import axios, { AxiosResponse } from "axios";
 import { usePathname } from "next/navigation";
-import { getworkflow } from "../_actions/workflow-connections";
-import { postContentToWebHook } from "@/app/(main)/(pages)/connections/_actions/discord-connection";
-import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
-import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_actions/notion-connection";
 import { useWorkflow } from "@/providers/workflow-providers";
 
 type Props = {};
