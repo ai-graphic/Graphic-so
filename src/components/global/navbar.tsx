@@ -46,7 +46,7 @@ const Navbar = async (props: Props) => {
             </nav>
             <aside className="flex items-center gap-4">
                 <Link
-                    href="/dashboard"
+                    href="/workflows"
                     className="relative inline-flex h-10 overflow-hidden
                     rounded-full p-[2px] focus:outline-none focus:ring-2
                     focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
@@ -56,7 +56,7 @@ const Navbar = async (props: Props) => {
                     <span className="inline-flex h-full w-full cursor-pointer items-center
                     justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium
                     text-white backdrop-blur-3xl">
-                        {user ? 'Dashboard' : 'Get Started'}
+                        {user ? 'Worflows' : 'Get Started'}
                     </span>
                 </Link>
                 {user ? <UserButton afterSignOutUrl="/"/> : null}
