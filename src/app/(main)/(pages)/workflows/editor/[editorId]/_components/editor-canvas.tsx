@@ -66,7 +66,7 @@ const EditorCanvas = (props: Props) => {
 
         if (!nodeConnection.aiNode[nodeId] && nodeData.model) {
           nodeConnection.aiNode[nodeId] = {
-            id: nodeId,
+            id: "",
             ApiKey: "",
             prompt: "",
             model: "",
