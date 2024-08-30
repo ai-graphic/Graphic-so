@@ -12,12 +12,16 @@ import axios from "axios";
 import { useEditor } from "@/providers/editor-provider";
 import Link from "next/link";
 import { useLoading } from "@/providers/loading-provider";
+import FlowInstance from "./flow-instance";
+import { EditorNodeType } from "@/lib/types";
 
 type Props = {
   currentService: string;
   nodeConnection: ConnectionProviderProps;
   channels?: Option[];
   setChannels?: (value: Option[]) => void;
+  nodes: EditorNodeType[];
+  edges: any;
 };
 
 const ActionButton = ({
@@ -25,6 +29,8 @@ const ActionButton = ({
   nodeConnection,
   channels,
   setChannels,
+  nodes,
+  edges,
 }: Props) => {
   const pathname = usePathname();
   const { isLoading, setIsLoading } = useLoading();
@@ -356,7 +362,12 @@ const ActionButton = ({
         return null;
     }
   };
-  return renderActionButton();
+  return (
+    <div className="flex flex-col gap-2 w-full">
+      {renderActionButton()}
+      <FlowInstance edges={edges} nodes={nodes} />
+    </div>
+  );
 };
 
 export default ActionButton;

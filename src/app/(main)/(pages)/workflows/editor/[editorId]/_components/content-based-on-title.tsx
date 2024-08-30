@@ -2,7 +2,7 @@
 
 import { ConnectionProviderProps } from "@/providers/connections-providers";
 import { EditorState, useEditor } from "@/providers/editor-provider";
-import { nodeMapper } from "@/lib/types";
+import { EditorNodeType, nodeMapper } from "@/lib/types";
 import { AccordionContent } from "@/components/ui/accordion";
 import {
   Card,
@@ -36,6 +36,8 @@ interface GroupOption {
 }
 
 type Props = {
+  nodes: EditorNodeType[];
+  edges: any;
   nodeConnection: ConnectionProviderProps;
   newState: EditorState;
   file: any;
@@ -44,6 +46,8 @@ type Props = {
   setSelectedSlackChannels: (value: Option[]) => void;
 };
 const ContentBasedOnTitle = ({
+  nodes,
+  edges,
   nodeConnection,
   newState,
   file,
@@ -126,7 +130,7 @@ const ContentBasedOnTitle = ({
   //       const firstThreeFiles = response.data.message.files.slice(0, 3);
   //       console.log(firstThreeFiles);
   //       toast.success("Files fetched successfully");
-  //       setFile(firstThreeFiles); 
+  //       setFile(firstThreeFiles);
   //     } else {
   //       toast.error("Something went wrong");
   //     }
@@ -134,14 +138,14 @@ const ContentBasedOnTitle = ({
   //   reqGoogle();
   // }, [setFile]); //
 
-
   //@ts-ignore
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]];
-  const [selectedKey, setSelectedKey] = useState<string>(nodeConnectionType[selectedNode.id]?.ApiKey);
+  const [selectedKey, setSelectedKey] = useState<string>(
+    nodeConnectionType[selectedNode.id]?.ApiKey
+  );
   const [triggerValue, setTriggerValue] = useState(
     nodeConnectionType.triggerValue
   );
-
 
   useEffect(() => {
     const nodeModel = nodeConnectionType[selectedNode.id]?.model;
@@ -157,9 +161,7 @@ const ContentBasedOnTitle = ({
     } else {
       setSelectedOutput(null);
     }
-
   }, [selectedNode.id, nodeConnectionType]);
-
 
   useEffect(() => {
     const isSuperAgent =
@@ -368,8 +370,8 @@ const ContentBasedOnTitle = ({
                           here
                         </p>
                         <Input
-                          type={optionValue.type} 
-                          placeholder={optionValue.placeholder} 
+                          type={optionValue.type}
+                          placeholder={optionValue.placeholder}
                           value={
                             nodeConnectionType[selectedNode.id]?.[optionKey] ||
                             ""
@@ -409,7 +411,6 @@ const ContentBasedOnTitle = ({
                   nodeConnectionType.triggerValue = newValue;
                 }}
               />
-              
             </div>
           ) : (
             <div>
@@ -478,6 +479,8 @@ const ContentBasedOnTitle = ({
           )}
           {title === "Google Drive" && <GoogleDriveFiles />}
           <ActionButton
+            nodes={nodes}
+            edges={edges}
             currentService={title}
             nodeConnection={nodeConnection}
             channels={selectedSlackChannels}

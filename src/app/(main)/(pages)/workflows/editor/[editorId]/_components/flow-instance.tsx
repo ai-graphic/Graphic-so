@@ -10,12 +10,11 @@ import {
 import { toast } from "sonner";
 
 type Props = {
-  children: React.ReactNode;
   edges: any[];
   nodes: any[];
 };
 
-const FlowInstance = ({ children, edges, nodes }: Props) => {
+const FlowInstance = ({ edges, nodes }: Props) => {
   const pathname = usePathname();
   const [isFlow, setIsFlow] = useState([]);
   const { nodeConnection } = useNodeConnections();
@@ -31,10 +30,10 @@ const FlowInstance = ({ children, edges, nodes }: Props) => {
     if (flow) toast.message(flow.message);
   }, [nodeConnection]);
 
-  const onPublishWorkflow = useCallback(async () => {
-    const response = await onFlowPublish(pathname.split("/").pop()!, true);
-    if (response) toast.message(response);
-  }, []);
+  // const onPublishWorkflow = useCallback(async () => {
+  //   const response = await onFlowPublish(pathname.split("/").pop()!, true);
+  //   if (response) toast.message(response);
+  // }, []);
 
   const onAutomateFlow = async () => {
     const flows: any = [];
@@ -54,16 +53,15 @@ const FlowInstance = ({ children, edges, nodes }: Props) => {
   }, [edges]);
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-3 p-4">
-        <Button onClick={onFlowAutomation} disabled={isFlow.length < 1}>
-          Save
+    <div className="flex flex-col gap-2 w-full">
+      <div className="flex gap-3 w-full">
+        <Button className="w-full" variant="outline" onClick={onFlowAutomation} disabled={isFlow.length < 1}>
+          Save Workflow
         </Button>
-        <Button disabled={isFlow.length < 1} onClick={onPublishWorkflow}>
+        {/* <Button disabled={isFlow.length < 1} onClick={onPublishWorkflow}>
           Publish
-        </Button>
+        </Button> */}
       </div>
-      {children}
     </div>
   );
 };

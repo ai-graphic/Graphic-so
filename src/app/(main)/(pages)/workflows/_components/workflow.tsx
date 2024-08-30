@@ -1,3 +1,4 @@
+"use client"
 import {Card, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
@@ -5,6 +6,7 @@ import {Label} from "@/components/ui/label";
 import {Switch} from "@/components/ui/switch";
 import {onFlowPublish} from "@/app/(main)/(pages)/workflows/editor/[editorId]/_actions/workflow-connections";
 import {toast} from "sonner";
+import { useState } from "react";
 
 type Props = {
     name: string;
@@ -13,6 +15,7 @@ type Props = {
     publish: boolean | null;
 };
 const Workflow = ({name, description, id, publish}: Props) => {
+    const [localpublish, setPublish] = useState(publish);
     const onPublishFlow = async (event: any) => {
         const response = await onFlowPublish(
             id,
@@ -63,8 +66,8 @@ const Workflow = ({name, description, id, publish}: Props) => {
                 </Label>
                 <Switch
                     id="airplane-mode"
-                    // onClick={onPublishFlow}
-                    defaultChecked={publish!}
+                    onClick={(e) => onPublishFlow(e)}
+                    defaultChecked={localpublish!}
                 />
             </div>
         </Card>

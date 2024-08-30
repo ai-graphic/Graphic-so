@@ -57,7 +57,9 @@ const EditorCanvas = (props: Props) => {
     const fetchWorkflow = async () => {
       let workflow = await getworkflow(pathname.split("/").pop()!);
       setWorkflow(workflow);
-      const aiTemplate = workflow?.AiTemplate ? JSON.parse(workflow.AiTemplate) : {};
+      const aiTemplate = workflow?.AiTemplate
+        ? JSON.parse(workflow.AiTemplate)
+        : {};
       Object.keys(aiTemplate).forEach((nodeId) => {
         const nodeData = aiTemplate[nodeId];
         console.log("hello", nodeData);
@@ -408,12 +410,13 @@ const EditorCanvas = (props: Props) => {
             </svg>
           </div>
         ) : (
-          <FlowInstance edges={edges} nodes={nodes}>
+          <div className="flex flex-col max-md:pt-12 pt-4">
             <EditorCanvasSidebar
               nodes={nodes}
               addNodeAtPosition={addNodeAtPosition}
+              edges={edges}
             />
-          </FlowInstance>
+            </div>
         )}
       </ResizablePanel>
     </ResizablePanelGroup>

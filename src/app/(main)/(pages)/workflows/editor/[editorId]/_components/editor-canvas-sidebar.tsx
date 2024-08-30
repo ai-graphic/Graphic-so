@@ -34,8 +34,9 @@ import Chat from "./chat";
 type Props = {
   nodes: EditorNodeType[];
   addNodeAtPosition: (type: EditorCanvasTypes) => void;
+  edges: any;
 };
-const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
+const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges }: Props) => {
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
   const { googleFile, setSlackChannels } = usegraphicStore();
@@ -77,7 +78,7 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
               return (
                 <Card
                   key={cardKey}
-                  draggable={!isDisabled} 
+                  draggable={!isDisabled}
                   className={`w-full cursor-${
                     isDisabled ? "not-allowed" : "grab"
                   } border-black bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900 ${
@@ -209,6 +210,8 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition }: Props) => {
                       Action
                     </AccordionTrigger>
                     <RenderOutputAccordion
+                      nodes={nodes}
+                      edges={edges}
                       state={state}
                       nodeConnection={nodeConnection}
                     />
