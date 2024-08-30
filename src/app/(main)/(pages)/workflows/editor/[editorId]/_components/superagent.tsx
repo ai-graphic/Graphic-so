@@ -46,7 +46,7 @@ const SuperAgent = ({ node }: { node: any }) => {
   const [workflow, setWorkflow] = useState<Workflow | null>(
     node[selectedNode.id]
   );
-  const [workflowId, setWorkflowId] = useState();
+  const [workflowId, setWorkflowId] = useState("");
   const [Agents, setAgents] = useState("");
   const [prompt, setPrompt] = useState("");
   const [toggleWorkflow, settoggleWorkflow] = useState(false);
@@ -63,7 +63,7 @@ const SuperAgent = ({ node }: { node: any }) => {
   const handlepromptchange = (e: any) => {
     setPrompt(e.target.value);
   };
-  const AddAgents = (agentId : string) => {
+  const AddAgents = (agentId: string) => {
     setLoading(true);
     axios
       .post("/api/AiResponse/superagent/addAgents", {
@@ -87,14 +87,14 @@ const SuperAgent = ({ node }: { node: any }) => {
 
   useEffect(() => {
     if (selectedNode.id !== node[selectedNode.id].id) {
-      setWorkflowId(node[selectedNode.id].id)
-      }
-      const gettools = async () => {
-        const response = await axios.get("/api/AiResponse/superagent/tools");
-        setTools(response.data.data);
-      };
-      gettools();
-    if(!workflowId) return;
+      setWorkflowId(node[selectedNode.id].id);
+    }
+    const gettools = async () => {
+      const response = await axios.get("/api/AiResponse/superagent/tools");
+      setTools(response.data.data);
+    };
+    gettools();
+    if (!workflowId) return;
     setLoading(true);
     findWorkflow(workflowId);
     setLoading(false);
@@ -169,22 +169,40 @@ const SuperAgent = ({ node }: { node: any }) => {
   const addtools = (agent: string) => {
     setLoading(true);
     console.log(selectedTool);
-
     gettools(agent);
     setLoading(false);
   };
+  const removeWorkflow = () => {
+    if (confirm("Are you sure you want to remove this workflow?")) {
+      setWorkflowId("");
+      setWorkflow(null);
+      node[selectedNode.id] = {
+        model : "SuperAgent",
+      }
+      console.log(node[selectedNode.id]);
+      toast.success("Workflow removed successfully");
+    }
+  }
 
   return (
     <div className="flex flex-col gap-3 px-6 py-3">
       {workflowId ? (
         <>
           {node[selectedNode.id] && (
-            <div>
+            <div className="flex flex-col gap-2">
               <p className="font-bold text-lg">{node[selectedNode.id].name}</p>
               <p className="text-sm from-neutral-300 font-regular">
                 {node[selectedNode.id].description}
               </p>
               <p>SId : {node[selectedNode.id].id}</p>
+              <Button
+                onClick={() => {
+                 removeWorkflow()
+                }}
+                variant="outline"
+              >
+                Add New Workflow
+              </Button>
             </div>
           )}
           {node[selectedNode.id] &&
@@ -195,10 +213,18 @@ const SuperAgent = ({ node }: { node: any }) => {
                   (step: Step, index: number) => (
                     <div key={step.id} className="mb-4">
                       <p>Step: {step.order}</p>
-                      <p>{step.agent.name} - {step.agent.type}</p>
-                      <p className="text-sm font-extralight">StepId : {step.id}</p>
-                      <p  className="text-sm font-extralight">Agent ID: {step.agentId}</p>
-                      <p  className="text-sm font-extralight">Prompt: {step.agent.prompt}</p>
+                      <p>
+                        {step.agent.name} - {step.agent.type}
+                      </p>
+                      <p className="text-sm font-extralight">
+                        StepId : {step.id}
+                      </p>
+                      <p className="text-sm font-extralight">
+                        Agent ID: {step.agentId}
+                      </p>
+                      <p className="text-sm font-extralight">
+                        Prompt: {step.agent.prompt}
+                      </p>
                       <select
                         name="tools"
                         id="tools"
@@ -230,7 +256,11 @@ const SuperAgent = ({ node }: { node: any }) => {
                 value={Agents}
                 onChange={handleAgentChange}
               />
-              <Button className="mt-2" variant="outline" onClick={() => AddAgents(Agents)}>
+              <Button
+                className="mt-2"
+                variant="outline"
+                onClick={() => AddAgents(Agents)}
+              >
                 Add Agents
               </Button>
               <Button
