@@ -133,13 +133,16 @@ const ContentBasedOnTitle = ({
   //   };
   //   reqGoogle();
   // }, [setFile]); //
-  const [selectedKey, setSelectedKey] = useState<string>("");
+
 
   //@ts-ignore
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]];
+  const [selectedKey, setSelectedKey] = useState<string>(nodeConnectionType[selectedNode.id]?.ApiKey);
   const [triggerValue, setTriggerValue] = useState(
     nodeConnectionType.triggerValue
   );
+
+
   useEffect(() => {
     const nodeModel = nodeConnectionType[selectedNode.id]?.model;
     if (nodeModel) {
@@ -154,7 +157,10 @@ const ContentBasedOnTitle = ({
     } else {
       setSelectedOutput(null);
     }
+
   }, [selectedNode.id, nodeConnectionType]);
+
+
   useEffect(() => {
     const isSuperAgent =
       nodeConnectionType[selectedNode.id]?.model === "SuperAgent";
@@ -308,7 +314,7 @@ const ContentBasedOnTitle = ({
                           placeholder="Click to select API Key"
                           value={
                             selectedKey ??
-                            nodeConnectionType[selectedNode.id]?.apiKey
+                            nodeConnectionType[selectedNode.id]?.ApiKey
                           }
                           onChange={(event) => {
                             const newValue = event.target.value;
@@ -318,7 +324,7 @@ const ContentBasedOnTitle = ({
                               nodeConnection,
                               title,
                               event,
-                              "apiKey"
+                              "ApiKey"
                             );
                           }}
                         />

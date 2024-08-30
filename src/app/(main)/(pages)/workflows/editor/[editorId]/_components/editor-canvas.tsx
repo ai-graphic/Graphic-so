@@ -31,6 +31,7 @@ import FlowInstance from "./flow-instance";
 import EditorCanvasSidebar from "./editor-canvas-sidebar";
 import { onGetNodesEdges } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
 import { useNodeConnections } from "@/providers/connections-providers";
+import { getworkflow } from "../_actions/workflow-connections";
 
 type Props = {};
 
@@ -50,6 +51,78 @@ const EditorCanvas = (props: Props) => {
   const pathname = usePathname();
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth);
+  const [workflow, setWorkflow] = useState<any>();
+
+  useEffect(() => {
+    const fetchWorkflow = async () => {
+      let workflow = await getworkflow(pathname.split("/").pop()!);
+      setWorkflow(workflow);
+      const aiTemplate = workflow?.AiTemplate ? JSON.parse(workflow.AiTemplate) : {};
+      Object.keys(aiTemplate).forEach((nodeId) => {
+        const nodeData = aiTemplate[nodeId];
+        console.log("hello", nodeData);
+
+        if (!nodeConnection.aiNode[nodeId] && nodeData.model) {
+          nodeConnection.aiNode[nodeId] = {
+            id: nodeId,
+            ApiKey: "",
+            prompt: "",
+            model: "",
+            localModel: "",
+            output: "",
+            temperature: 0,
+            maxTokens: 0,
+            endpoint: "",
+            num_outputs: 0,
+            aspect_ratio: "",
+            output_format: "",
+            guidance_scale: 0,
+            output_quality: 0,
+            num_inference_steps: 0,
+            model_name: "",
+            hf_token: "",
+            steps: 0,
+            learning_rate: 0,
+            batch_size: 0,
+            resolution: "",
+            lora_linear: false,
+            lora_linear_alpha: 0,
+            repo_id: "",
+            images: "",
+          };
+        }
+
+        if (nodeData.model === "SuperAgent") {
+          // If model is SuperAgent, save the entire nodeData
+          nodeConnection.aiNode[nodeId] = nodeData;
+        } else {
+          // Otherwise, update selectively
+          nodeConnection.aiNode[nodeId] = {
+            ...nodeConnection.aiNode[nodeId], // Preserve existing data
+            model: nodeData.model,
+            ApiKey: nodeData.ApiKey,
+            prompt: nodeData.prompt,
+            localModel: nodeData.localModel,
+            temperature: nodeData.temperature,
+            maxTokens: nodeData.maxTokens,
+            endpoint: nodeData.endpoint,
+            num_outputs: nodeData.num_outputs,
+            aspect_ratio: nodeData.aspect_ratio,
+            output_format: nodeData.output_format,
+            guidance_scale: nodeData.guidance_scale,
+            output_quality: nodeData.output_quality,
+            num_inference_steps: nodeData.num_inference_steps,
+            model_name: nodeData.model_name,
+            hf_token: nodeData.hf_token,
+            // Add other parameters as needed
+          };
+        }
+      });
+      console.log("Updated nodeConnection:", nodeConnection);
+    };
+
+    fetchWorkflow();
+  }, []);
 
   useEffect(() => {
     setIsMobile(window.innerWidth);
@@ -193,10 +266,10 @@ const EditorCanvas = (props: Props) => {
   useEffect(() => {
     dispatch({ type: "LOAD_DATA", payload: { edges, elements: nodes } });
   }, [nodes, edges]);
-  
+
   useEffect(() => {
     toast.warning("Save the template before leaving");
-}, [state.editor.selectedNode.id]);
+  }, [state.editor.selectedNode.id]);
 
   const nodeTypes = useMemo(
     () => ({

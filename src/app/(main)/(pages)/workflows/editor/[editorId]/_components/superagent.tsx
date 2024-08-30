@@ -5,8 +5,6 @@ import { Input } from "@/components/ui/input";
 import { useEditor } from "@/providers/editor-provider";
 import { useForm, FormProvider } from "react-hook-form";
 import { FormItem, FormField } from "@/components/ui/form";
-import { set } from "zod";
-import { getworkflow } from "../_actions/workflow-connections";
 import { toast } from "sonner";
 // 09d09171-2ff7-407f-8fd5-f5e8c3fe62bb
 
@@ -47,7 +45,7 @@ const SuperAgent = ({ node }: { node: any }) => {
   const [workflow, setWorkflow] = useState<Workflow | null>(
     node[selectedNode.id]
   );
-  const [workflowId, setWorkflowId] = useState();
+  const [workflowId, setWorkflowId] = useState(node[selectedNode.id].id);
   const [Agents, setAgents] = useState("");
   const [prompt, setPrompt] = useState("");
   const [toggleWorkflow, settoggleWorkflow] = useState(false);
