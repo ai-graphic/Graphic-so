@@ -46,7 +46,7 @@ const SuperAgent = ({ node }: { node: any }) => {
   const [workflow, setWorkflow] = useState<Workflow | null>(
     node[selectedNode.id]
   );
-  const [workflowId, setWorkflowId] = useState(node[selectedNode.id].id);
+  const [workflowId, setWorkflowId] = useState();
   const [Agents, setAgents] = useState("");
   const [prompt, setPrompt] = useState("");
   const [toggleWorkflow, settoggleWorkflow] = useState(false);
@@ -86,6 +86,9 @@ const SuperAgent = ({ node }: { node: any }) => {
   const [tools, setTools] = useState([]);
 
   useEffect(() => {
+    if (selectedNode.id !== node[selectedNode.id].id) {
+      setWorkflowId(node[selectedNode.id].id)
+      }
     if(!workflowId) return;
     setLoading(true);
     findWorkflow(workflowId);

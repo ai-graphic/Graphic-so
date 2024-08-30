@@ -95,7 +95,6 @@ const EditorCanvas = (props: Props) => {
         }
 
         if (nodeData.model === "SuperAgent") {
-          // If model is SuperAgent, save the entire nodeData
           nodeConnection.aiNode[nodeId] = nodeData;
         } else {
           // Otherwise, update selectively
