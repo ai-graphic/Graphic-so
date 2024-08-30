@@ -89,15 +89,15 @@ const SuperAgent = ({ node }: { node: any }) => {
     if (selectedNode.id !== node[selectedNode.id].id) {
       setWorkflowId(node[selectedNode.id].id)
       }
+      const gettools = async () => {
+        const response = await axios.get("/api/AiResponse/superagent/tools");
+        setTools(response.data.data);
+      };
+      gettools();
     if(!workflowId) return;
     setLoading(true);
     findWorkflow(workflowId);
     setLoading(false);
-    const gettools = async () => {
-      const response = await axios.get("/api/AiResponse/superagent/tools");
-      setTools(response.data.data);
-    };
-    gettools();
   }, []);
 
   console.log(tools);
