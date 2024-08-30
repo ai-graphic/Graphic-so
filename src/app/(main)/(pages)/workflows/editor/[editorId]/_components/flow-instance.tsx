@@ -55,7 +55,12 @@ const FlowInstance = ({ edges, nodes }: Props) => {
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="flex gap-3 w-full">
-        <Button className="w-full" variant="outline" onClick={onFlowAutomation} disabled={isFlow.length < 1}>
+        <Button
+          className="w-full"
+          variant="outline"
+          onClick={onFlowAutomation}
+          disabled={isFlow.length < 1}
+        >
           Save Workflow
         </Button>
         {/* <Button disabled={isFlow.length < 1} onClick={onPublishWorkflow}>

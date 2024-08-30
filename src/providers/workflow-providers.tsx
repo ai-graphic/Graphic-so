@@ -41,7 +41,12 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const runWorkFlow = useCallback(
-    async (workflowId: string, nodeConnection: any, setIsLoading: any, setHistory?: any) => {
+    async (
+      workflowId: string,
+      nodeConnection: any,
+      setIsLoading: any,
+      setHistory?: any
+    ) => {
       async function updateAINodeOutput(
         idNode: string,
         aiResponseContent: string
@@ -118,8 +123,16 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 content = contentarr[contentarr.length - 1];
                 chatHistory.user = content;
               } else {
-                content =
-                  latestOutputs[node.id] || "default content if not found";
+                let prompt = nodeConnection.aiNode[idNode].prompt;
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", latestOutputs[node.id]);
+                  } else {
+                    content = prompt;
+                  }
+                } else {
+                  content = latestOutputs[node.id];
+                }
               }
               if (aiTemplate[idNode].model === "Openai") {
                 try {
@@ -282,9 +295,14 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               console.log("chatHistory", chatHistory);
             }
             if (chatHistory.user && chatHistory.bot) {
-              const published =  await onUpdateChatHistory(workflowId, chatHistory);
-              const history = published?.map((item: string) => JSON.parse(item));
-              if(setHistory) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
                 setHistory(history);
               }
             }

@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import SuperAgent from "./superagent";
+import { Button } from "@/components/ui/button";
 
 export interface Option {
   value: string;
@@ -254,28 +255,41 @@ const ContentBasedOnTitle = ({
                   <p className="block text-sm font-medium text-gray-300">
                     Enter Your Prompt Here
                   </p>
-                  <Input
-                    type="text"
-                    placeholder="a beautiful castle frstingln illustration"
-                    value={
-                      selectedOutput ??
-                      nodeConnectionType[selectedNode.id]?.prompt
-                    }
-                    onClick={() => {
-                      setShowButtons((prev) => !prev);
-                    }}
-                    onChange={(event) => {
-                      const newValue = event.target.value;
-                      setSelectedOutput(newValue);
-                      onContentChange(
-                        state,
-                        nodeConnection,
-                        title,
-                        event,
-                        "prompt"
-                      );
-                    }}
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="a beautiful castle frstingln illustration"
+                      value={
+                        selectedOutput ??
+                        nodeConnectionType[selectedNode.id]?.prompt
+                      }
+                      onClick={() => {
+                        setShowButtons((prev) => !prev);
+                      }}
+                      onChange={(event) => {
+                        const newValue = event.target.value;
+                        setSelectedOutput(newValue);
+                        onContentChange(
+                          state,
+                          nodeConnection,
+                          title,
+                          event,
+                          "prompt"
+                        );
+                      }}
+                    />
+                    <Button
+                      onClick={() => {
+                        const updatedOutput =
+                          selectedOutput == null
+                            ? `:input:`
+                            : `${selectedOutput}:input:`;
+                        setSelectedOutput(updatedOutput);
+                      }}
+                    >
+                      @tag
+                    </Button>
+                  </div>
                   {showButtons &&
                     nodeConnection.aiNode.output &&
                     state.editor.edges &&
@@ -303,6 +317,7 @@ const ContentBasedOnTitle = ({
                             </button>
                           ))
                       )}
+
                   {!(
                     nodeConnectionType[selectedNode.id]?.model === "SuperAgent"
                   ) && (
@@ -330,13 +345,11 @@ const ContentBasedOnTitle = ({
                             );
                           }}
                         />
-
                         {modelArray
                           .filter((modelObj) => modelObj.key === model)
                           .map((modelObj) => (
-                            <button
+                            <Button
                               key={modelObj.key}
-                              className="bg-gray-500 hover:bg-gray-300 hover:text-gray-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-xs"
                               onClick={() => {
                                 console.log("model", modelObj);
                                 nodeConnectionType[selectedNode.id].ApiKey =
@@ -345,7 +358,7 @@ const ContentBasedOnTitle = ({
                               }}
                             >
                               Load
-                            </button>
+                            </Button>
                           ))}
                       </div>
                     </div>

@@ -220,7 +220,7 @@ const EditorCanvas = (props: Props) => {
       const lastNode = state.editor.elements[state.editor.elements.length - 1];
       const position = lastNode
         ? { x: lastNode.position.x, y: lastNode.position.y + 200 }
-        : { x: 100, y: 100 };
+        : { x: isMobile < 726 ? 10 : 200, y: 100 };
 
       const newNode = {
         id: v4(),
@@ -239,7 +239,12 @@ const EditorCanvas = (props: Props) => {
       setNodes((nds) => nds.concat(newNode));
       addAINode(newNode.id);
       toast("Node added successfully");
+      reactFlowInstance.setCenter(position.x, position.y, {
+        duration: 1000,
+        zoom: 0.8,
+      });
     },
+
     [reactFlowInstance, state]
   );
 
@@ -343,8 +348,8 @@ const EditorCanvas = (props: Props) => {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 onInit={setReactFlowInstance}
-                fitView
                 onClick={handleClickCanvas}
+                fitView={nodes.length === 1}
                 nodeTypes={nodeTypes}
               >
                 {isMobile < 726 ? (
@@ -415,7 +420,7 @@ const EditorCanvas = (props: Props) => {
               addNodeAtPosition={addNodeAtPosition}
               edges={edges}
             />
-            </div>
+          </div>
         )}
       </ResizablePanel>
     </ResizablePanelGroup>
