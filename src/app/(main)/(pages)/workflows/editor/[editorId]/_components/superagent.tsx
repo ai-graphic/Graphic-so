@@ -34,6 +34,7 @@ const SuperAgent = ({ node }: { node: any }) => {
       name: string;
       type: string;
       description: string;
+      prompt?: string; // Add optional prompt property
     };
   }
   interface Workflow {
@@ -85,23 +86,26 @@ const SuperAgent = ({ node }: { node: any }) => {
   const [tools, setTools] = useState([]);
 
   useEffect(() => {
+    if(!workflowId) return;
+    setLoading(true);
+    findWorkflow(workflowId);
+    setLoading(false);
     const gettools = async () => {
       const response = await axios.get("/api/AiResponse/superagent/tools");
       setTools(response.data.data);
     };
-
     gettools();
   }, []);
+
   console.log(tools);
   const CreateAgents = agentsMethod.handleSubmit((data) => {
     console.log("data", data);
-    const { name, description, initialMessage, prompt } = data;
+    const { name, prompt } = data;
     setLoading(true);
     axios
       .post("/api/AiResponse/superagent/createAgents", {
         name: name,
-        description: description,
-        initialMessage: initialMessage,
+        description: name,
         prompt: prompt,
         llmProvider: "OPENAI",
         llmModel: "GPT_4_O",
@@ -177,7 +181,7 @@ const SuperAgent = ({ node }: { node: any }) => {
               <p className="text-sm from-neutral-300 font-regular">
                 {node[selectedNode.id].description}
               </p>
-              <p>Id : {node[selectedNode.id].id}</p>
+              <p>SId : {node[selectedNode.id].id}</p>
             </div>
           )}
           {node[selectedNode.id] &&
@@ -187,13 +191,11 @@ const SuperAgent = ({ node }: { node: any }) => {
                 {node[selectedNode.id].steps.map(
                   (step: Step, index: number) => (
                     <div key={step.id} className="mb-4">
-                      <div>Step: {step.order}</div>
-                      <div>ID: {step.id}</div>
-
-                      <div>Agent ID: {step.agentId}</div>
-                      <div>Agent Name: {step.agent.name}</div>
-                      <div>Agent Type: {step.agent.type}</div>
-                      <div>Description: {step.agent.description}</div>
+                      <p>Step: {step.order}</p>
+                      <p>{step.agent.name} - {step.agent.type}</p>
+                      <p className="text-sm font-extralight">StepId : {step.id}</p>
+                      <p  className="text-sm font-extralight">Agent ID: {step.agentId}</p>
+                      <p  className="text-sm font-extralight">Prompt: {step.agent.prompt}</p>
                       <select
                         name="tools"
                         id="tools"
@@ -249,33 +251,9 @@ const SuperAgent = ({ node }: { node: any }) => {
                 </FormItem>
                 <FormItem>
                   <FormField
-                    name="description"
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        required
-                        placeholder="Enter Description"
-                      />
-                    )}
-                  />
-                </FormItem>
-                <FormItem>
-                  <FormField
                     name="prompt"
                     render={({ field }) => (
                       <Input {...field} required placeholder="Enter prompt" />
-                    )}
-                  />
-                </FormItem>
-                <FormItem>
-                  <FormField
-                    name="initialMessage"
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        required
-                        placeholder="Enter initialMessage"
-                      />
                     )}
                   />
                 </FormItem>
