@@ -298,7 +298,7 @@ const ActionButton = ({
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
             ) : (
               <div>
-                {nodeConnection.aiNode[selectedNode.id]?.model === "Openai" ? (
+                {nodeConnection.aiNode[selectedNode.id]?.model !== "FLUX-image" ? (
                   <div className="font-extralight">
                     <p className="font-bold">Outputs</p>
                     {aiOutput.map((output, index) => (

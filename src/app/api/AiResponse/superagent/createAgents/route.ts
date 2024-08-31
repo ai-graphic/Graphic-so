@@ -1,4 +1,6 @@
 import axios from "axios";
+import { db } from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
 
 export const maxDuration = 300;
 export async function POST(req: Request, res: Response) {
@@ -11,6 +13,19 @@ export async function POST(req: Request, res: Response) {
       const {
         name, description, initialMessage, prompt, llmProvider, llmModel, workflowId
       } = await req.json();
+      const { userId } = auth();
+      if (!userId) {
+        return new Response("Unauthorized", {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const dbUser = await db.user.findFirst({
+        where: {
+          clerkId: userId ?? "",
+        },
+      });
+      
 
       const url = `https://api.spaceship.im/api/v1/agents`;
       const data = {
@@ -24,7 +39,7 @@ export async function POST(req: Request, res: Response) {
       const options = {
           headers: {
             accept: "application/json",
-            Authorization: `Bearer ${process.env.SUPERAGENT_API}`,
+            Authorization: `Bearer ${dbUser?.superAgentAPI}`,
           },
       };
 
