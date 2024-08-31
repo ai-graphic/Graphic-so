@@ -22,6 +22,8 @@ type Props = {
   setChannels?: (value: Option[]) => void;
   nodes: EditorNodeType[];
   edges: any;
+  setNodes: (nodes: EditorNodeType[]) => void;
+  setEdges: (edges: any) => void;
 };
 
 const ActionButton = ({
@@ -31,6 +33,8 @@ const ActionButton = ({
   setChannels,
   nodes,
   edges,
+  setNodes,
+  setEdges
 }: Props) => {
   const pathname = usePathname();
   const { isLoading, setIsLoading } = useLoading();
@@ -272,6 +276,8 @@ const ActionButton = ({
     }
   }, [nodeConnection.aiNode.output, selectedNode.id]);
 
+
+
   const renderActionButton = () => {
     switch (currentService) {
       case "Discord":
@@ -365,7 +371,7 @@ const ActionButton = ({
   return (
     <div className="flex flex-col gap-2 w-full">
       {renderActionButton()}
-      <FlowInstance edges={edges} nodes={nodes} />
+      <FlowInstance edges={edges} nodes={nodes} setNodes={setNodes} setEdges={setEdges} />
     </div>
   );
 };

@@ -45,6 +45,8 @@ type Props = {
   setFile: (file: any) => void;
   selectedSlackChannels: Option[];
   setSelectedSlackChannels: (value: Option[]) => void;
+  setNodes: (nodes: EditorNodeType[]) => void;
+  setEdges: (edges: any) => void;
 };
 const ContentBasedOnTitle = ({
   nodes,
@@ -55,6 +57,8 @@ const ContentBasedOnTitle = ({
   setFile,
   selectedSlackChannels,
   setSelectedSlackChannels,
+  setNodes,
+  setEdges
 }: Props) => {
   const [showButtons, setShowButtons] = useState(false);
   const [selectedOutput, setSelectedOutput] = useState<string | null>(null);
@@ -498,6 +502,8 @@ const ContentBasedOnTitle = ({
             nodeConnection={nodeConnection}
             channels={selectedSlackChannels}
             setChannels={setSelectedSlackChannels}
+            setNodes={setNodes}
+            setEdges={setEdges}
           />
         </div>
       </Card>

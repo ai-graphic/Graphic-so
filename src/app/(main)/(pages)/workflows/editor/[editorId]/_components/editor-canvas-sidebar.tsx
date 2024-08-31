@@ -35,8 +35,10 @@ type Props = {
   nodes: EditorNodeType[];
   addNodeAtPosition: (type: EditorCanvasTypes) => void;
   edges: any;
+  setNodes: (nodes: EditorNodeType[]) => void;
+  setEdges: (edges: any) => void;
 };
-const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges }: Props) => {
+const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges, setNodes, setEdges }: Props) => {
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
   const { googleFile, setSlackChannels } = usegraphicStore();
@@ -214,6 +216,8 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges }: Props) => {
                       edges={edges}
                       state={state}
                       nodeConnection={nodeConnection}
+                      setNodes={setNodes}
+                      setEdges={setEdges}
                     />
                   </AccordionItem>
                 </Accordion>

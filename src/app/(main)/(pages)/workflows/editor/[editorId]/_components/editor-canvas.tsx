@@ -349,7 +349,7 @@ const EditorCanvas = (props: Props) => {
                 onConnect={onConnect}
                 onInit={setReactFlowInstance}
                 onClick={handleClickCanvas}
-                fitView={nodes.length === 1}
+                fitView={nodes?.length === 1}
                 nodeTypes={nodeTypes}
               >
                 {isMobile < 726 ? (
@@ -419,6 +419,8 @@ const EditorCanvas = (props: Props) => {
               nodes={nodes}
               addNodeAtPosition={addNodeAtPosition}
               edges={edges}
+              setNodes={setNodes}
+              setEdges={setEdges}
             />
           </div>
         )}
