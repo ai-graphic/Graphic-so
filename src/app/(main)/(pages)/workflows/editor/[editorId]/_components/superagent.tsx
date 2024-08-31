@@ -349,7 +349,7 @@ const SuperAgent = ({ node }: { node: any }) => {
                 )}
               {llms.length > 0 ? (
                 !toggleAgents ? (
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-2">
                     <Input
                       placeholder="AgentId"
                       type="text"
