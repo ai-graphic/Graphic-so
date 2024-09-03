@@ -1,4 +1,5 @@
 // @ts-nocheck
+
 "use server";
 import "server-only";
 import { createAI, createStreamableUI, getMutableAIState } from "ai/rsc";
@@ -158,20 +159,20 @@ async function submitUserMessage(
           }
         }
       }
-      uiStream.done()
-      textStream.done()
-      messageStream.done()
+      if (!uiStream.closed) uiStream.done();
+      if (!textStream.closed) textStream.done();
+      if (!messageStream.closed) messageStream.done();
       console.log(aiState.get().messages);
     } catch (e) {
-      console.error(e)
-
+      console.error(e);
+  
       const error = new Error(
         'The AI got rate limited, please try again later.'
-      )
-      uiStream.error(error)
-      textStream.error(error)
-      messageStream.error(error)
-      aiState.done()
+      );
+      if (!uiStream.closed) uiStream.error(error);
+      if (!textStream.closed) textStream.error(error);
+      if (!messageStream.closed) messageStream.error(error);
+      aiState.done();
     }
   })();
 
