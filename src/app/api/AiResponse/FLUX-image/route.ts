@@ -28,7 +28,7 @@ export async function POST(req: Request, res: Response) {
     const outputQualityInt = parseInt(output_quality, 10);
 
     const output = await replicate.run(
-      "lucataco/flux-dev-lora:94a0c19e55e36f75d657ecf9eada9f16a233b5329fb9cdf8e2b9ecd093e5c97e",
+      "lucataco/flux-dev-lora:a22c463f11808638ad5e2ebd582e07a469031f48dd567366fb4c6fdab91d614d",
       {
         input: {
           prompt: prompt,

@@ -144,24 +144,8 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges, setNodes, setEdg
         </TabsContent>
         {state.editor.selectedNode.data.title ? (
           <TabsContent value="settings" className="-mt-20">
-            {state.editor.selectedNode.data.title === "Chat" ? (
-              <Accordion
-                type="multiple"
-                className="h-full"
-                defaultValue={["options"]}
-              >
-                <AccordionItem value="options" className="h-full px-2">
-                  <AccordionTrigger className="!no-underline">
-                    <p className="block text-sm font-medium text-gray-500">
-                      <span className="text-md font-bold text-gray-300">
-                        Chat{" "}
-                      </span>{" "}
-                      : {state.editor.selectedNode.id}
-                    </p>
-                  </AccordionTrigger>
-                  <Chat />
-                </AccordionItem>
-              </Accordion>
+            {state.editor.selectedNode.data.title === "Chat" ? (      
+                <Chat />
             ) : (
               <div>
                 <div className="px-2 py-4 text-center text-xl font-bold">

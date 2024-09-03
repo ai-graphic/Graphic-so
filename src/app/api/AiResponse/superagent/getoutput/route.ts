@@ -7,20 +7,14 @@ export async function POST(req: Request, res: Response) {
 
   try {
     const {
-       prompt, workflowId
+       prompt, workflowId, userid
     } = await req.json();
-    const { userId } = auth();
-    if (!userId) {
-      return new Response("Unauthorized", {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
     const dbUser = await db.user.findFirst({
       where: {
-        clerkId: userId ?? "",
+        clerkId: userid ?? "",
       },
     });
+    console.log(dbUser);
     
 
     const url = `https://api.spaceship.im/api/v1/workflows/${workflowId}/invoke`;

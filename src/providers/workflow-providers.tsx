@@ -1,4 +1,5 @@
 "use client";
+
 import React, {
   createContext,
   useContext,
@@ -266,6 +267,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                     {
                       prompt: content,
                       workflowId: aiTemplate[idNode].id,
+                      userid: workflow.userId,
                     }
                   );
                   nodeConnection.setAINode((prev: any) => ({
@@ -310,7 +312,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
           }
           if (nodeType == "Slack") {
             console.log(workflow.slackChannels);
-            const channels = workflow.slackChannels.map((channel) => {
+            const channels = workflow.slackChannels.map((channel: string) => {
               return {
                 label: "",
                 value: channel,

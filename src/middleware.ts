@@ -6,6 +6,9 @@ export default authMiddleware({
         '/api/clerk-webhook',
         '/api/drive-activity/notification',
         '/api/payment/success',
+        '/api/workflow',
+        '/api/AiResponse/superagent/getoutput',
+        '/api/AiResponse/FLUX-image'
     ],
     ignoredRoutes: [
         '/api/auth/callback/discord',
