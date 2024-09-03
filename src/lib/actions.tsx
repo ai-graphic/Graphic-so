@@ -60,8 +60,8 @@ async function submitUserMessage(
           },
         },
         system: `\
-      You are required to run the workflowRun tool whenever you receive a message starting with '/'. otherwise talk to the user normally, you are a ai for calling the workflows the user has created..
-      `,
+        You are required to run the workflowRun tool whenever you receive a message starting with '/'. otherwise talk to the user normally, you are a ai for calling the workflows the user has created..
+        `,
         messages: [...history],
       });
       console.log(result);
@@ -72,11 +72,11 @@ async function submitUserMessage(
         const { type } = delta;
         if (type === "text-delta") {
           const { textDelta } = delta;
-
+  
           textContent += textDelta;
           console.log(textContent);
           messageStream.update(<TextContentDisplay content={textContent} />);
-
+  
           aiState.update({
             ...aiState.get(),
             messages: [
@@ -91,7 +91,7 @@ async function submitUserMessage(
         } else if (type === "tool-call") {
           const { toolName } = delta;
           console.log(toolName);
-
+  
           if (toolName === "workflowRun") {
             const response = await axios.post(
               `${process.env.NEXT_PUBLIC_URL}/api/workflow`,
@@ -101,16 +101,16 @@ async function submitUserMessage(
                 userid: userid,
               }
             );
-
+  
             textContent = response.data;
             console.log("data", textContent);
-
+  
             if (textContent.startsWith("http")) {
               textStream.update(<ImageContentDisplay url={textContent} />);
             } else {
               textStream.update(<TextContentDisplay content={textContent} />);
             }
-
+  
             aiState.update({
               ...aiState.get(),
               messages: [
@@ -128,7 +128,7 @@ async function submitUserMessage(
                 .get()
                 .messages.filter((message) => message.role === "user")
             );
-
+  
             // Push the assistant message
             await onUpdateChatHistory(
               workflowId,
@@ -136,7 +136,7 @@ async function submitUserMessage(
                 .get()
                 .messages.filter((message) => message.role === "assistant")
             );
-
+  
             // Save spinner and display in the chat history
             await onUpdateChatHistory(
               workflowId,
@@ -146,7 +146,7 @@ async function submitUserMessage(
                 display: messageStream.value,
               }))
             );
-
+  
             if (textContent.startsWith("http")) {
               messageStream.update(<ImageContentDisplay url={textContent} />);
             } else {
@@ -158,14 +158,20 @@ async function submitUserMessage(
           }
         }
       }
-
+      uiStream.done()
+      textStream.done()
+      messageStream.done()
       console.log(aiState.get().messages);
     } catch (e) {
-      console.error(e);
-      textStream.error({ error: "An error occurred." }); // Pass an object with an error property
-      aiState.done();
-    } finally {
-      textStream.done();
+      console.error(e)
+
+      const error = new Error(
+        'The AI got rate limited, please try again later.'
+      )
+      uiStream.error(error)
+      textStream.error(error)
+      messageStream.error(error)
+      aiState.done()
     }
   })();
 
