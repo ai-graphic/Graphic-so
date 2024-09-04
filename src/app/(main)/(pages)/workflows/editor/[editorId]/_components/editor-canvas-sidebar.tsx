@@ -60,7 +60,7 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges, setNodes, setEdg
 
   return (
     <aside className="overflow-hidden">
-      <Tabs defaultValue="settings" className="h-screen overflow-scroll pb-24">
+      <Tabs defaultValue="settings" className="h-screen overflow-scroll">
         <TabsList className="bg-transparent">
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="actions">Actions</TabsTrigger>

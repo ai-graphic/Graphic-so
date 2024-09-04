@@ -116,15 +116,23 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const edge = edgesArray.find((e: any) => e.target === idNode);
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
+              let prompt = nodeConnection.aiNode[idNode].prompt;
+              console.log("Prompt:", prompt);
               if (node.type === "Trigger") {
                 const output = nodeConnection.aiNode.output as unknown as {
                   [key: string]: any[];
                 };
                 const contentarr = output[node.id];
-                content = contentarr[contentarr.length - 1];
-                chatHistory.user = content;
+                const prmpt = contentarr[contentarr.length - 1];
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", prmpt);
+                  } else {
+                    content = prompt;
+                  }
+                }
+                chatHistory.user = prmpt;
               } else {
-                let prompt = nodeConnection.aiNode[idNode].prompt;
                 if (prompt) {
                   if (prompt.includes(":input:")) {
                     content = prompt.replace(":input:", latestOutputs[node.id]);
@@ -142,18 +150,6 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   const nodeArray = JSON.parse(workflow.nodes || "[]");
                   const edge = edgesArray.find((e: any) => e.target === idNode);
                   const node = nodeArray.find((n: any) => n.id === edge.source);
-                  let content;
-                  if (node.type === "Trigger") {
-                    console.log("Trigger Node", nodeConnection);
-                    const output = nodeConnection.aiNode.output as unknown as {
-                      [key: string]: any[];
-                    };
-                    const contentarr = output[node.id];
-                    content = contentarr[contentarr.length - 1];
-                  } else {
-                    content =
-                      latestOutputs[node.id] || "default content if not found";
-                  }
                   const messages = [
                     {
                       role: "system",

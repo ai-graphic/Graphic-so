@@ -19,7 +19,7 @@ export async function POST(req: Request, res: Response) {
     }
     const dbUser = await db.user.findFirst({
       where: {
-        clerkId: userId ?? "",
+        clerkId: userId,
       },
     });
     

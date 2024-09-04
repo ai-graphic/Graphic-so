@@ -15,7 +15,7 @@ export async function POST(req: Request, res: Response) {
       }
       const dbUser = await db.user.findFirst({
         where: {
-          clerkId: userId ?? "",
+          clerkId: userId,
         },
       });
       const url = `https://api.spaceship.im/api/v1/tools`;

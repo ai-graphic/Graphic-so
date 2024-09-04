@@ -11,12 +11,11 @@ export async function POST(req: Request, res: Response) {
     } = await req.json();
     const dbUser = await db.user.findFirst({
       where: {
-        clerkId: userid ?? "",
+        clerkId: userid,
       },
     });
     console.log(dbUser);
     
-
     const url = `https://api.spaceship.im/api/v1/workflows/${workflowId}/invoke`;
     const data = {
         input: prompt,
@@ -29,10 +28,22 @@ export async function POST(req: Request, res: Response) {
         Authorization:
         `Bearer ${dbUser?.superAgentAPI}`,
       },
-      timeout: 20000,
+      timeout: 30000,
     };
-    const response = await axios.post(url, data, options);
-    const final = JSON.stringify(response.data.data);
+    const maxRetries = 3;
+    let response;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        response = await axios.post(url, data, options);
+        break; // Exit loop if request is successful
+      } catch (error: any) {
+        if (attempt === maxRetries || !error.code || error.code !== 'ETIMEDOUT') {
+          throw error; // Rethrow if max retries reached or error is not a timeout
+        }
+        console.warn(`Attempt ${attempt} failed. Retrying...`);
+      }
+    }
+    const final = JSON.stringify(response?.data.data);
     return new Response(final, {
       status: 200,
       headers: { "Content-Type": "application/json" },

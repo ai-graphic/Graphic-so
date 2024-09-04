@@ -31,7 +31,7 @@ export async function GET(req: Request, res: Response) {
     }
     const dbUser = await db.user.findFirst({
       where: {
-        clerkId: userId ?? "",
+        clerkId: userId,
       },
     });
     
@@ -69,7 +69,7 @@ export async function POST(req: Request, res: Response) {
     }
     const dbUser = await db.user.findFirst({
       where: {
-        clerkId: userId ?? "",
+        clerkId: userId,
       },
     });
     

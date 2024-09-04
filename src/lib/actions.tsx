@@ -45,10 +45,10 @@ async function submitUserMessage(
       .messages.filter((message) => message.role === "user")
       .slice(-1)[0]?.content || "";
 
-  const textStream = createStreamableUI("");
+  const textStream = createStreamableUI('');
   const uiStream = createStreamableUI();
-  const spinnerStream = createStreamableUI(<SpinnerMessage />);
-  const messageStream = createStreamableUI(null);
+  const spinnerStream = createStreamableUI(<SpinnerMessage />); 
+  const messageStream = createStreamableUI(null); 
 
   (async () => {
     try {
@@ -74,11 +74,11 @@ async function submitUserMessage(
         const { type } = delta;
         if (type === "text-delta") {
           const { textDelta } = delta;
-
+  
           textContent += textDelta;
           console.log(textContent);
           messageStream.update(<TextContentDisplay content={textContent} />);
-
+  
           aiState.update({
             ...aiState.get(),
             messages: [
@@ -93,7 +93,7 @@ async function submitUserMessage(
         } else if (type === "tool-call") {
           const { toolName } = delta;
           console.log(toolName);
-
+  
           if (toolName === "workflowRun") {
             const response = await axios.post(
               `${process.env.NEXT_PUBLIC_URL}/api/workflow`,
@@ -103,16 +103,16 @@ async function submitUserMessage(
                 userid: userid,
               }
             );
-
+  
             textContent = response.data;
             console.log("data", textContent);
-
+  
             if (textContent.startsWith("http")) {
               textStream.update(<ImageContentDisplay url={textContent} />);
             } else {
               textStream.update(<TextContentDisplay content={textContent} />);
             }
-
+  
             aiState.update({
               ...aiState.get(),
               messages: [
@@ -130,7 +130,7 @@ async function submitUserMessage(
                 .get()
                 .messages.filter((message) => message.role === "user")
             );
-
+  
             // Push the assistant message
             await onUpdateChatHistory(
               workflowId,
@@ -138,7 +138,7 @@ async function submitUserMessage(
                 .get()
                 .messages.filter((message) => message.role === "assistant")
             );
-
+  
             // Save spinner and display in the chat history
             await onUpdateChatHistory(
               workflowId,
@@ -148,7 +148,7 @@ async function submitUserMessage(
                 display: messageStream.value,
               }))
             );
-
+  
             if (textContent.startsWith("http")) {
               messageStream.update(<ImageContentDisplay url={textContent} />);
             } else {
@@ -160,19 +160,15 @@ async function submitUserMessage(
           }
         }
       }
-
-      uiStream.done();
-      textStream.done();
-      messageStream.done();
+      if (!uiStream.closed) uiStream.done();
+      if (!textStream.closed) textStream.done();
+      if (!messageStream.closed) messageStream.done();
+      console.log(aiState.get().messages);
     } catch (e) {
       console.error(e);
-
-      const error = new Error(
-        "The AI got rate limited, please try again later."
-      );
-      uiStream.error(error);
-      textStream.error(error);
-      messageStream.error(error);
+      if (!uiStream.closed) uiStream.error(error);
+      if (!textStream.closed) textStream.error(error);
+      if (!messageStream.closed) messageStream.error(error);
       aiState.done();
     }
   })();
