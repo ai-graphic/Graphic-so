@@ -243,7 +243,7 @@ const Chat = () => {
   const runtime = useVercelRSCRuntime({ messages, convertMessage, onNew });
 
   return (
-    <div className='flex justify-center w-[100%] items-center h-[80vh]'>
+    <div className='flex justify-center min-w-[100%] items-center h-[80vh]'>
       <Thread
         runtime={runtime}
         welcome={{
