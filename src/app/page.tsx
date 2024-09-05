@@ -1,223 +1,90 @@
-
-import Image from "next/image";
 import Navbar from "@/components/global/navbar";
-import {ContainerScroll} from "@/components/global/container-scroll-animation";
-import {Button} from "@/components/ui/button";
-import {clients, products} from "@/lib/constants";
-import {InfiniteMovingCards} from "@/components/global/infinite-moving-cards";
-import {HeroParallax} from "@/components/global/connect-parallax";
-import {LampComponent} from "@/components/global/lamp";
-import {CardBody, CardContainer, CardItem} from "@/components/global/3d-card";
-import {CheckIcon} from "lucide-react";
+import { FadeIn } from "@/components/cult/fade-in";
+import {
+  EmptyFeaturedGrid,
+  FeaturedGrid,
+  ResourceCardGrid,
+} from "@/components/directory-card-grid";
+import { DirectorySearch } from "@/components/directory-search";
+import { Hero } from "@/components/hero";
+import { Suspense } from "react";
+import { getAllWorkflows } from "./actions";
 
+export default async function Home() {
+  const isValidImageUrl = (url: string) => {
+    return /\.(jpeg|jpg|gif|png|webp)$/.test(url);
+  };
 
+  const workflows = await getAllWorkflows();
+  console.log("hello", workflows);
 
-export default function Home() {
+  const data = workflows.map((workflow: any) => {
+    const chatHistory = workflow.chatHistory || [];
+    const lastHistory =
+      chatHistory.length > 0
+        ? JSON.parse(chatHistory[chatHistory.length - 1])
+        : null;
+    const logo_src = lastHistory && lastHistory.bot;
 
+    return {
+      id: workflow.id,
+      created_at: workflow.createdAt,
+      full_name: workflow.name,
+      email: "rohit9804singh@gmail.com",
+      twitter_handle: "",
+      product_website: "",
+      codename: workflow.name,
+      punchline: workflow.description,
+      description: workflow.description,
+      user_id: workflow.userId,
+      view_count: 0,
+      approved: false,
+      featured: logo_src && isValidImageUrl(logo_src) && logo_src,
+      logo_src: logo_src && isValidImageUrl(logo_src) && logo_src,
+      tags: [], 
+      labels: [], 
+      categories: "",
+    };
+  });
 
-    return (
-        <main>
-            <Navbar/>
+  const filteredFeaturedData = data.filter(
+    (product) => product.featured
+  );
 
-            <section
-                className="h-screen w-full bg-neutral-950 rounded-md
-                !overflow-visible relative flex flex-col items-center antialiased"
-            >
-                <div
-                    className="absolute inset-0  h-full w-full items-center
-                    px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_35%,#223_100%)]"></div>
-                <div className="flex flex-col mt-[-100px] md:mt-[-50px]">
-                    <ContainerScroll
-                        titleComponent={
-                            <div className="flex items-center flex-col">
-                                <Button
-                                    size={'lg'}
-                                    className="p-8 mb-8 md:mb-0 text-2xl w-full sm:w-fit
-                                    border-t-2 rounded-full border-[#4D4D4D] bg-[#1F1F1F]
-                                    hover:bg-white group transition-all flex items-center
-                                    justify-center gap-4 hover:shadow-xl hover:shadow-neutral-500 duration-500"
-                                >
-                                      <span
-                                          className="bg-clip-text text-transparent bg-gradient-to-r
-                                          from-neutral-500 to-neutral-600  md:text-center
-                                          font-sans group-hover:bg-gradient-to-r
-                                          group-hover:from-black goup-hover:to-black"
-                                      >
-                                        Start For Free Today
-                                      </span>
-                                </Button>
-                                <h1 className="text-5xl md:text-8xl  bg-clip-text text-transparent
-                                bg-gradient-to-b from-white to-neutral-600 font-sans font-bold"
-                                >
-                                    Graphic : Future of Automation
-                                </h1>
-                            </div>
-                        }
-                    />
-                </div>
-            </section>
-            <InfiniteMovingCards
-                className="md:mt-[18rem] mt-[-100px]"
-                items={clients}
-                direction="right"
-                speed="slow"
-            />
-            <section>
-                <HeroParallax
-                    products={products}
-                ></HeroParallax>
-            </section>
-            <section className="mt-[-500px]">
-                <LampComponent />
-                <div className="flex flex-wrap items-center justify-center flex-col
-                md:flex-row gap-8 -mt-72">
-                    <CardContainer className="inter-var">
-                        <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl
-                        dark:hover:shadow-neutral-500/[0.1] dark:bg-black dark:border-white/[0.2]
-                        border-black/[0.1] w-full md:!w-[350px] h-auto rounded-xl p-6 border">
-                            <CardItem
-                                translateZ="50"
-                                className="text-xl font-bold text-neutral-600 dark:text-white"
-                            >
-                                Hobby
-                                <h2 className="text-6xl">₹0</h2>
-                            </CardItem>
-                            <CardItem
-                                translateZ="60"
-                                className="text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300"
-                            >
-                                Get a glimpse of what our software is capable of. Just a heads
-                                up {"you'll"} never leave us after this!
-                                <ul className="my-4 flex flex-col gap-2">
-                                    <li className="flex items-center gap-2">
-                                        <CheckIcon />3 Free AI Assistants/automations
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <CheckIcon />
-                                        100 tasks per month
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <CheckIcon />
-                                        Two-step Actions
-                                    </li>
-                                </ul>
-                            </CardItem>
-                            <div className="flex justify-between items-center mt-8">
-                                <CardItem
-                                    translateZ={20}
-                                    as="button"
-                                    className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
-                                >
-                                    Try now →
-                                </CardItem>
-                                <CardItem
-                                    translateZ={20}
-                                    as="button"
-                                    className="px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
-                                >
-                                    Get Started Now
-                                </CardItem>
-                            </div>
-                        </CardBody>
-                    </CardContainer>
-                    <CardContainer className="inter-var ">
-                        <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl
-                        dark:hover:shadow-neutral-500/[0.1] dark:bg-black dark:border-[#E2CBFF]
-                        border-black/[0.1] w-full md:!w-[350px] h-auto rounded-xl p-6 border">
-                            <CardItem
-                                translateZ="50"
-                                className="text-xl font-bold text-neutral-600 dark:text-white "
-                            >
-                                Pro Plan
-                                <h2 className="text-6xl ">₹499</h2>
-                            </CardItem>
-                            <CardItem
-                                translateZ="60"
-                                className="text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300"
-                            >
-                                Get a glimpse of what our software is capable of. Just a heads
-                                up {"you'll"} never leave us after this!
-                                <ul className="my-4 flex flex-col gap-2">
-                                    <li className="flex items-center gap-2">
-                                        <CheckIcon />3 Free automations
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <CheckIcon />
-                                        100 tasks per month
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <CheckIcon />
-                                        Two-step Actions
-                                    </li>
-                                </ul>
-                            </CardItem>
-                            <div className="flex justify-between items-center mt-8">
-                                <CardItem
-                                    translateZ={20}
-                                    as="button"
-                                    className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
-                                >
-                                    Try now →
-                                </CardItem>
-                                <CardItem
-                                    translateZ={20}
-                                    as="button"
-                                    className="px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
-                                >
-                                    Get Started Now
-                                </CardItem>
-                            </div>
-                        </CardBody>
-                    </CardContainer>
-                    <CardContainer className="inter-var ">
-                        <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-neutral-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full md:!w-[350px] h-auto rounded-xl p-6 border">
-                            <CardItem
-                                translateZ="50"
-                                className="text-xl font-bold text-neutral-600 dark:text-white "
-                            >
-                                Unlimited
-                                <h2 className="text-6xl ">₹999</h2>
-                            </CardItem>
-                            <CardItem
-                                translateZ="60"
-                                className="text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300"
-                            >
-                                Get a glimpse of what our software is capable of. Just a heads
-                                up {"you'll"} never leave us after this!
-                                <ul className="my-4 flex flex-col gap-2">
-                                    <li className="flex items-center gap-2">
-                                        <CheckIcon />3 Free automations
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <CheckIcon />
-                                        100 tasks per month
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <CheckIcon />
-                                        Two-step Actions
-                                    </li>
-                                </ul>
-                            </CardItem>
-                            <div className="flex justify-between items-center mt-8">
-                                <CardItem
-                                    translateZ={20}
-                                    as="button"
-                                    className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
-                                >
-                                    Try now →
-                                </CardItem>
-                                <CardItem
-                                    translateZ={20}
-                                    as="button"
-                                    className="px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
-                                >
-                                    Get Started Now
-                                </CardItem>
-                            </div>
-                        </CardBody>
-                    </CardContainer>
-                </div>
-            </section>
-        </main>
-    );
+  return (
+    <main>
+      <Navbar />
+
+      <div className="w-full px-2 md:px-4 flex mt-40">
+        <FadeIn>
+          <ResourceCardGrid
+            sortedData={data}
+            filteredFeaturedData={filteredFeaturedData}
+          >
+            <div className="grid grid-cols-1 xl:grid-cols-6 lg:gap-16 pb-8 pt-8">
+              <div className="col-span-1 md:col-span-2 z-10">
+                <Hero>
+                  <DirectorySearch />
+                </Hero>
+              </div>
+
+              <div className="col-span-1 md:col-span-4 mt-6 md:mt-0">
+                {filteredFeaturedData.length >= 1 ? (
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <div className="relative">
+                      <FeaturedGrid featuredData={filteredFeaturedData} />
+                    </div>
+                  </Suspense>
+                ) : (
+                  <div className="relative">
+                    <EmptyFeaturedGrid />
+                  </div>
+                )}
+              </div>
+            </div>
+          </ResourceCardGrid>
+        </FadeIn>
+      </div>
+    </main>
+  );
 }
