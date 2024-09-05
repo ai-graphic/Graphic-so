@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useLoading } from "@/providers/loading-provider";
 import FlowInstance from "./flow-instance";
 import { EditorNodeType } from "@/lib/types";
+import { useUser } from "@clerk/nextjs";
 
 type Props = {
   currentService: string;
@@ -38,6 +39,7 @@ const ActionButton = ({
 }: Props) => {
   const pathname = usePathname();
   const { isLoading, setIsLoading } = useLoading();
+  const {user} = useUser();
   const onSendDiscordMessage = useCallback(async () => {
     const response = await postContentToWebHook(
       nodeConnection.discordNode.content,
@@ -178,17 +180,19 @@ const ActionButton = ({
           setIsLoading(id, false);
         }
       } else if (nodeConnection.aiNode[id].model === "SuperAgent") {
-        console.log("AI model:", nodeConnection.aiNode[id].model);
+        console.log("AI model:");
         try {
-          setIsLoading(id, true);
+          console.log("yo");
           const response = await axios.post(
             "/api/AiResponse/superagent/getoutput",
             {
               prompt: nodeConnection.aiNode[id].prompt,
               workflowId: nodeConnection.aiNode[id].id,
+              userid: user?.id,
+              history: nodeConnection.aiNode[id].history,
             }
           );
-          console.log(response.data);
+          console.log("chup", response.data);
           nodeConnection.setAINode((prev: any) => ({
             ...prev,
             output: {

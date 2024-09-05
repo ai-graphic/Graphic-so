@@ -49,6 +49,7 @@ export type ConnectionProviderProps = {
       lora_linear_alpha: number;
       repo_id: string;
       images: string;
+      history: boolean;
     };
     
   };
@@ -179,6 +180,7 @@ const generateDefaultAINode = (id: string) => ({
   lora_linear_alpha: 0,
   repo_id: "",
   images: "",
+  history: true
 });
 
 const ConnectionsContext = createContext(InitialValues);
@@ -228,6 +230,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     setTriggerNode,
     chatNode,
     setChatNode,
+    history
   };
 
   return <Provider value={values}>{children}</Provider>;

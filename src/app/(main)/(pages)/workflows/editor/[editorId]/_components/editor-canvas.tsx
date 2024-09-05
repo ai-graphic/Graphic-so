@@ -91,6 +91,7 @@ const EditorCanvas = (props: Props) => {
             lora_linear_alpha: 0,
             repo_id: "",
             images: "",
+            history: true,
           };
         }
 

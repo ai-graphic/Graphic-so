@@ -17,8 +17,6 @@ import GoogleFileDetails from "@/app/(main)/(pages)/workflows/editor/[editorId]/
 import GoogleDriveFiles from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/google-drive-files";
 import ActionButton from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/action-button";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { toast } from "sonner";
 import SuperAgent from "./superagent";
 import { Button } from "@/components/ui/button";
 
@@ -69,6 +67,7 @@ const ContentBasedOnTitle = ({
   const title = selectedNode.data.title;
   const [model, setModel] = useState<string>("Select Model");
   const [showSuperAgent, setShowSuperAgent] = useState(false);
+
 
   const FluxOptions = [
     {
@@ -175,6 +174,7 @@ const ContentBasedOnTitle = ({
   }, [selectedNode.id, nodeConnectionType]);
 
   console.log("Node Connection Type:", nodeConnectionType);
+  const [ishistoryChecked, setHistory] = useState(nodeConnectionType[selectedNode.id].history);
   useEffect(() => {
     const modelKey = nodeConnectionType[selectedNode.id]?.model;
     if (modelKey) {
@@ -253,7 +253,7 @@ const ContentBasedOnTitle = ({
                 <option value="FLUX-image">FLUX-image</option>
                 <option value="SuperAgent">SuperAgent</option>
               </select>
-              {showSuperAgent && <SuperAgent node={nodeConnectionType} />}
+              {showSuperAgent && <SuperAgent node={nodeConnectionType} ishistoryChecked={ishistoryChecked} />}
               {nodeConnectionType[selectedNode.id]?.model && (
                 <div>
                   <p className="block text-sm font-medium text-gray-300">

@@ -15,8 +15,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
-const SuperAgent = ({ node }: { node: any }) => {
+const SuperAgent = ({
+  node,
+  ishistoryChecked,
+}: {
+  node: any;
+  ishistoryChecked: boolean;
+}) => {
+  console.log(ishistoryChecked);
   const { selectedNode } = useEditor().state.editor;
   const methods = useForm({
     defaultValues: {
@@ -68,7 +77,9 @@ const SuperAgent = ({ node }: { node: any }) => {
   const [loading, setLoading] = useState(false);
   const [selectedTool, setSelectedTool] = useState("");
   const [selectedLlm, setSelectedLlm] = useState("");
-  const [llms, setLlms] = useState<{ id: string; provider: string; apiKey: string }[]>([]);
+  const [llms, setLlms] = useState<
+    { id: string; provider: string; apiKey: string }[]
+  >([]);
   const [tools, setTools] = useState<{ id: string; name: string }[]>([]);
 
   const handleInputChange = (e: any) => {
@@ -229,7 +240,7 @@ const SuperAgent = ({ node }: { node: any }) => {
     gettools(agent);
     setLoading(false);
   };
-  
+
   const removeWorkflow = () => {
     if (confirm("Are you sure you want to remove this workflow?")) {
       setWorkflowId("");
@@ -260,7 +271,7 @@ const SuperAgent = ({ node }: { node: any }) => {
       setLoading(false);
     }
   });
-  const addllmsInAgents = async (agentsId : string) => {
+  const addllmsInAgents = async (agentsId: string) => {
     try {
       setLoading(true);
       if (!selectedLlm) {
@@ -270,7 +281,7 @@ const SuperAgent = ({ node }: { node: any }) => {
       await axios
         .post("/api/AiResponse/superagent/addllms", {
           agentId: agentsId,
-          llmId: selectedLlm
+          llmId: selectedLlm,
         })
         .then((res) => {
           console.log(res.data);
@@ -292,14 +303,27 @@ const SuperAgent = ({ node }: { node: any }) => {
           {workflowId ? (
             <>
               {node[selectedNode.id] && (
-                <div className="flex flex-col gap-2">
-                  <p className="font-bold text-lg">
-                    {node[selectedNode.id].name} -{" "}
-                    <span className="font-extralight text-sm">
-                      SId : {node[selectedNode.id].id}
-                    </span>
-                  </p>
-
+                <div>
+                  <div className="flex gap-2  items-center">
+                    <p className="font-bold text-lg">
+                      {node[selectedNode.id].name} -{" "}
+                      <span className="font-extralight text-sm">
+                        SId : {node[selectedNode.id].id}
+                      </span>
+                    </p>
+                    <div className="flex items-center gap-2 p-4">
+                      <Switch
+                        id="airplane-mode"
+                        defaultChecked={ishistoryChecked}
+                        onClick={() => {
+                          node[selectedNode.id].history =
+                            !node[selectedNode.id].history;
+                          console.log(node[selectedNode.id]);
+                        }}
+                      />
+                      history
+                    </div>{" "}
+                  </div>
                   <Button
                     onClick={() => {
                       removeWorkflow();
@@ -377,17 +401,21 @@ const SuperAgent = ({ node }: { node: any }) => {
                             <SelectTrigger>
                               <SelectValue>
                                 {selectedLlm
-                                  ? llms.find(
-                                      (llm) => llm.id === selectedLlm
-                                    )?.provider
+                                  ? llms.find((llm) => llm.id === selectedLlm)
+                                      ?.provider
                                   : "Select LLms to add"}
                               </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
                               {llms?.map(
-                                (llm: { id: string; provider: string, apiKey : string}) => (
+                                (llm: {
+                                  id: string;
+                                  provider: string;
+                                  apiKey: string;
+                                }) => (
                                   <SelectItem key={llm.id} value={llm.id}>
-                                    {llm.provider} - {llm.apiKey.slice(0, 10)}*****
+                                    {llm.provider} - {llm.apiKey.slice(0, 10)}
+                                    *****
                                   </SelectItem>
                                 )
                               )}
