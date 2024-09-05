@@ -326,6 +326,26 @@ export const EditorCanvasDefaultCardTypes = {
     description: "Boolean operator that creates different conditions lanes.",
     type: "Action",
   },
+  "flux-dev": {
+    description: "Development tools for creating and testing flux models.",
+    type: "Action",
+  },
+  "image-to-image": {
+    description: "Convert one image to another using AI models.",
+    type: "Action",
+  },
+  "flux-lora": {
+    description: "Low-rank adaptation for fine-tuning flux models.",
+    type: "Action",
+  },
+  "train-flux": {
+    description: "Train flux models with custom datasets.",
+    type: "Action",
+  },
+  "stable-video": {
+    description: "Generate stable videos using AI techniques.",
+    type: "Action",
+  },
 };
 
 export const CONNECTIONS: Connection[] = [

@@ -18,12 +18,21 @@ import {
 import { EditorCanvasTypes } from "@/lib/types";
 
 type Props = { type: EditorCanvasTypes };
-
 const EditorCanvasIconHelper = ({ type }: Props) => {
   switch (type) {
     case "Email":
       return <Mail className="flex-shrink-0" size={30} />;
     case "Condition":
+      return <GitBranch className="flex-shrink-0" size={30} />;
+    case "flux-dev":
+      return <GitBranch className="flex-shrink-0" size={30} />;
+    case "image-to-image":
+      return <GitBranch className="flex-shrink-0" size={30} />;
+    case "flux-lora":
+      return <GitBranch className="flex-shrink-0" size={30} />;
+    case "stable-video":
+      return <GitBranch className="flex-shrink-0" size={30} />;
+    case "train-flux":
       return <GitBranch className="flex-shrink-0" size={30} />;
     case "AI":
       return <CircuitBoard className="flex-shrink-0" size={30} />;

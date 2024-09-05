@@ -13,14 +13,14 @@ export type ConnectionProviderProps = {
   triggerNode: {
     triggerType: string;
     triggerValue: string;
-  }
+  };
   setTriggerNode: React.Dispatch<React.SetStateAction<any>>;
   chatNode: {
     chatType: string;
     chatid: string;
     chatHistory: string[];
     chatinput: string;
-  }
+  };
   setChatNode: React.Dispatch<React.SetStateAction<any>>;
   aiNode: {
     [id: string]: {
@@ -51,8 +51,162 @@ export type ConnectionProviderProps = {
       images: string;
       history: boolean;
     };
-    
   };
+  fluxDevNode: {
+    [id: string]: {
+      id: string;
+      ApiKey: string;
+      prompt: string;
+      model: string;
+      localModel: string;
+      output: string;
+      temperature: number;
+      maxTokens: number;
+      endpoint: string;
+      num_outputs: number;
+      aspect_ratio: string;
+      output_format: string;
+      guidance_scale: number;
+      output_quality: number;
+      num_inference_steps: number;
+      model_name: string;
+      hf_token: string;
+      steps: number;
+      learning_rate: number;
+      batch_size: number;
+      resolution: string;
+      lora_linear: boolean;
+      lora_linear_alpha: number;
+      repo_id: string;
+      images: string;
+      history: boolean;
+    };
+  };
+  imageToImageNode: {
+    [id: string]: {
+      id: string;
+      ApiKey: string;
+      prompt: string;
+      model: string;
+      localModel: string;
+      output: string;
+      temperature: number;
+      maxTokens: number;
+      endpoint: string;
+      num_outputs: number;
+      aspect_ratio: string;
+      output_format: string;
+      guidance_scale: number;
+      output_quality: number;
+      num_inference_steps: number;
+      model_name: string;
+      hf_token: string;
+      steps: number;
+      learning_rate: number;
+      batch_size: number;
+      resolution: string;
+      lora_linear: boolean;
+      lora_linear_alpha: number;
+      repo_id: string;
+      images: string;
+      history: boolean;
+    };
+  };
+  fluxLoraNode: {
+    [id: string]: {
+      id: string;
+      ApiKey: string;
+      prompt: string;
+      model: string;
+      localModel: string;
+      output: string;
+      temperature: number;
+      maxTokens: number;
+      endpoint: string;
+      num_outputs: number;
+      aspect_ratio: string;
+      output_format: string;
+      guidance_scale: number;
+      output_quality: number;
+      num_inference_steps: number;
+      model_name: string;
+      hf_token: string;
+      steps: number;
+      learning_rate: number;
+      batch_size: number;
+      resolution: string;
+      lora_linear: boolean;
+      lora_linear_alpha: number;
+      repo_id: string;
+      images: string;
+      history: boolean;
+    };
+  };
+  stableVideoNode: {
+    [id: string]: {
+      id: string;
+      ApiKey: string;
+      prompt: string;
+      model: string;
+      localModel: string;
+      output: string;
+      temperature: number;
+      maxTokens: number;
+      endpoint: string;
+      num_outputs: number;
+      aspect_ratio: string;
+      output_format: string;
+      guidance_scale: number;
+      output_quality: number;
+      num_inference_steps: number;
+      model_name: string;
+      hf_token: string;
+      steps: number;
+      learning_rate: number;
+      batch_size: number;
+      resolution: string;
+      lora_linear: boolean;
+      lora_linear_alpha: number;
+      repo_id: string;
+      images: string;
+      history: boolean;
+    };
+  };
+  trainFluxNode: {
+    [id: string]: {
+      id: string;
+      ApiKey: string;
+      prompt: string;
+      model: string;
+      localModel: string;
+      output: string;
+      temperature: number;
+      maxTokens: number;
+      endpoint: string;
+      num_outputs: number;
+      aspect_ratio: string;
+      output_format: string;
+      guidance_scale: number;
+      output_quality: number;
+      num_inference_steps: number;
+      model_name: string;
+      hf_token: string;
+      steps: number;
+      learning_rate: number;
+      batch_size: number;
+      resolution: string;
+      lora_linear: boolean;
+      lora_linear_alpha: number;
+      repo_id: string;
+      images: string;
+      history: boolean;
+    };
+  };
+  setfluxDevNode: React.Dispatch<React.SetStateAction<any>>;
+  setimageToImageNode: React.Dispatch<React.SetStateAction<any>>;
+  setfluxLoraNode: React.Dispatch<React.SetStateAction<any>>;
+  setstableVideoNode: React.Dispatch<React.SetStateAction<any>>;
+  settrainFluxNode: React.Dispatch<React.SetStateAction<any>>;
   output: string[];
   setAINode: React.Dispatch<React.SetStateAction<any>>;
   addAINode: (id: string) => void; // Add this line
@@ -90,7 +244,7 @@ export type ConnectionProviderProps = {
       ai?: string;
     }>
   >;
-  
+
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -135,6 +289,11 @@ const InitialValues: ConnectionProviderProps = {
     content: "",
   },
   aiNode: {},
+  fluxDevNode: {},
+  imageToImageNode: {},
+  fluxLoraNode: {},
+  stableVideoNode: {},
+  trainFluxNode: {},
   output: [],
   workflowTemplate: {
     discord: "",
@@ -153,6 +312,11 @@ const InitialValues: ConnectionProviderProps = {
   setChatNode: () => undefined,
   setAINode: () => undefined,
   addAINode: () => undefined,
+  setfluxDevNode: () => undefined,
+  setimageToImageNode: () => undefined,
+  setfluxLoraNode: () => undefined,
+  setstableVideoNode: () => undefined,
+  settrainFluxNode: () => undefined,
 };
 const generateDefaultAINode = (id: string) => ({
   id,
@@ -180,14 +344,11 @@ const generateDefaultAINode = (id: string) => ({
   lora_linear_alpha: 0,
   repo_id: "",
   images: "",
-  history: true
+  history: true,
 });
 
 const ConnectionsContext = createContext(InitialValues);
 const { Provider } = ConnectionsContext;
-
-
-
 
 export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [discordNode, setDiscordNode] = useState(InitialValues.discordNode);
@@ -199,6 +360,17 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [output, setOutput] = useState(InitialValues.output);
   const [chatNode, setChatNode] = useState(InitialValues.chatNode);
   const [triggerNode, setTriggerNode] = useState(InitialValues.triggerNode);
+  const [fluxDevNode, setfluxDevNode] = useState(InitialValues.fluxDevNode);
+  const [imageToImageNode, setimageToImageNode] = useState(
+    InitialValues.imageToImageNode
+  );
+  const [fluxLoraNode, setfluxLoraNode] = useState(InitialValues.fluxLoraNode);
+  const [stableVideoNode, setstableVideoNode] = useState(
+    InitialValues.stableVideoNode
+  );
+  const [trainFluxNode, settrainFluxNode] = useState(
+    InitialValues.trainFluxNode
+  );
   const [workflowTemplate, setWorkFlowTemplate] = useState(
     InitialValues.workflowTemplate
   );
@@ -208,7 +380,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
       [id]: generateDefaultAINode(id),
     }));
   };
-  
+
   const values = {
     discordNode,
     setDiscordNode,
@@ -230,7 +402,17 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     setTriggerNode,
     chatNode,
     setChatNode,
-    history
+    history,
+    fluxDevNode,
+    setfluxDevNode,
+    imageToImageNode,
+    setimageToImageNode,
+    fluxLoraNode,
+    setfluxLoraNode,
+    stableVideoNode,
+    setstableVideoNode,
+    trainFluxNode,
+    settrainFluxNode,
   };
 
   return <Provider value={values}>{children}</Provider>;

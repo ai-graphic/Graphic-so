@@ -174,7 +174,7 @@ const ContentBasedOnTitle = ({
   }, [selectedNode.id, nodeConnectionType]);
 
   console.log("Node Connection Type:", nodeConnectionType);
-  const [ishistoryChecked, setHistory] = useState(nodeConnectionType[selectedNode.id].history);
+  const [ishistoryChecked, setHistory] = useState(nodeConnectionType[selectedNode.id]?.model && nodeConnectionType[selectedNode.id]?.history);
   useEffect(() => {
     const modelKey = nodeConnectionType[selectedNode.id]?.model;
     if (modelKey) {
@@ -225,6 +225,9 @@ const ContentBasedOnTitle = ({
               ? ""
               : "Message"}
           </p>
+          {title === "flux-dev" && (
+            <div>fluxdeb</div>
+          )}
           {title === "AI" ? (
             <div className="gap-2 flex flex-col">
               <p className="block text-sm font-medium text-gray-300">
