@@ -29,13 +29,6 @@ export async function POST(req: Request, res: Response) {
       sync_mode
     );
 
-    // Log Cloudinary configuration for debugging
-    console.log("Cloudinary Config:", {
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
-
     if (!apiKey && !prompt) {
       return new Response("API key and prompt is required", {
         status: 400,
