@@ -7,8 +7,8 @@ export default authMiddleware({
         '/api/drive-activity/notification',
         '/api/payment/success',
         '/api/workflow',
-        '/api/AiResponse/superagent/getoutput',
-        '/api/AiResponse/FLUX-image'
+        '/api/ai/superagent/getoutput',
+        '/api/ai/FLUX-image'
     ],
     ignoredRoutes: [
         '/api/auth/callback/discord',

@@ -7,7 +7,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { FormItem, FormField } from "@/components/ui/form";
 import { toast } from "sonner";
 import { LLMS } from "@/lib/constants";
-import AddTool from "./tools";
+import AddTool from "../tools";
 import {
   Select,
   SelectContent,
@@ -95,7 +95,7 @@ const SuperAgent = ({
     try {
       setLoading(true);
       await axios
-        .post("/api/AiResponse/superagent/addAgents", {
+        .post("/api/ai/superagent/addAgents", {
           workflowId: workflowId,
           Agents: agentId,
           steps: node[selectedNode.id].steps
@@ -126,8 +126,8 @@ const SuperAgent = ({
       try {
         setLoading(true);
         const [toolsdata, llmsdata] = await Promise.all([
-          await axios.get("/api/AiResponse/superagent/tools"),
-          await axios.get("/api/AiResponse/superagent/llms"),
+          await axios.get("/api/ai/superagent/tools"),
+          await axios.get("/api/ai/superagent/llms"),
         ]);
         setTools(toolsdata.data.data);
         setLlms(llmsdata.data.data);
@@ -152,7 +152,7 @@ const SuperAgent = ({
       const { name, prompt } = data;
       setLoading(true);
       await axios
-        .post("/api/AiResponse/superagent/createAgents", {
+        .post("/api/ai/superagent/createAgents", {
           name: name,
           description: name,
           prompt: prompt,
@@ -176,7 +176,7 @@ const SuperAgent = ({
     try {
       setLoading(true);
       await axios
-        .post("/api/AiResponse/superagent/getworkflow", {
+        .post("/api/ai/superagent/getworkflow", {
           workflowId: id,
         })
         .then((res) => {
@@ -200,7 +200,7 @@ const SuperAgent = ({
       setLoading(true);
       const { name } = data;
       await axios
-        .post("/api/AiResponse/superagent/createWorkflow", {
+        .post("/api/ai/superagent/createWorkflow", {
           name,
           description: name,
         })
@@ -223,7 +223,7 @@ const SuperAgent = ({
   const gettools = async (agent: string) => {
     try {
       setLoading(true);
-      const response = await axios.post("/api/AiResponse/superagent/tools", {
+      const response = await axios.post("/api/ai/superagent/tools", {
         toolId: selectedTool,
         agentId: agent,
       });
@@ -257,11 +257,11 @@ const SuperAgent = ({
     const { LLM, Apikey } = data;
     try {
       setLoading(true);
-      const response = await axios.post("/api/AiResponse/superagent/llms", {
+      const response = await axios.post("/api/ai/superagent/llms", {
         LLM,
         Apikey,
       });
-      const llms = await axios.get("/api/AiResponse/superagent/llms");
+      const llms = await axios.get("/api/ai/superagent/llms");
 
       toast.success("LLM added successfully");
     } catch (error) {
@@ -279,7 +279,7 @@ const SuperAgent = ({
         return;
       }
       await axios
-        .post("/api/AiResponse/superagent/addllms", {
+        .post("/api/ai/superagent/addllms", {
           agentId: agentsId,
           llmId: selectedLlm,
         })

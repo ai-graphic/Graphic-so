@@ -54,152 +54,69 @@ export type ConnectionProviderProps = {
   };
   fluxDevNode: {
     [id: string]: {
-      id: string;
-      ApiKey: string;
-      prompt: string;
-      model: string;
-      localModel: string;
-      output: string;
-      temperature: number;
-      maxTokens: number;
-      endpoint: string;
-      num_outputs: number;
-      aspect_ratio: string;
-      output_format: string;
-      guidance_scale: number;
-      output_quality: number;
-      num_inference_steps: number;
-      model_name: string;
-      hf_token: string;
-      steps: number;
-      learning_rate: number;
-      batch_size: number;
-      resolution: string;
-      lora_linear: boolean;
-      lora_linear_alpha: number;
-      repo_id: string;
-      images: string;
-      history: boolean;
+      id : string,
+      model : string,
+      output : string,
+      prompt : string,
+      image_size : string,
+      apiKey : string,
+      num_inference_steps : number,
+      guidance_scale : number,
+      num_images : number,
+      seed : number,
+      enable_safety_checker : boolean,
+      sync_mode : boolean
     };
   };
   imageToImageNode: {
     [id: string]: {
       id: string;
-      ApiKey: string;
-      prompt: string;
-      model: string;
-      localModel: string;
-      output: string;
-      temperature: number;
-      maxTokens: number;
-      endpoint: string;
-      num_outputs: number;
-      aspect_ratio: string;
-      output_format: string;
-      guidance_scale: number;
-      output_quality: number;
-      num_inference_steps: number;
-      model_name: string;
-      hf_token: string;
-      steps: number;
-      learning_rate: number;
-      batch_size: number;
-      resolution: string;
-      lora_linear: boolean;
-      lora_linear_alpha: number;
-      repo_id: string;
-      images: string;
-      history: boolean;
+      prompt : string,
+      image_size : string,
+      image_url : string,
+      apiKey : string,
+      num_inference_steps : number,
+      guidance_scale : number,
+      num_images : number,
+      seed : number,
+      enable_safety_checker : boolean,
+      sync_mode : boolean,
+      strength : number
     };
   };
   fluxLoraNode: {
     [id: string]: {
       id: string;
-      ApiKey: string;
-      prompt: string;
-      model: string;
-      localModel: string;
-      output: string;
-      temperature: number;
-      maxTokens: number;
-      endpoint: string;
-      num_outputs: number;
-      aspect_ratio: string;
-      output_format: string;
-      guidance_scale: number;
-      output_quality: number;
-      num_inference_steps: number;
-      model_name: string;
-      hf_token: string;
-      steps: number;
-      learning_rate: number;
-      batch_size: number;
-      resolution: string;
-      lora_linear: boolean;
-      lora_linear_alpha: number;
-      repo_id: string;
-      images: string;
-      history: boolean;
+      prompt : string,
+      image_size : string,
+      apiKey : string,
+      num_inference_steps : number,
+      guidance_scale : number, 
+      num_images : number, 
+      seed :  number,
+      enable_safety_checker:  boolean,
+      loras : string,
+      sync_mode : boolean,
+      output_format : string,
     };
   };
   stableVideoNode: {
     [id: string]: {
       id: string;
-      ApiKey: string;
-      prompt: string;
-      model: string;
-      localModel: string;
-      output: string;
-      temperature: number;
-      maxTokens: number;
-      endpoint: string;
-      num_outputs: number;
-      aspect_ratio: string;
-      output_format: string;
-      guidance_scale: number;
-      output_quality: number;
-      num_inference_steps: number;
-      model_name: string;
-      hf_token: string;
-      steps: number;
-      learning_rate: number;
-      batch_size: number;
-      resolution: string;
-      lora_linear: boolean;
-      lora_linear_alpha: number;
-      repo_id: string;
-      images: string;
-      history: boolean;
+      image_url : string,
+      apiKey : string,
+      motion_bucket_id : string,
+      fps : number,
+      cond_aug : boolean,
     };
   };
   trainFluxNode: {
     [id: string]: {
       id: string;
-      ApiKey: string;
-      prompt: string;
-      model: string;
-      localModel: string;
-      output: string;
-      temperature: number;
-      maxTokens: number;
-      endpoint: string;
-      num_outputs: number;
-      aspect_ratio: string;
-      output_format: string;
-      guidance_scale: number;
-      output_quality: number;
-      num_inference_steps: number;
-      model_name: string;
-      hf_token: string;
-      steps: number;
-      learning_rate: number;
-      batch_size: number;
-      resolution: string;
-      lora_linear: boolean;
-      lora_linear_alpha: number;
-      repo_id: string;
-      images: string;
-      history: boolean;
+      images_data_url : string,
+      trigger_word :  string,
+      apiKey : string,
+      iter_multiplier : number,
     };
   };
   setfluxDevNode: React.Dispatch<React.SetStateAction<any>>;

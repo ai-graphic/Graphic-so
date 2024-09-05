@@ -35,11 +35,11 @@ const ActionButton = ({
   nodes,
   edges,
   setNodes,
-  setEdges
+  setEdges,
 }: Props) => {
   const pathname = usePathname();
   const { isLoading, setIsLoading } = useLoading();
-  const {user} = useUser();
+  const { user } = useUser();
   const onSendDiscordMessage = useCallback(async () => {
     const response = await postContentToWebHook(
       nodeConnection.discordNode.content,
@@ -90,7 +90,12 @@ const ActionButton = ({
       toast.error(response.message);
     }
   }, [nodeConnection.slackNode, channels]);
-  // ... existing code ...
+
+  const onFluxDev = useCallback(async () => {}, []);
+  const onImageToImage = useCallback(async () => {}, []);
+  const onFluxLora = useCallback(async () => {}, []);
+  const onTrainFlux = useCallback(async () => {}, []);
+  const onStableVideo = useCallback(async () => {}, []);
 
   const onAiSearch = useCallback(
     async (id: string) => {
@@ -154,7 +159,7 @@ const ActionButton = ({
         console.log("AI model:", nodeConnection.aiNode[id].model);
         try {
           setIsLoading(id, true);
-          const response = await axios.post("/api/AiResponse/FLUX-image", {
+          const response = await axios.post("/api/ai/FLUX-image", {
             prompt: nodeConnection.aiNode[id].prompt,
             apiKey: nodeConnection.aiNode[id].ApiKey,
             temperature: nodeConnection.aiNode[id].temperature,
@@ -183,15 +188,12 @@ const ActionButton = ({
         console.log("AI model:");
         try {
           console.log("yo");
-          const response = await axios.post(
-            "/api/AiResponse/superagent/getoutput",
-            {
-              prompt: nodeConnection.aiNode[id].prompt,
-              workflowId: nodeConnection.aiNode[id].id,
-              userid: user?.id,
-              history: nodeConnection.aiNode[id].history,
-            }
-          );
+          const response = await axios.post("/api/ai/superagent/getoutput", {
+            prompt: nodeConnection.aiNode[id].prompt,
+            workflowId: nodeConnection.aiNode[id].id,
+            userid: user?.id,
+            history: nodeConnection.aiNode[id].history,
+          });
           console.log("chup", response.data);
           nodeConnection.setAINode((prev: any) => ({
             ...prev,
@@ -224,6 +226,21 @@ const ActionButton = ({
       if (response) {
         toast.message(response);
       }
+    }
+    if (currentService === "flux-dev") {
+
+    }
+    if (currentService === "image-to-image") {
+
+    }
+    if (currentService === "flux-lora") {
+
+    }
+    if (currentService === "train-flux") {
+
+    }
+    if (currentService === "stable-video") {
+      
     }
     if (currentService === "Discord") {
       const response = await onCreateNodeTemplate(
@@ -280,8 +297,6 @@ const ActionButton = ({
     }
   }, [nodeConnection.aiNode.output, selectedNode.id]);
 
-
-
   const renderActionButton = () => {
     switch (currentService) {
       case "Discord":
@@ -302,7 +317,8 @@ const ActionButton = ({
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
             ) : (
               <div>
-                {nodeConnection.aiNode[selectedNode.id]?.model !== "FLUX-image" ? (
+                {nodeConnection.aiNode[selectedNode.id]?.model !==
+                "FLUX-image" ? (
                   <div className="font-extralight">
                     <p className="font-bold">Outputs</p>
                     {aiOutput.map((output, index) => (
@@ -367,6 +383,61 @@ const ActionButton = ({
             </Button>
           </>
         );
+      case "flux-dev":
+        return (
+          <>
+            <Button variant="outline" onClick={onFluxDev}>
+              Test
+            </Button>
+            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+              Save Template
+            </Button>
+          </>
+        );
+      case "image-to-image":
+        return (
+          <>
+            <Button variant="outline" onClick={onImageToImage}>
+              Test
+            </Button>
+            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+              Save Template
+            </Button>
+          </>
+        );
+      case "flux-lora":
+        return (
+          <>
+            <Button variant="outline" onClick={onFluxLora}>
+              Test
+            </Button>
+            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+              Save Template
+            </Button>
+          </>
+        );
+      case "train-flux":
+        return (
+          <>
+            <Button variant="outline" onClick={onTrainFlux}>
+              Test
+            </Button>
+            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+              Save Template
+            </Button>
+          </>
+        );
+      case "stable-video":
+        return (
+          <>
+            <Button variant="outline" onClick={onStableVideo}>
+              Test
+            </Button>
+            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+              Save Template
+            </Button>
+          </>
+        );
 
       default:
         return null;
@@ -375,7 +446,12 @@ const ActionButton = ({
   return (
     <div className="flex flex-col gap-2 w-full">
       {renderActionButton()}
-      <FlowInstance edges={edges} nodes={nodes} setNodes={setNodes} setEdges={setEdges} />
+      <FlowInstance
+        edges={edges}
+        nodes={nodes}
+        setNodes={setNodes}
+        setEdges={setEdges}
+      />
     </div>
   );
 };

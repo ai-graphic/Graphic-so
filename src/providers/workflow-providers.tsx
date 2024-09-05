@@ -232,7 +232,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   setIsLoading(idNode, true);
 
                   const output = await axios.post(
-                    "/api/AiResponse/FLUX-image",
+                    "/api/ai/FLUX-image",
                     {
                       prompt: content,
                       apiKey: aiTemplate[idNode].ApiKey,
@@ -259,7 +259,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   setIsLoading(idNode, true);
 
                   const response = await axios.post(
-                    "/api/AiResponse/superagent/getoutput",
+                    "/api/ai/superagent/getoutput",
                     {
                       prompt: content,
                       workflowId: aiTemplate[idNode].id,

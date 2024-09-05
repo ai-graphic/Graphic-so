@@ -17,8 +17,13 @@ import GoogleFileDetails from "@/app/(main)/(pages)/workflows/editor/[editorId]/
 import GoogleDriveFiles from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/google-drive-files";
 import ActionButton from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/action-button";
 import { useEffect, useState } from "react";
-import SuperAgent from "./superagent";
+import SuperAgent from "./nodes/superagent";
 import { Button } from "@/components/ui/button";
+import FluxDev from "./nodes/FluxDev";
+import ImageToImage from "./nodes/ImageToImage";
+import FluxLora from "./nodes/FluxLora";
+import TrainFlux from "./nodes/TrainFlux";
+import StableVideo from "./nodes/stableVideo";
 
 export interface Option {
   value: string;
@@ -56,7 +61,7 @@ const ContentBasedOnTitle = ({
   selectedSlackChannels,
   setSelectedSlackChannels,
   setNodes,
-  setEdges
+  setEdges,
 }: Props) => {
   const [showButtons, setShowButtons] = useState(false);
   const [selectedOutput, setSelectedOutput] = useState<string | null>(null);
@@ -67,7 +72,6 @@ const ContentBasedOnTitle = ({
   const title = selectedNode.data.title;
   const [model, setModel] = useState<string>("Select Model");
   const [showSuperAgent, setShowSuperAgent] = useState(false);
-
 
   const FluxOptions = [
     {
@@ -174,7 +178,10 @@ const ContentBasedOnTitle = ({
   }, [selectedNode.id, nodeConnectionType]);
 
   console.log("Node Connection Type:", nodeConnectionType);
-  const [ishistoryChecked, setHistory] = useState(nodeConnectionType[selectedNode.id]?.model && nodeConnectionType[selectedNode.id]?.history);
+  const [ishistoryChecked, setHistory] = useState(
+    nodeConnectionType[selectedNode.id]?.model &&
+      nodeConnectionType[selectedNode.id]?.history
+  );
   useEffect(() => {
     const modelKey = nodeConnectionType[selectedNode.id]?.model;
     if (modelKey) {
@@ -225,9 +232,6 @@ const ContentBasedOnTitle = ({
               ? ""
               : "Message"}
           </p>
-          {title === "flux-dev" && (
-            <div>fluxdeb</div>
-          )}
           {title === "AI" ? (
             <div className="gap-2 flex flex-col">
               <p className="block text-sm font-medium text-gray-300">
@@ -256,7 +260,12 @@ const ContentBasedOnTitle = ({
                 <option value="FLUX-image">FLUX-image</option>
                 <option value="SuperAgent">SuperAgent</option>
               </select>
-              {showSuperAgent && <SuperAgent node={nodeConnectionType} ishistoryChecked={ishistoryChecked} />}
+              {showSuperAgent && (
+                <SuperAgent
+                  node={nodeConnectionType}
+                  ishistoryChecked={ishistoryChecked}
+                />
+              )}
               {nodeConnectionType[selectedNode.id]?.model && (
                 <div>
                   <p className="block text-sm font-medium text-gray-300">
@@ -432,7 +441,7 @@ const ContentBasedOnTitle = ({
                 }}
               />
             </div>
-          ) : (
+          ) : title === "Slack" || title === "Notion" ? (
             <div>
               <Input
                 type="text"
@@ -478,6 +487,26 @@ const ContentBasedOnTitle = ({
                         </button>
                       ))
                   )}
+            </div>
+          ) : (
+            <div>
+            <p className="text-lg">{title}</p>
+            {title === "flux-dev" && (
+              <FluxDev />
+            )}
+            {title === "image-to-image" && (
+             <ImageToImage />
+            )}
+            {title === "flux-lora" && (
+              <FluxLora />
+            )}
+            {title === "train-flux" && (
+              <TrainFlux />
+            )}
+            {title === "stable-video" && (
+              <StableVideo />
+            )}
+
             </div>
           )}
 

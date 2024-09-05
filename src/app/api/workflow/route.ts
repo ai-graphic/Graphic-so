@@ -167,7 +167,7 @@ export async function POST(req: Request, res: Response) {
               }
             } else if (aiTemplate[idNode].model === "FLUX-image") {
               try {
-                const output = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/AiResponse/FLUX-image`, {
+                const output = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/ai/FLUX-image`, {
                   prompt: content,
                   apiKey: aiTemplate[idNode].ApiKey,
                 });
@@ -179,7 +179,7 @@ export async function POST(req: Request, res: Response) {
             } else if (aiTemplate[idNode].model === "SuperAgent") {
               try {
                 const response = await axios.post(
-                  `${process.env.NEXT_PUBLIC_URL}/api/AiResponse/superagent/getoutput`,
+                  `${process.env.NEXT_PUBLIC_URL}/api/ai/superagent/getoutput`,
                   {
                     prompt: content,
                     workflowId: aiTemplate[idNode].id,

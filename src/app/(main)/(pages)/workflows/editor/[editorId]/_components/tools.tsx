@@ -72,13 +72,13 @@ function AddTool({ setTools }: { setTools: (tools: any[]) => void }) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const response = await axios.post(
-        "/api/AiResponse/superagent/create-tools",
+        "/api/ai/superagent/create-tools",
         {
           ...values,
         }
       );
       toast.success("Tool created successfully");
-      const tools = await axios.get("/api/AiResponse/superagent/tools");
+      const tools = await axios.get("/api/ai/superagent/tools");
       setTools(tools.data.data);
       form.reset();
       setOpen(false);

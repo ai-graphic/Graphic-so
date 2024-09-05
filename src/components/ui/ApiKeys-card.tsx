@@ -52,11 +52,11 @@ const ApikeyCard = () => {
         return;
       }
 
-      const response = await axios.post("/api/AiResponse/superagent/llms", {
+      const response = await axios.post("/api/ai/superagent/llms", {
         LLM,
         Apikey,
       });
-      const llms = await axios.get("/api/AiResponse/superagent/llms");
+      const llms = await axios.get("/api/ai/superagent/llms");
       toast.success("LLM added successfully");
     } catch (error) {
       console.error("Error adding LLM:", error);
