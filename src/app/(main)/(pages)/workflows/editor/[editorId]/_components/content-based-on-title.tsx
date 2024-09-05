@@ -489,8 +489,8 @@ const ContentBasedOnTitle = ({
                   )}
             </div>
           ) : (
-            <div>
-            <p className="text-lg">{title}</p>
+            <div className="flex flex-col gap-4">
+            <p className="text-lg underline">{title}</p>
             {title === "flux-dev" && (
               <FluxDev />
             )}
@@ -501,7 +501,7 @@ const ContentBasedOnTitle = ({
               <FluxLora />
             )}
             {title === "train-flux" && (
-              <TrainFlux />
+              <TrainFlux  nodeConnectionType={nodeConnectionType} title={title}/>
             )}
             {title === "stable-video" && (
               <StableVideo />

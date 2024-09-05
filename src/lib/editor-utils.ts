@@ -50,6 +50,103 @@ export const onAIContent = (
   }));
 };
 
+export const onfluxDevContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setfluxDevNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+};
+
+export const onImageToImageContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setimageToImageNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+}
+
+export const onFluxLoraContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setfluxLoraNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+};
+
+export const onStableVideoContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setstableVideoNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+};
+
+export const onTrainFluxContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.settrainFluxNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+};
+
+
+
 export const onDiscordContent = (
   nodeConnection: ConnectionProviderProps,
   event: React.ChangeEvent<HTMLInputElement>
@@ -86,6 +183,16 @@ export const onContentChange = (
     onNotionContent(nodeConnection, event);
   } else if (nodeType === "AI") {
     onAIContent(state, nodeConnection, event, content);
+  } else if (nodeType === "flux-dev") {
+    onfluxDevContent(state, nodeConnection, event, content);
+  } else if (nodeType === "image-to-image") {
+    onImageToImageContent(state, nodeConnection, event, content);
+  } else if (nodeType === "flux-lora") {
+    onFluxLoraContent(state, nodeConnection, event, content);
+  } else if (nodeType === "stable-video") {
+    onStableVideoContent(state, nodeConnection, event, content);
+  } else if (nodeType === "train-flux") {
+    onTrainFluxContent(state, nodeConnection, event, content);
   }
 };
 

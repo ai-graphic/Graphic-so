@@ -115,6 +115,76 @@ export const onCreateNodeTemplate = async (
             return 'AI template saved';
         }
     }
+    if (type === 'flux-dev') {
+        const response = await db.workflows.update({
+            where: {
+                id: workflowId,
+            },
+            data: {
+                fluxDevTemplate: content,
+            },
+        });
+
+        if (response) {
+            return 'flux-dev template saved';
+        }
+    }
+    if (type === 'image-to-image') {
+        const response = await db.workflows.update({
+            where: {
+                id: workflowId,
+            },
+            data: {
+                ImageToImageTemplate: content,
+            },
+        });
+
+        if (response) {
+            return 'image-to-image template saved';
+        }
+    }
+    if (type === 'flux-lora') {
+        const response = await db.workflows.update({
+            where: {
+                id: workflowId,
+            },
+            data: {
+                fluxloraTemplate: content,
+            },
+        });
+
+        if (response) {
+            return 'flux-lora template saved';
+        }
+    }
+    if (type === 'stable-video') {
+        const response = await db.workflows.update({
+            where: {
+                id: workflowId,
+            },
+            data: {
+                videoTemplate: content,
+            },
+        });
+
+        if (response) {
+            return 'stable-video template saved';
+        }
+    }
+    if (type === 'train-flux') {
+        const response = await db.workflows.update({
+            where: {
+                id: workflowId,
+            },
+            data: {
+                fluxTrainTemplate: content,
+            },
+        });
+
+        if (response) {
+            return 'train-flux template saved';
+        }
+    }
 }
 
 export const onGetWorkflows = async () => {

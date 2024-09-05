@@ -103,3 +103,10 @@ export const nodeMapper: Record<string, string> = {
   "stable-video": "stableVideoNode",
   "train-flux": "trainFluxNode",
 };
+
+export type Option = {
+    [key: string]: {
+      placeholder: string | number | boolean;
+      type: string;
+    };
+  };

@@ -94,24 +94,29 @@ model Connections {
 }
 
 model Workflows {
-  id                String   @id @default(uuid())
-  nodes             String?
-  edges             String?
-  name              String
-  discordTemplate   String?
-  notionTemplate    String?
-  slackTemplate     String?
-  AiTemplate        String?
-  slackChannels     String[]
-  slackAccessToken  String?
-  notionAccessToken String?
-  notionDbId        String?
-  flowPath          String?
-  cronPath          String?
-  publish           Boolean? @default(false)
-  description       String
-  userId            String
-  User              User     @relation(fields: [userId], references: [clerkId])
-  chatTemplate      String?
-  chatHistory       String[]
+  id                    String   @id @default(uuid())
+  nodes                 String?
+  edges                 String?
+  name                  String
+  discordTemplate       String?
+  notionTemplate        String?
+  slackTemplate         String?
+  AiTemplate            String?
+  slackChannels         String[]
+  slackAccessToken      String?
+  notionAccessToken     String?
+  notionDbId            String?
+  flowPath              String?
+  cronPath              String?
+  publish               Boolean? @default(false)
+  description           String
+  userId                String
+  User                  User     @relation(fields: [userId], references: [clerkId])
+  chatTemplate          String?
+  chatHistory           String[]
+  fluxDevTemplate       String?
+  fluxloraTemplate      String?
+  fluxTrainTemplate     String?
+  ImageToImageTemplate  String?
+  videoTemplate         String?
 }

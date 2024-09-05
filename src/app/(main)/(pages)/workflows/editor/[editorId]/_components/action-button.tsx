@@ -228,19 +228,69 @@ const ActionButton = ({
       }
     }
     if (currentService === "flux-dev") {
+      console.log("AI Node:", nodeConnection.fluxDevNode);
+      const aiNodeAsString = JSON.stringify(nodeConnection.fluxDevNode);
+      const response = await onCreateNodeTemplate(
+        aiNodeAsString,
+        currentService,
+        pathname.split("/").pop()!
+      );
 
+      if (response) {
+        toast.message(response);
+      }
     }
     if (currentService === "image-to-image") {
+      console.log("AI Node:", nodeConnection.imageToImageNode);
+      const aiNodeAsString = JSON.stringify(nodeConnection.imageToImageNode);
+      const response = await onCreateNodeTemplate(
+        aiNodeAsString,
+        currentService,
+        pathname.split("/").pop()!
+      );
 
+      if (response) {
+        toast.message(response);
+      }
     }
     if (currentService === "flux-lora") {
+      console.log("AI Node:", nodeConnection.fluxLoraNode);
+      const aiNodeAsString = JSON.stringify(nodeConnection.fluxLoraNode);
+      const response = await onCreateNodeTemplate(
+        aiNodeAsString,
+        currentService,
+        pathname.split("/").pop()!
+      );
 
+      if (response) {
+        toast.message(response);
+      }
     }
     if (currentService === "train-flux") {
+      console.log("AI Node:", nodeConnection.trainFluxNode);
+      const aiNodeAsString = JSON.stringify(nodeConnection.trainFluxNode);
+      const response = await onCreateNodeTemplate(
+        aiNodeAsString,
+        currentService,
+        pathname.split("/").pop()!
+      );
 
+      if (response) {
+        toast.message(response);
+      }
     }
     if (currentService === "stable-video") {
-      
+      console.log("AI Node:", nodeConnection.stableVideoNode);
+      const aiNodeAsString = JSON.stringify(nodeConnection.stableVideoNode);
+      const response = await onCreateNodeTemplate(
+        aiNodeAsString,
+        currentService,
+        pathname.split("/").pop()!
+      );
+
+      if (response) {
+        toast.message(response);
+      }
     }
     if (currentService === "Discord") {
       const response = await onCreateNodeTemplate(
