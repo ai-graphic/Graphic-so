@@ -8,7 +8,7 @@ import React from "react";
 const fluxDevNodeOption : Option[] = [
   { prompt: { placeholder: "Enter your prompt", type: "text" } },
   { image_size: { placeholder: "Enter image size", type: "text" } },
-  { apiKey: { placeholder: "Enter API key", type: "password" } },
+  { apiKey: { placeholder: "Enter API key", type: "text" } },
   { num_inference_steps: { placeholder: 50, type: "number" } },
   { guidance_scale: { placeholder: 7.5, type: "number" } },
   { num_images: { placeholder: 1, type: "number" } },

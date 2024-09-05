@@ -91,11 +91,157 @@ const ActionButton = ({
     }
   }, [nodeConnection.slackNode, channels]);
 
-  const onFluxDev = useCallback(async () => {}, []);
-  const onImageToImage = useCallback(async () => {}, []);
-  const onFluxLora = useCallback(async () => {}, []);
-  const onTrainFlux = useCallback(async () => {}, []);
-  const onStableVideo = useCallback(async () => {}, []);
+  const onFluxDev = useCallback(
+    async (id: string) => {
+      console.log("Flux Dev Node:", id);
+      try {
+        setIsLoading(id, true);
+        console.log("Flux Dev Node:", nodeConnection.fluxDevNode);
+        const response = await axios.post("/api/ai/fal/flux-dev", {
+          prompt: nodeConnection.fluxDevNode[id].prompt,
+          image_size: nodeConnection.fluxDevNode[id].image_size,
+          apiKey: nodeConnection.fluxDevNode[id].apiKey,
+          num_inference_steps:
+            nodeConnection.fluxDevNode[id].num_inference_steps,
+          guidance_scale: nodeConnection.fluxDevNode[id].guidance_scale,
+          num_images: nodeConnection.fluxDevNode[id].num_images,
+          seed: nodeConnection.fluxDevNode[id].seed,
+          enable_safety_checker:
+            nodeConnection.fluxDevNode[id].enable_safety_checker,
+          sync_mode: nodeConnection.fluxDevNode[id].sync_mode,
+        });
+        nodeConnection.setAINode((prev: any) => ({
+          ...prev,
+          output: {
+            ...(prev.output || {}),
+            [id]: [...(prev.output?.[id] || []), response.data],
+          },
+        }));
+        console.log("Flux Dev Response:", response.data);
+      } catch (error) {
+        console.error("Error during Flux Dev API call:", error);
+      } finally {
+        setIsLoading(id, false);
+      }
+    },
+    [nodeConnection.fluxDevNode, pathname]
+  );
+
+  const onImageToImage = useCallback(async (id: string) => {
+    console.log("Image to Image Node:", id);
+    try {
+      setIsLoading(id, true);
+      const response = await axios.post("/api/ai/fal/image-to-image", {
+        prompt: nodeConnection.imageToImageNode[id].prompt,
+        image_size: nodeConnection.imageToImageNode[id].image_size,
+        image_url: nodeConnection.imageToImageNode[id].image_url,
+        apiKey: nodeConnection.imageToImageNode[id].apiKey,
+        num_inference_steps:
+          nodeConnection.imageToImageNode[id].num_inference_steps,
+        guidance_scale: nodeConnection.imageToImageNode[id].guidance_scale,
+        num_images: nodeConnection.imageToImageNode[id].num_images,
+        seed: nodeConnection.imageToImageNode[id].seed,
+        enable_safety_checker:
+          nodeConnection.imageToImageNode[id].enable_safety_checker,
+        sync_mode: nodeConnection.imageToImageNode[id].sync_mode,
+        strength: nodeConnection.imageToImageNode[id].strength,
+      });
+      nodeConnection.setAINode((prev: any) => ({
+        ...prev,
+        output: {
+          ...(prev.output || {}),
+          [id]: [...(prev.output?.[id] || []), response.data],
+        },
+      }));
+      console.log("Image to Image Response:", response.data);
+    } catch (error) {
+      console.error("Error during Image to Image API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
+  const onFluxLora = useCallback(async (id: string) => {
+    console.log("Flux Lora Node:", id);
+    try {
+      setIsLoading(id, true);
+      const response = await axios.post("/api/ai/fal/flux-lora", {
+        prompt: nodeConnection.fluxLoraNode[id].prompt,
+        image_size: nodeConnection.fluxLoraNode[id].image_size,
+        apiKey: nodeConnection.fluxLoraNode[id].apiKey,
+        num_inference_steps:
+          nodeConnection.fluxLoraNode[id].num_inference_steps,
+        guidance_scale: nodeConnection.fluxLoraNode[id].guidance_scale,
+        num_images: nodeConnection.fluxLoraNode[id].num_images,
+        seed: nodeConnection.fluxLoraNode[id].seed,
+        enable_safety_checker:
+          nodeConnection.fluxLoraNode[id].enable_safety_checker,
+        loras: nodeConnection.fluxLoraNode[id].loras,
+        sync_mode: nodeConnection.fluxLoraNode[id].sync_mode,
+        output_format: nodeConnection.fluxLoraNode[id].output_format,
+      });
+      nodeConnection.setAINode((prev: any) => ({
+        ...prev,
+        output: {
+          ...(prev.output || {}),
+          [id]: [...(prev.output?.[id] || []), response.data],
+        },
+      }));
+      console.log("Flux Lora Response:", response.data);
+    } catch (error) {
+      console.error("Error during Flux Lora API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
+  const onTrainFlux = useCallback(async (id: string) => {
+    console.log("Train Flux Node:", id);
+    try {
+      setIsLoading(id, true);
+      const response = await axios.post("/api/ai/fal/train-flux", {
+        images_data_url: nodeConnection.trainFluxNode[id].images_data_url,
+        trigger_word: nodeConnection.trainFluxNode[id].trigger_word,
+        apiKey: nodeConnection.trainFluxNode[id].apiKey,
+        iter_multiplier: nodeConnection.trainFluxNode[id].iter_multiplier,
+      });
+      nodeConnection.setAINode((prev: any) => ({
+        ...prev,
+        output: {
+          ...(prev.output || {}),
+          [id]: [...(prev.output?.[id] || []), response.data],
+        },
+      }));
+      console.log("Train Flux Response:", response.data);
+    } catch (error) {
+      console.error("Error during Train Flux API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
+  const onStableVideo = useCallback(async (id: string) => {
+    console.log("Stable Video Node:", id);
+    try {
+      setIsLoading(id, true);
+      const response = await axios.post("/api/ai/fal/stable-video", {
+        image_url: nodeConnection.stableVideoNode[id].image_url,
+        apiKey: nodeConnection.stableVideoNode[id].apiKey,
+        motion_bucket_id: nodeConnection.stableVideoNode[id].motion_bucket_id,
+        fps: nodeConnection.stableVideoNode[id].fps,
+        cond_aug: nodeConnection.stableVideoNode[id].cond_aug,
+      });
+      nodeConnection.setAINode((prev: any) => ({
+        ...prev,
+        output: {
+          ...(prev.output || {}),
+          [id]: [...(prev.output?.[id] || []), response.data],
+        },
+      }));
+      console.log("Stable Video Response:", response.data);
+    } catch (error) {
+      console.error("Error during Stable Video API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
 
   const onAiSearch = useCallback(
     async (id: string) => {
@@ -436,7 +582,25 @@ const ActionButton = ({
       case "flux-dev":
         return (
           <>
-            <Button variant="outline" onClick={onFluxDev}>
+            {nodeConnection.fluxDevNode[selectedNode.id] &&
+              aiOutput.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <img
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                     / >
+                      
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onFluxDev(selectedNode.id)}
+            >
               Test
             </Button>
             <Button onClick={onCreateLocalNodeTempate} variant="outline">
@@ -447,7 +611,10 @@ const ActionButton = ({
       case "image-to-image":
         return (
           <>
-            <Button variant="outline" onClick={onImageToImage}>
+            <Button
+              variant="outline"
+              onClick={() => onImageToImage(selectedNode.id)}
+            >
               Test
             </Button>
             <Button onClick={onCreateLocalNodeTempate} variant="outline">
@@ -458,7 +625,10 @@ const ActionButton = ({
       case "flux-lora":
         return (
           <>
-            <Button variant="outline" onClick={onFluxLora}>
+            <Button
+              variant="outline"
+              onClick={() => onFluxLora(selectedNode.id)}
+            >
               Test
             </Button>
             <Button onClick={onCreateLocalNodeTempate} variant="outline">
@@ -469,7 +639,10 @@ const ActionButton = ({
       case "train-flux":
         return (
           <>
-            <Button variant="outline" onClick={onTrainFlux}>
+            <Button
+              variant="outline"
+              onClick={() => onTrainFlux(selectedNode.id)}
+            >
               Test
             </Button>
             <Button onClick={onCreateLocalNodeTempate} variant="outline">
@@ -480,7 +653,10 @@ const ActionButton = ({
       case "stable-video":
         return (
           <>
-            <Button variant="outline" onClick={onStableVideo}>
+            <Button
+              variant="outline"
+              onClick={() => onStableVideo(selectedNode.id)}
+            >
               Test
             </Button>
             <Button onClick={onCreateLocalNodeTempate} variant="outline">
