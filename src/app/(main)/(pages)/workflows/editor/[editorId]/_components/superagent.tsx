@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { findDOMNode } from "react-dom";
 
 const SuperAgent = ({ node }: { node: any }) => {
   const { selectedNode } = useEditor().state.editor;
@@ -68,7 +67,8 @@ const SuperAgent = ({ node }: { node: any }) => {
   const [toggleAgents, settoggleAgents] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedTool, setSelectedTool] = useState("");
-  const [llms, setLlms] = useState([]);
+  const [selectedLlm, setSelectedLlm] = useState("");
+  const [llms, setLlms] = useState<{ id: string; provider: string; apiKey: string }[]>([]);
   const [tools, setTools] = useState<{ id: string; name: string }[]>([]);
 
   const handleInputChange = (e: any) => {
@@ -133,6 +133,7 @@ const SuperAgent = ({ node }: { node: any }) => {
     getdata();
   }, []);
 
+  console.log(llms);
   console.log(tools);
   const CreateAgents = agentsMethod.handleSubmit(async (data) => {
     console.log("data", data);
@@ -186,11 +187,11 @@ const SuperAgent = ({ node }: { node: any }) => {
   const CreateWorkflow = methods.handleSubmit(async (data) => {
     try {
       setLoading(true);
-      const { name, description } = data;
+      const { name } = data;
       await axios
         .post("/api/AiResponse/superagent/createWorkflow", {
           name,
-          description,
+          description: name,
         })
         .then((res) => {
           setWorkflow(res.data.data);
@@ -228,6 +229,7 @@ const SuperAgent = ({ node }: { node: any }) => {
     gettools(agent);
     setLoading(false);
   };
+  
   const removeWorkflow = () => {
     if (confirm("Are you sure you want to remove this workflow?")) {
       setWorkflowId("");
@@ -241,7 +243,6 @@ const SuperAgent = ({ node }: { node: any }) => {
   };
 
   const Addllm = llmMethod.handleSubmit(async (data) => {
-
     const { LLM, Apikey } = data;
     try {
       setLoading(true);
@@ -250,7 +251,7 @@ const SuperAgent = ({ node }: { node: any }) => {
         Apikey,
       });
       const llms = await axios.get("/api/AiResponse/superagent/llms");
-      setLlms(llms.data.data);
+
       toast.success("LLM added successfully");
     } catch (error) {
       console.error("Error adding LLM:", error);
@@ -259,7 +260,29 @@ const SuperAgent = ({ node }: { node: any }) => {
       setLoading(false);
     }
   });
-
+  const addllmsInAgents = async (agentsId : string) => {
+    try {
+      setLoading(true);
+      if (!selectedLlm) {
+        toast.error("Please select an llm to add");
+        return;
+      }
+      await axios
+        .post("/api/AiResponse/superagent/addllms", {
+          agentId: agentsId,
+          llmId: selectedLlm
+        })
+        .then((res) => {
+          console.log(res.data);
+          toast.success("LLM added successfully");
+        });
+    } catch (error) {
+      console.error("Error adding llms:", error);
+      toast.error("Failed to add llms. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
       {loading ? (
@@ -271,12 +294,12 @@ const SuperAgent = ({ node }: { node: any }) => {
               {node[selectedNode.id] && (
                 <div className="flex flex-col gap-2">
                   <p className="font-bold text-lg">
-                    {node[selectedNode.id].name}
+                    {node[selectedNode.id].name} -{" "}
+                    <span className="font-extralight text-sm">
+                      SId : {node[selectedNode.id].id}
+                    </span>
                   </p>
-                  <p className="text-sm from-neutral-300 font-regular">
-                    {node[selectedNode.id].description}
-                  </p>
-                  <p>SId : {node[selectedNode.id].id}</p>
+
                   <Button
                     onClick={() => {
                       removeWorkflow();
@@ -299,11 +322,17 @@ const SuperAgent = ({ node }: { node: any }) => {
                             <p>
                               {step.agent.name} - {step.agent.type}
                             </p>
-                            <p className="text-sm font-extralight">
-                              StepId : {step.id}
+                            <p className="text-sm  font-bold">
+                              Agent ID:{" "}
+                              <span className=" font-extralight">
+                                {step.agentId}
+                              </span>
                             </p>
-                            <p className="text-sm font-extralight">
-                              Agent ID: {step.agentId}
+                            <p className="text-sm  font-bold">
+                              StepId :{" "}
+                              <span className=" font-extralight">
+                                {step.id},
+                              </span>
                             </p>
                             <p className="text-sm font-extralight">
                               Prompt: {step.agent.prompt}
@@ -342,6 +371,34 @@ const SuperAgent = ({ node }: { node: any }) => {
                             </Button>{" "}
                             <AddTool setTools={setTools} />
                           </div>
+                          <Select
+                            onValueChange={(value) => setSelectedLlm(value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue>
+                                {selectedLlm
+                                  ? llms.find(
+                                      (llm) => llm.id === selectedLlm
+                                    )?.provider
+                                  : "Select LLms to add"}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              {llms?.map(
+                                (llm: { id: string; provider: string, apiKey : string}) => (
+                                  <SelectItem key={llm.id} value={llm.id}>
+                                    {llm.provider} - {llm.apiKey.slice(0, 10)}*****
+                                  </SelectItem>
+                                )
+                              )}
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            onClick={() => addllmsInAgents(step.agentId)}
+                            variant="outline"
+                          >
+                            Add LLM
+                          </Button>
                         </div>
                       )
                     )}
@@ -349,6 +406,51 @@ const SuperAgent = ({ node }: { node: any }) => {
                 )}
               {llms.length > 0 ? (
                 !toggleAgents ? (
+                  <div className="flex flex-col gap-2">
+                    <p>Agents</p>
+                    <FormProvider {...agentsMethod}>
+                      <form
+                        className="flex flex-col gap-2"
+                        onSubmit={CreateAgents}
+                      >
+                        <FormItem>
+                          <FormField
+                            name="name"
+                            render={({ field }) => (
+                              <Input
+                                {...field}
+                                required
+                                placeholder="Enter Name"
+                              />
+                            )}
+                          />
+                        </FormItem>
+                        <FormItem>
+                          <FormField
+                            name="prompt"
+                            render={({ field }) => (
+                              <Input
+                                {...field}
+                                required
+                                placeholder="Enter prompt"
+                              />
+                            )}
+                          />
+                        </FormItem>
+                        <Button onClick={CreateAgents} type="submit">
+                          Add Agents
+                        </Button>
+                        <Button
+                          variant="outline"
+                          type="button"
+                          onClick={() => settoggleAgents((prev) => !prev)}
+                        >
+                          Already have a Agent? Add it!
+                        </Button>
+                      </form>
+                    </FormProvider>
+                  </div>
+                ) : (
                   <div className="flex flex-col gap-2">
                     <Input
                       placeholder="AgentId"
@@ -370,89 +472,7 @@ const SuperAgent = ({ node }: { node: any }) => {
                     >
                       Don{"'"}t have a Agent? Create one!
                     </Button>
-                    ADD LLMS
-                    <FormProvider {...llmMethod}>
-                      <form className="flex flex-col gap-2" onSubmit={Addllm}>
-                        <FormItem>
-                          <FormField
-                            name="LLM"
-                            render={({ field }) => (
-                              <select
-                                {...field}
-                                className="border rounded w-full p-2"
-                              >
-                                <option disabled value="Select LLM">
-                                  Select llm
-                                </option>
-                                {LLMS.map((llm: any) => (
-                                  <option key={llm} value={llm}>
-                                    {llm}
-                                  </option>
-                                ))}
-                              </select>
-                            )}
-                          />
-                        </FormItem>
-                        <FormItem>
-                          <FormField
-                            name="Apikey"
-                            render={({ field }) => (
-                              <Input
-                                {...field}
-                                required
-                                placeholder="Enter api key"
-                              />
-                            )}
-                          />
-                        </FormItem>
-                        <Button onClick={Addllm} type="submit">
-                          Add LLm
-                        </Button>
-                      </form>
-                    </FormProvider>
                   </div>
-                ) : (
-                  <FormProvider {...agentsMethod}>
-                    <form
-                      className="flex flex-col gap-2"
-                      onSubmit={CreateAgents}
-                    >
-                      <FormItem>
-                        <FormField
-                          name="name"
-                          render={({ field }) => (
-                            <Input
-                              {...field}
-                              required
-                              placeholder="Enter Name"
-                            />
-                          )}
-                        />
-                      </FormItem>
-                      <FormItem>
-                        <FormField
-                          name="prompt"
-                          render={({ field }) => (
-                            <Input
-                              {...field}
-                              required
-                              placeholder="Enter prompt"
-                            />
-                          )}
-                        />
-                      </FormItem>
-                      <Button onClick={CreateAgents} type="submit">
-                        Add Agents
-                      </Button>
-                      <Button
-                        variant="outline"
-                        type="button"
-                        onClick={() => settoggleAgents((prev) => !prev)}
-                      >
-                        Go Back
-                      </Button>
-                    </form>
-                  </FormProvider>
                 )
               ) : (
                 <div>
@@ -502,6 +522,30 @@ const SuperAgent = ({ node }: { node: any }) => {
           ) : (
             <div>
               {!toggleWorkflow ? (
+                <FormProvider {...methods}>
+                  <form
+                    className="flex flex-col gap-2"
+                    onSubmit={CreateWorkflow}
+                  >
+                    <FormItem>
+                      <FormField
+                        name="name"
+                        render={({ field }) => (
+                          <Input {...field} required placeholder="Enter Name" />
+                        )}
+                      />
+                    </FormItem>
+                    <Button type="submit">Create New</Button>
+                    <Button
+                      variant="outline"
+                      type="button"
+                      onClick={() => settoggleWorkflow((prev) => !prev)}
+                    >
+                      Already have a workflow? Add it!
+                    </Button>
+                  </form>
+                </FormProvider>
+              ) : (
                 <div className="flex flex-col gap-2">
                   <Input
                     placeholder="Enter workflow ID"
@@ -522,42 +566,6 @@ const SuperAgent = ({ node }: { node: any }) => {
                     Don{"'"}t have a workflow? Create one!
                   </Button>
                 </div>
-              ) : (
-                <FormProvider {...methods}>
-                  <form
-                    className="flex flex-col gap-2"
-                    onSubmit={CreateWorkflow}
-                  >
-                    <FormItem>
-                      <FormField
-                        name="name"
-                        render={({ field }) => (
-                          <Input {...field} required placeholder="Enter Name" />
-                        )}
-                      />
-                    </FormItem>
-                    <FormItem>
-                      <FormField
-                        name="description"
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            required
-                            placeholder="Enter Description"
-                          />
-                        )}
-                      />
-                    </FormItem>
-                    <Button type="submit">Create New</Button>
-                    <Button
-                      variant="outline"
-                      type="button"
-                      onClick={() => settoggleWorkflow((prev) => !prev)}
-                    >
-                      Go Back
-                    </Button>
-                  </form>
-                </FormProvider>
               )}
             </div>
           )}

@@ -27,7 +27,7 @@ import {
 import RenderConnectionAccordion from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/render-connection-accordion";
 import RenderOutputAccordion from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/render-output-accordion";
 import { usegraphicStore } from "@/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ApikeyCard from "@/components/ui/ApiKeys-card";
 import Chat from "./chat";
 
@@ -42,6 +42,7 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges, setNodes, setEdg
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
   const { googleFile, setSlackChannels } = usegraphicStore();
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   useEffect(() => {
     if (state) {
@@ -56,11 +57,16 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges, setNodes, setEdg
         setSlackChannels
       );
     }
-  }, [nodeConnection]);
+  }, [nodeConnection])
+
+  useEffect(() => {
+    setIsFirstLoad(false);
+  }, []);
+
 
   return (
     <aside className="overflow-hidden">
-      <Tabs defaultValue="settings" className="h-screen overflow-scroll">
+     <Tabs defaultValue={isFirstLoad ? "actions" : "settings"} className="h-screen overflow-scroll">
         <TabsList className="bg-transparent">
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="actions">Actions</TabsTrigger>
