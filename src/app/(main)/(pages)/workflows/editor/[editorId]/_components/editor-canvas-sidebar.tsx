@@ -42,7 +42,6 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges, setNodes, setEdg
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
   const { googleFile, setSlackChannels } = usegraphicStore();
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   useEffect(() => {
     if (state) {
@@ -59,14 +58,10 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges, setNodes, setEdg
     }
   }, [nodeConnection])
 
-  useEffect(() => {
-    setIsFirstLoad(false);
-  }, []);
-
 
   return (
     <aside className="overflow-hidden">
-     <Tabs defaultValue={isFirstLoad ? "actions" : "settings"} className="h-screen overflow-scroll">
+ <Tabs defaultValue={nodes.length === 0 ? "actions" : "settings"} className="h-screen overflow-scroll">
         <TabsList className="bg-transparent">
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="actions">Actions</TabsTrigger>
