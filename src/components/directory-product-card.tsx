@@ -81,8 +81,8 @@ export const ResourceCard: React.FC<{
       className="group relative  break-inside-avoid w-full"
     >
       <Link
-        href={`/workflows/editor/${data.id}/chat`}
-        key={`/products/editor/${data.id}/chat`}
+        href={`/workflows/editor/${data.id}`}
+        key={`/workflows/editor/${data.id}`}
         className=""
         onClick={handleClick}
       >

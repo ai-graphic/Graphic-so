@@ -27,7 +27,7 @@ const convertMessage = (message: UIState[number]): VercelRSCMessage => {
 const Chat = () => {
   const { submitUserMessage } = useActions();
   const [messages, setMessages] = useUIState<typeof AI>();
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const pathname = usePathname();
   const workflowId = pathname.split("/")[3];
 
