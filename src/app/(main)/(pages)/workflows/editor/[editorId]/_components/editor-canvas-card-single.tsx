@@ -151,17 +151,19 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
                 <MousePointerClickIcon className="flex-shrink-0 " size={20} />
               </Button>
             </div>
-          ) : isLoading[nodeId ?? ""] &&
-            nodeConnection.aiNode[nodeId ?? ""]?.model ? (
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-          ) : nodeConnection.aiNode[nodeId ?? ""]?.model === "FLUX-image" &&
-            output ? (
-            <img src={output} alt="Model Output" />
-          ) : /https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(output) ? (
-            <img src={output} alt="Model Output" />
-          ) : (
-            <p>{output}</p>
-          )}
+              ) : isLoading[nodeId ?? ""] &&
+              nodeConnection.aiNode[nodeId ?? ""]?.model ? (
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+            ) : nodeConnection.aiNode[nodeId ?? ""]?.model === "FLUX-image" &&
+              output ? (
+              <img src={output} alt="Model Output" />
+            ) : /https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(output) ? (
+              <img src={output} alt="Model Output" />
+            ) : /https?:\/\/.*\.(?:mp4|webm)/.test(output) ? (
+              <video src={output} controls width="320" height="240" />
+            ) : (
+              <p>{output}</p>
+            )}
         </CardHeader>
         <Badge variant="secondary" className="absolute right-2 top-2">
           {nodeConnection.aiNode[nodeId ?? ""]?.model ? (

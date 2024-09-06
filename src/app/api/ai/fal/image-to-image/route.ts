@@ -1,5 +1,11 @@
 export const maxDuration = 300;
 import * as fal from "@fal-ai/serverless-client";
+import { v2 as cloudinary } from "cloudinary";
+
+
+interface FalResult {
+  images: { url: string }[];
+}
 
 export async function POST(req: Request, res: Response) {
   //TODO: Add security checks with clerk
@@ -17,6 +23,17 @@ export async function POST(req: Request, res: Response) {
       sync_mode,
       strength,
     } = await req.json();
+
+    fal.config({
+      credentials: apiKey,
+    });
+
+    if (!apiKey && !prompt) {
+      return new Response("API key and prompt is required", {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     fal.config({
       credentials: apiKey,
@@ -44,14 +61,35 @@ export async function POST(req: Request, res: Response) {
           update.logs.map((log: any) => log.message).forEach(console.log);
         }
       },
+    }) as FalResult;
+
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
     });
 
-    console.log("Flux output :", result);
-    const finaloutput = JSON.stringify(result);
-    return new Response(finaloutput, {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    const uploadurl = result.images[0].url;
+    const uploadResult = await cloudinary.uploader
+      .upload(uploadurl, {
+        public_id: "fluxaisssdd",
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+
+
+      if (uploadResult && uploadResult.url) {
+        const finalurl = [uploadResult.url];
+        const finaloutput = JSON.stringify(finalurl);
+  
+        return new Response(finaloutput, {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      } else {
+        throw new Error("Upload failed, no URL returned.");
+      }
   } catch (error: any) {
     console.error("Error during Replicate API call:", error);
     return new Response("error", {

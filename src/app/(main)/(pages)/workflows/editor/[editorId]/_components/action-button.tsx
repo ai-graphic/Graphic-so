@@ -131,6 +131,7 @@ const ActionButton = ({
     console.log("Image to Image Node:", id);
     try {
       setIsLoading(id, true);
+      console.log("Flux Dev Node:", nodeConnection.imageToImageNode);
       const response = await axios.post("/api/ai/fal/image-to-image", {
         prompt: nodeConnection.imageToImageNode[id].prompt,
         image_size: nodeConnection.imageToImageNode[id].image_size,
@@ -164,6 +165,7 @@ const ActionButton = ({
     console.log("Flux Lora Node:", id);
     try {
       setIsLoading(id, true);
+      console.log("Flux Dev Node:", nodeConnection.fluxLoraNode);
       const response = await axios.post("/api/ai/fal/flux-lora", {
         prompt: nodeConnection.fluxLoraNode[id].prompt,
         image_size: nodeConnection.fluxLoraNode[id].image_size,
@@ -221,6 +223,8 @@ const ActionButton = ({
     console.log("Stable Video Node:", id);
     try {
       setIsLoading(id, true);
+      console.log("Stable Video Node:", nodeConnection);
+      console.log("Stable Video Node:", nodeConnection.stableVideoNode);
       const response = await axios.post("/api/ai/fal/stable-video", {
         image_url: nodeConnection.stableVideoNode[id].image_url,
         apiKey: nodeConnection.stableVideoNode[id].apiKey,
@@ -611,6 +615,21 @@ const ActionButton = ({
       case "image-to-image":
         return (
           <>
+          {nodeConnection.imageToImageNode[selectedNode.id] &&
+              aiOutput.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <img
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                     / >
+                      
+                    </div>
+                  ))}
+                </div>
+              )}
             <Button
               variant="outline"
               onClick={() => onImageToImage(selectedNode.id)}
@@ -625,6 +644,21 @@ const ActionButton = ({
       case "flux-lora":
         return (
           <>
+          {nodeConnection.fluxLoraNode[selectedNode.id] &&
+              aiOutput.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <img
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                     / >
+                      
+                    </div>
+                  ))}
+                </div>
+              )}
             <Button
               variant="outline"
               onClick={() => onFluxLora(selectedNode.id)}
@@ -653,6 +687,23 @@ const ActionButton = ({
       case "stable-video":
         return (
           <>
+          {nodeConnection.stableVideoNode[selectedNode.id] &&
+              aiOutput.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <video
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                        controls
+                        width="320"
+                        height="240"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             <Button
               variant="outline"
               onClick={() => onStableVideo(selectedNode.id)}

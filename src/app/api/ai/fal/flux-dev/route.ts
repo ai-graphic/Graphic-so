@@ -44,8 +44,8 @@ export async function POST(req: Request, res: Response) {
     const numInferenceStepsInt = parseInt(num_inference_steps, 10);
     interface FalResult {
       images: { url: string }[];
-      // Add other properties if needed
     }
+    
     const result = await fal.subscribe("fal-ai/flux/dev", {
       input: {
         prompt: prompt,
