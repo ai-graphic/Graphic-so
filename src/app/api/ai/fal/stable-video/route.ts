@@ -54,7 +54,7 @@ export async function POST(req: Request, res: Response) {
     console.log("uploadurl", uploadurl);
     const uploadResult = await cloudinary.uploader
       .upload(uploadurl, {
-        public_id: "fluxaisssdd",
+        public_id: `fluxaisssdd_${Date.now()}`,
         resource_type: "video",
       })
       .catch((error) => {

@@ -8,7 +8,9 @@ import {
   HardDrive,
   Mail,
   MousePointerClickIcon,
-  Plus,
+  Image,
+  ImagePlayIcon,
+  Video,
   Slack,
   Timer,
   Webhook,
@@ -25,15 +27,23 @@ const EditorCanvasIconHelper = ({ type }: Props) => {
     case "Condition":
       return <GitBranch className="flex-shrink-0" size={30} />;
     case "flux-dev":
-      return <GitBranch className="flex-shrink-0" size={30} />;
+      return <ImagePlayIcon className="flex-shrink-0" size={30} />;
     case "image-to-image":
-      return <GitBranch className="flex-shrink-0" size={30} />;
+      return <ImagePlayIcon className="flex-shrink-0" size={30} />;
     case "flux-lora":
-      return <GitBranch className="flex-shrink-0" size={30} />;
+      return <Image className="flex-shrink-0" size={30} />;
     case "stable-video":
-      return <GitBranch className="flex-shrink-0" size={30} />;
+      return <Video className="flex-shrink-0" size={30} />;
     case "train-flux":
-      return <GitBranch className="flex-shrink-0" size={30} />;
+      return <Image className="flex-shrink-0" size={30} />;
+    case "consistent-character":
+      return <ImagePlayIcon className="flex-shrink-0" size={30} />;
+    case "dreamShaper":
+      return <ImagePlayIcon className="flex-shrink-0" size={30} />;
+    case "fluxGeneral":
+      return <Image className="flex-shrink-0" size={30} />;
+    case "fluxDevLora":
+      return <Image className="flex-shrink-0" size={30} />;
     case "AI":
       return <CircuitBoard className="flex-shrink-0" size={30} />;
     case "Slack":

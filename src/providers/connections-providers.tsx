@@ -54,71 +54,134 @@ export type ConnectionProviderProps = {
   };
   fluxDevNode: {
     [id: string]: {
-      id : string,
-      model : string,
-      output : string,
-      prompt : string,
-      image_size : string,
-      apiKey : string,
-      num_inference_steps : number,
-      guidance_scale : number,
-      num_images : number,
-      seed : number,
-      enable_safety_checker : boolean,
-      sync_mode : boolean
+      id: string;
+      model: string;
+      output: string;
+      prompt: string;
+      image_size: string;
+      apiKey: string;
+      num_inference_steps: number;
+      guidance_scale: number;
+      num_images: number;
+      seed: number;
+      enable_safety_checker: boolean;
+      sync_mode: boolean;
     };
   };
   imageToImageNode: {
     [id: string]: {
       id: string;
-      prompt : string,
-      image_size : string,
-      image_url : string,
-      apiKey : string,
-      num_inference_steps : number,
-      guidance_scale : number,
-      num_images : number,
-      seed : number,
-      enable_safety_checker : boolean,
-      sync_mode : boolean,
-      strength : number
+      prompt: string;
+      image_size: string;
+      image_url: string;
+      apiKey: string;
+      num_inference_steps: number;
+      guidance_scale: number;
+      num_images: number;
+      seed: number;
+      enable_safety_checker: boolean;
+      sync_mode: boolean;
+      strength: number;
     };
   };
   fluxLoraNode: {
     [id: string]: {
       id: string;
-      prompt : string,
-      image_size : string,
-      apiKey : string,
-      num_inference_steps : number,
-      guidance_scale : number, 
-      num_images : number, 
-      seed :  number,
-      enable_safety_checker:  boolean,
-      loras : string,
-      sync_mode : boolean,
-      output_format : string,
+      prompt: string;
+      image_size: string;
+      apiKey: string;
+      num_inference_steps: number;
+      guidance_scale: number;
+      num_images: number;
+      seed: number;
+      enable_safety_checker: boolean;
+      loras: [];
+      sync_mode: boolean;
+      output_format: string;
     };
   };
   stableVideoNode: {
     [id: string]: {
       id: string;
-      image_url : string,
-      apiKey : string,
-      motion_bucket_id : string,
-      fps : number,
-      cond_aug : boolean,
+      image_url: string;
+      apiKey: string;
+      motion_bucket_id: string;
+      fps: number;
+      cond_aug: boolean;
     };
   };
   trainFluxNode: {
     [id: string]: {
       id: string;
-      images_data_url : string,
-      trigger_word :  string,
-      apiKey : string,
-      iter_multiplier : number,
+      images_data_url: string;
+      trigger_word: string;
+      apiKey: string;
+      iter_multiplier: number;
     };
   };
+  consistentCharacterNode: {
+    [id: string]: {
+      id: string;
+      prompt: string;
+      apiKey: string;
+      subject : string;
+      negative_prompt : string;
+      randomise_poses : boolean;
+      number_of_outputs: number;
+      number_of_images_per_pose: number;
+      num_outputs: number;
+      output_format: string;
+      disable_safety_checker: boolean;
+      output_quality: number;
+    };
+  };
+  dreamShaperNode: {
+    [id: string]: {
+      id: string;
+      prompt: string;
+      apiKey: string;
+      image : string;
+      negative_prompt : string;
+      num_inference_steps: number;
+      guidance_scale: number;
+      num_outputs: number;
+      scheduler: string;
+      upscale: number;
+      strength : number;
+    };
+  };
+  fluxGeneralNode : {
+    [id: string]: {
+      id: string;
+      prompt: string;
+      image_size: string;
+      apiKey: string;
+      num_inference_steps: number;
+      guidance_scale: number;
+      num_images: number;
+      seed: number;
+      sync_mode: boolean;
+      enable_safety_checker: boolean;
+    };
+  }
+  fluxDevLoraNode :{
+    [id: string]: {
+      id: string;
+      prompt: string;
+      apiKey: string;
+      hf_loras: string[];
+      num_outputs: number;
+      aspect_ratio: string;
+      output_format: string;
+      guidance_scale: number;
+      output_quality: string;
+      num_inference_steps: number;
+    };
+  }
+  setDreamShaperNode: React.Dispatch<React.SetStateAction<any>>;
+  setFluxGeneralNode: React.Dispatch<React.SetStateAction<any>>;
+  setFluxDevLoraNode: React.Dispatch<React.SetStateAction<any>>;
+  setconsistentCharacterNode: React.Dispatch<React.SetStateAction<any>>;
   setfluxDevNode: React.Dispatch<React.SetStateAction<any>>;
   setimageToImageNode: React.Dispatch<React.SetStateAction<any>>;
   setfluxLoraNode: React.Dispatch<React.SetStateAction<any>>;
@@ -210,6 +273,10 @@ const InitialValues: ConnectionProviderProps = {
   imageToImageNode: {},
   fluxLoraNode: {},
   stableVideoNode: {},
+  consistentCharacterNode: {},
+  dreamShaperNode: {},
+  fluxGeneralNode: {},
+  fluxDevLoraNode: {},
   trainFluxNode: {},
   output: [],
   workflowTemplate: {
@@ -219,6 +286,10 @@ const InitialValues: ConnectionProviderProps = {
     ai: "",
   },
   isLoading: false,
+  setDreamShaperNode: () => undefined,
+  setFluxGeneralNode: () => undefined,
+  setFluxDevLoraNode: () => undefined,
+  setconsistentCharacterNode: () => undefined,
   setGoogleNode: () => undefined,
   setTriggerNode: () => undefined,
   setDiscordNode: () => undefined,
@@ -288,6 +359,18 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [trainFluxNode, settrainFluxNode] = useState(
     InitialValues.trainFluxNode
   );
+  const [consistentCharacterNode, setconsistentCharacterNode] = useState(
+    InitialValues.consistentCharacterNode
+  );
+  const [dreamShaperNode, setDreamShaperNode] = useState(
+    InitialValues.dreamShaperNode
+  );
+  const [fluxGeneralNode, setFluxGeneralNode] = useState(
+    InitialValues.fluxGeneralNode
+  );
+  const [fluxDevLoraNode, setFluxDevLoraNode] = useState(
+    InitialValues.fluxDevLoraNode
+  );
   const [workflowTemplate, setWorkFlowTemplate] = useState(
     InitialValues.workflowTemplate
   );
@@ -330,6 +413,14 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     setstableVideoNode,
     trainFluxNode,
     settrainFluxNode,
+    consistentCharacterNode,
+    setconsistentCharacterNode,
+    dreamShaperNode,
+    setDreamShaperNode,
+    fluxGeneralNode,
+    setFluxGeneralNode,
+    fluxDevLoraNode,
+    setFluxDevLoraNode,
   };
 
   return <Provider value={values}>{children}</Provider>;

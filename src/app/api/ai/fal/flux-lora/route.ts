@@ -67,7 +67,7 @@ export async function POST(req: Request, res: Response) {
     const uploadurl = result.images[0].url;
     const uploadResult = await cloudinary.uploader
       .upload(uploadurl, {
-        public_id: "fluxaisssdd",
+        public_id: `fluxaisssdd_${Date.now()}`,
       })
       .catch((error) => {
         console.log(error);

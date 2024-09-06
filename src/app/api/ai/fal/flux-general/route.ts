@@ -15,6 +15,9 @@ export async function POST(req: Request, res: Response) {
       seed,
       enable_safety_checker,
       sync_mode,
+      loras,
+      controlnets,
+      controlnet_unions,
     } = await req.json();
     console.log(
       "prompt",
@@ -45,8 +48,8 @@ export async function POST(req: Request, res: Response) {
     interface FalResult {
       images: { url: string }[];
     }
-
-    const result = await fal.subscribe("fal-ai/flux/dev", {
+    
+    const result = await fal.subscribe("fal-ai/flux-general", {
       input: {
         prompt: prompt,
         image_size: image_size || "landscape_4_3",
@@ -56,6 +59,9 @@ export async function POST(req: Request, res: Response) {
         enable_safety_checker: enable_safety_checker || false,
         seed: seed || 0,
         sync_mode: sync_mode || true,
+        loras: loras || [],
+        controlnets: controlnets || [],
+        controlnet_unions: controlnet_unions || [],
       },
       logs: true,
       onQueueUpdate: (update: any) => {

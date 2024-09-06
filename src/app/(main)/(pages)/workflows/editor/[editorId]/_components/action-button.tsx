@@ -15,6 +15,7 @@ import { useLoading } from "@/providers/loading-provider";
 import FlowInstance from "./flow-instance";
 import { EditorNodeType } from "@/lib/types";
 import { useUser } from "@clerk/nextjs";
+import { on } from "events";
 
 type Props = {
   currentService: string;
@@ -247,6 +248,140 @@ const ActionButton = ({
     }
   }, []);
 
+  const onConsistantChar = useCallback(async (id: string) => {
+    console.log("Consistant Character Node:", id);
+    try {
+      setIsLoading(id, true);
+      console.log("Consistant Character Node:", nodeConnection.consistentCharacterNode[id]);
+      const response = await axios.post("/api/ai/replicate/consistent-character", {
+        prompt: nodeConnection.consistentCharacterNode[id]?.prompt,
+        apiKey: nodeConnection.consistentCharacterNode[id]?.apiKey,
+        subject: nodeConnection.consistentCharacterNode[id]?.subject,
+        num_outputs: nodeConnection.consistentCharacterNode[id]?.num_outputs,
+        negative_prompt:
+          nodeConnection.consistentCharacterNode[id]?.negative_prompt,
+        randomise_poses:
+          nodeConnection.consistentCharacterNode[id]?.randomise_poses,
+        number_of_outputs:
+          nodeConnection.consistentCharacterNode[id]?.number_of_outputs,
+        disable_safety_checker:
+          nodeConnection.consistentCharacterNode[id]?.disable_safety_checker,
+        number_of_images_per_pose:
+          nodeConnection.consistentCharacterNode[id]?.number_of_images_per_pose,
+        output_format: nodeConnection.consistentCharacterNode[id]?.output_format,
+        output_quality:
+          nodeConnection.consistentCharacterNode[id]?.output_quality,
+      });
+      nodeConnection.setAINode((prev: any) => ({
+        ...prev,
+        output: {
+          ...(prev.output || {}),
+          [id]: [...(prev.output?.[id] || []), response.data],
+        },
+      }));
+      console.log("Consistant Character Response:", response.data);
+    } catch (error) {
+      console.error("Error during Consistant Character API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
+
+  const onFluxDevLora = useCallback(async (id: string) => {
+    console.log("Flux Dev Lora Node:", id);
+    try {
+      setIsLoading(id, true);
+      console.log("Flux Dev Lora Node:", nodeConnection.fluxDevLoraNode[id]);
+      const response = await axios.post("/api/ai/replicate/fluxDevlora", {
+        prompt: nodeConnection.fluxDevLoraNode[id]?.prompt,
+        hf_loras: nodeConnection.fluxDevLoraNode[id]?.hf_loras,
+        apiKey: nodeConnection.fluxDevLoraNode[id]?.apiKey,
+        num_outputs: nodeConnection.fluxDevLoraNode[id]?.num_outputs,
+        aspect_ratio: nodeConnection.fluxDevLoraNode[id]?.aspect_ratio,
+        output_format: nodeConnection.fluxDevLoraNode[id]?.output_format,
+        guidance_scale: nodeConnection.fluxDevLoraNode[id]?.guidance_scale,
+        output_quality: nodeConnection.fluxDevLoraNode[id]?.output_quality,
+        num_inference_steps:
+          nodeConnection.fluxDevLoraNode[id].num_inference_steps,
+      });
+      nodeConnection.setAINode((prev: any) => ({
+        ...prev,
+        output: {
+          ...(prev.output || {}),
+          [id]: [...(prev.output?.[id] || []), response.data],
+        },
+      }));
+      console.log("Flux Dev Lora Response:", response.data);
+    } catch (error) {
+      console.error("Error during Flux Dev Lora API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
+
+  const onDreamShaper = useCallback(async (id: string) => {
+    console.log("Dream Shaper Node:", id);
+    try {
+      setIsLoading(id, true);
+      console.log("Dream Shaper Node:", nodeConnection.dreamShaperNode[id]);
+      const response = await axios.post("/api/ai/replicate/dreamshaper", {
+        prompt: nodeConnection.dreamShaperNode[id]?.prompt,
+        apiKey: nodeConnection.dreamShaperNode[id]?.apiKey,
+        num_inference_steps:
+          nodeConnection.dreamShaperNode[id]?.num_inference_steps,
+        image: nodeConnection.dreamShaperNode[id]?.image,
+        negative_prompt: nodeConnection.dreamShaperNode[id]?.negative_prompt,
+        strength: nodeConnection.dreamShaperNode[id]?.strength,
+        scheduler: nodeConnection.dreamShaperNode[id]?.scheduler,
+        upscale: nodeConnection.dreamShaperNode[id]?.upscale,
+      });
+      nodeConnection.setAINode((prev: any) => ({
+        ...prev,
+        output: {
+          ...(prev.output || {}),
+          [id]: [...(prev.output?.[id] || []), response.data],
+        },
+      }));
+      console.log("Dream Shaper Response:", response.data);
+    } catch (error) {
+      console.error("Error during Dream Shaper API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
+
+  const onFluxGeneral = useCallback(async (id: string) => {
+    console.log("Flux General Node:", id);
+    try {
+      setIsLoading(id, true);
+      console.log("Flux General Node:", nodeConnection.fluxGeneralNode[id]);
+      const response = await axios.post("/api/ai/fal/fluxGeneral", {
+        prompt: nodeConnection.fluxGeneralNode[id]?.prompt,
+        apiKey: nodeConnection.fluxGeneralNode[id]?.apiKey,
+        num_inference_steps:
+          nodeConnection.fluxGeneralNode[id]?.num_inference_steps,
+        guidance_scale: nodeConnection.fluxGeneralNode[id]?.guidance_scale,
+        num_images: nodeConnection.fluxGeneralNode[id]?.num_images,
+        seed: nodeConnection.fluxGeneralNode[id]?.seed,
+        sync_mode: nodeConnection.fluxGeneralNode[id]?.sync_mode,
+        enable_safety_checker:
+          nodeConnection.fluxGeneralNode[id]?.enable_safety_checker,
+      });
+      nodeConnection.setAINode((prev: any) => ({
+        ...prev,
+        output: {
+          ...(prev.output || {}),
+          [id]: [...(prev.output?.[id] || []), response.data],
+        },
+      }));
+      console.log("Flux General Response:", response.data);
+    } catch (error) {
+      console.error("Error during Flux General API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
+
   const onAiSearch = useCallback(
     async (id: string) => {
       if (!nodeConnection.aiNode[id]) {
@@ -442,6 +577,61 @@ const ActionButton = ({
         toast.message(response);
       }
     }
+    if (currentService === "consistent-character") {
+      console.log("AI Node:", nodeConnection.consistentCharacterNode);
+      const aiNodeAsString = JSON.stringify(
+        nodeConnection.consistentCharacterNode
+      );
+      const response = await onCreateNodeTemplate(
+        aiNodeAsString,
+        currentService,
+        pathname.split("/").pop()!
+      );
+
+      if (response) {
+        toast.message(response);
+      }
+    }
+    if (currentService === "dreamShaper") {
+      console.log("AI Node:", nodeConnection.dreamShaperNode);
+      const aiNodeAsString = JSON.stringify(nodeConnection.dreamShaperNode);
+      const response = await onCreateNodeTemplate(
+        aiNodeAsString,
+        currentService,
+        pathname.split("/").pop()!
+      );
+
+      if (response) {
+        toast.message(response);
+      }
+    }
+    if (currentService === "fluxGeneral") {
+      console.log("AI Node:", nodeConnection.fluxGeneralNode);
+      const aiNodeAsString = JSON.stringify(nodeConnection.fluxGeneralNode);
+      const response = await onCreateNodeTemplate(
+        aiNodeAsString,
+        currentService,
+        pathname.split("/").pop()!
+      );
+
+      if (response) {
+        toast.message(response);
+      }
+    }
+    if (currentService === "fluxDevLora") {
+      console.log("AI Node:", nodeConnection.fluxDevLoraNode);
+      const aiNodeAsString = JSON.stringify(nodeConnection.fluxDevLoraNode);
+      const response = await onCreateNodeTemplate(
+        aiNodeAsString,
+        currentService,
+        pathname.split("/").pop()!
+      );
+
+      if (response) {
+        toast.message(response);
+      }
+    }
+
     if (currentService === "Discord") {
       const response = await onCreateNodeTemplate(
         nodeConnection.discordNode.content,
@@ -595,8 +785,7 @@ const ActionButton = ({
                       <img
                         src={output}
                         className="text-blue-500 hover:text-blue-600"
-                     / >
-                      
+                      />
                     </div>
                   ))}
                 </div>
@@ -615,7 +804,7 @@ const ActionButton = ({
       case "image-to-image":
         return (
           <>
-          {nodeConnection.imageToImageNode[selectedNode.id] &&
+            {nodeConnection.imageToImageNode[selectedNode.id] &&
               aiOutput.length > 0 && (
                 <div className="flex flex-col space-y-2">
                   {aiOutput.map((output, index) => (
@@ -624,8 +813,7 @@ const ActionButton = ({
                       <img
                         src={output}
                         className="text-blue-500 hover:text-blue-600"
-                     / >
-                      
+                      />
                     </div>
                   ))}
                 </div>
@@ -644,7 +832,7 @@ const ActionButton = ({
       case "flux-lora":
         return (
           <>
-          {nodeConnection.fluxLoraNode[selectedNode.id] &&
+            {nodeConnection.fluxLoraNode[selectedNode.id] &&
               aiOutput.length > 0 && (
                 <div className="flex flex-col space-y-2">
                   {aiOutput.map((output, index) => (
@@ -653,8 +841,7 @@ const ActionButton = ({
                       <img
                         src={output}
                         className="text-blue-500 hover:text-blue-600"
-                     / >
-                      
+                      />
                     </div>
                   ))}
                 </div>
@@ -687,7 +874,7 @@ const ActionButton = ({
       case "stable-video":
         return (
           <>
-          {nodeConnection.stableVideoNode[selectedNode.id] &&
+            {nodeConnection.stableVideoNode[selectedNode.id] &&
               aiOutput.length > 0 && (
                 <div className="flex flex-col space-y-2">
                   {aiOutput.map((output, index) => (
@@ -707,6 +894,118 @@ const ActionButton = ({
             <Button
               variant="outline"
               onClick={() => onStableVideo(selectedNode.id)}
+            >
+              Test
+            </Button>
+            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+              Save Template
+            </Button>
+          </>
+        );
+      case "consistent-character":
+        return (
+          <>
+           {nodeConnection.consistentCharacterNode[selectedNode.id] &&
+              aiOutput.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <img
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onConsistantChar(selectedNode.id)}
+            >
+              Test
+            </Button>
+            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+              Save Template
+            </Button>
+          </>
+        );
+      case "fluxDevLora":
+        return (
+          <>
+           {nodeConnection.fluxDevLoraNode[selectedNode.id] &&
+              aiOutput.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <img
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onFluxDevLora(selectedNode.id)}
+            >
+              Test
+            </Button>
+            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+              Save Template
+            </Button>
+          </>
+        );
+      case "dreamShaper":
+        return (
+          <>
+           {nodeConnection.dreamShaperNode[selectedNode.id] &&
+              aiOutput.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <img
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onDreamShaper(selectedNode.id)}
+            >
+              Test
+            </Button>
+            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+              Save Template
+            </Button>
+          </>
+        );
+      case "fluxGeneral":
+        return (
+          <>
+           {nodeConnection.fluxGeneralNode[selectedNode.id] &&
+              aiOutput.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <img
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onFluxGeneral(selectedNode.id)}
             >
               Test
             </Button>

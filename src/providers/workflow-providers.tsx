@@ -13,6 +13,7 @@ import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_act
 import axios, { AxiosResponse } from "axios";
 import { db } from "@/lib/db";
 import { onUpdateChatHistory } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
+import FluxDevLora from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/nodes/fluxDevLora";
 
 type WorkflowContextType = {
   runWorkFlow: (
@@ -263,12 +264,12 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   [key: string]: any[];
                 };
                 const contentarr = output[node.id];
-                const prmpt = contentarr[contentarr.length - 1]; 
+                const prmpt = contentarr[contentarr.length - 1];
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
-                  content = latestOutputs[node.id];
-                  chatHistory.user = content;
+                content = latestOutputs[node.id];
+                chatHistory.user = content;
               }
               try {
                 setIsLoading(idNode, true);
@@ -320,12 +321,12 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   [key: string]: any[];
                 };
                 const contentarr = output[node.id];
-                const prmpt = contentarr[contentarr.length - 1]; 
+                const prmpt = contentarr[contentarr.length - 1];
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
-                  content = latestOutputs[node.id];
-                  chatHistory.user = content;
+                content = latestOutputs[node.id];
+                chatHistory.user = content;
               }
               try {
                 setIsLoading(idNode, true);
@@ -335,6 +336,238 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   motion_bucket_id: falVideoTemplate[idNode].motion_bucket_id,
                   fps: falVideoTemplate[idNode].fps,
                   cond_aug: falVideoTemplate[idNode].cond_aug,
+                });
+                nodeConnection.setAINode((prev: any) => ({
+                  ...prev,
+                  output: {
+                    ...(prev.output || {}),
+                    [idNode]: [
+                      ...(prev.output?.[idNode] || []),
+                      output.data[0],
+                    ],
+                  },
+                }));
+                latestOutputs[idNode] = output.data[0];
+              } catch (error) {
+                console.error("Error during Replicate API call:", error);
+              } finally {
+                setIsLoading(idNode, false);
+              }
+            }
+            flowPath.splice(current, 2);
+          }
+          if (nodeType == "consistent-character") {
+            const falCharacterTemplate = JSON.parse(
+              workflow.CharacterTemplate!
+            );
+            if (falCharacterTemplate[idNode]) {
+              console.log("consistent-character Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              if (node.type === "Trigger") {
+                const output = nodeConnection.aiNode.output as unknown as {
+                  [key: string]: any[];
+                };
+                const contentarr = output[node.id];
+                const prmpt = contentarr[contentarr.length - 1];
+                chatHistory.user = prmpt;
+                content = prmpt;
+              } else {
+                content = latestOutputs[node.id];
+                chatHistory.user = content;
+              }
+              try {
+                setIsLoading(idNode, true);
+                const output = await axios.post(
+                  "/api/ai/replicate/consistent-character",
+                  {
+                    prompt: falCharacterTemplate[idNode]?.prompt,
+                    apiKey: falCharacterTemplate[idNode]?.apiKey,
+                    subject: content,
+                    num_outputs: falCharacterTemplate[idNode]?.num_outputs,
+                    negative_prompt:
+                      falCharacterTemplate[idNode]?.negative_prompt,
+                    randomise_poses:
+                      falCharacterTemplate[idNode]?.randomise_poses,
+                    number_of_outputs:
+                      falCharacterTemplate[idNode]?.number_of_outputs,
+                    disable_safety_checker:
+                      falCharacterTemplate[idNode]?.disable_safety_checker,
+                    number_of_images_per_pose:
+                      falCharacterTemplate[idNode]?.number_of_images_per_pose,
+                    output_format: falCharacterTemplate[idNode]?.output_format,
+                    output_quality:
+                      falCharacterTemplate[idNode]?.output_quality,
+                  }
+                );
+                nodeConnection.setAINode((prev: any) => ({
+                  ...prev,
+                  output: {
+                    ...(prev.output || {}),
+                    [idNode]: [
+                      ...(prev.output?.[idNode] || []),
+                      output.data[0],
+                    ],
+                  },
+                }));
+                latestOutputs[idNode] = output.data[0];
+              } catch (error) {
+                console.error("Error during Replicate API call:", error);
+              } finally {
+                setIsLoading(idNode, false);
+              }
+            }
+            flowPath.splice(current, 2);
+          }
+          if (nodeType == "dreamShaper") {
+            const falDreamShaperTemplate = JSON.parse(
+              workflow.DreamShaperTemplate!
+            );
+            if (falDreamShaperTemplate[idNode]) {
+              console.log("dreamShaper Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              if (node.type === "Trigger") {
+                const output = nodeConnection.aiNode.output as unknown as {
+                  [key: string]: any[];
+                };
+                const contentarr = output[node.id];
+                const prmpt = contentarr[contentarr.length - 1];
+                chatHistory.user = prmpt;
+                content = prmpt;
+              } else {
+                content = latestOutputs[node.id];
+                chatHistory.user = content;
+              }
+              try {
+                setIsLoading(idNode, true);
+                const output = await axios.post("/api/ai/replicate/dreamshaper", {
+                  prompt: falDreamShaperTemplate[idNode].prompt,
+                  apiKey: falDreamShaperTemplate[idNode].apiKey,
+                  num_inference_steps:
+                    falDreamShaperTemplate[idNode].num_inference_steps,
+                  image: content,
+                  negative_prompt:
+                    falDreamShaperTemplate[idNode]?.negative_prompt,
+                  strength: falDreamShaperTemplate[idNode]?.strength,
+                  scheduler: falDreamShaperTemplate[idNode]?.scheduler,
+                  upscale: falDreamShaperTemplate[idNode]?.upscale,
+                });
+                nodeConnection.setAINode((prev: any) => ({
+                  ...prev,
+                  output: {
+                    ...(prev.output || {}),
+                    [idNode]: [
+                      ...(prev.output?.[idNode] || []),
+                      output.data[0],
+                    ],
+                  },
+                }));
+                latestOutputs[idNode] = output.data[0];
+              } catch (error) {
+                console.error("Error during Replicate API call:", error);
+              } finally {
+                setIsLoading(idNode, false);
+              }
+            }
+            flowPath.splice(current, 2);
+          }
+          if (nodeType == "fluxGeneral") {
+            const falGeneralTemplate = JSON.parse(
+              workflow.fluxGeneralTemplate!
+            );
+            if (falGeneralTemplate[idNode]) {
+              console.log("fluxGeneral Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              if (node.type === "Trigger") {
+                const output = nodeConnection.aiNode.output as unknown as {
+                  [key: string]: any[];
+                };
+                const contentarr = output[node.id];
+                const prmpt = contentarr[contentarr.length - 1];
+                chatHistory.user = prmpt;
+                content = prmpt;
+              } else {
+                content = latestOutputs[node.id];
+                chatHistory.user = content;
+              }
+              try {
+                setIsLoading(idNode, true);
+                const output = await axios.post("/api/ai/fal/flux-general", {
+                  prompt: content,
+                  apiKey: falGeneralTemplate[idNode]?.apiKey,
+                  num_inference_steps:
+                    falGeneralTemplate[idNode]?.num_inference_steps,
+                  guidance_scale: falGeneralTemplate[idNode]?.guidance_scale,
+                  num_images: falGeneralTemplate[idNode]?.num_images,
+                  seed: falGeneralTemplate[idNode]?.seed,
+                  sync_mode: falGeneralTemplate[idNode]?.sync_mode,
+                  enable_safety_checker:
+                    falGeneralTemplate[idNode]?.enable_safety_checker,
+                });
+                nodeConnection.setAINode((prev: any) => ({
+                  ...prev,
+                  output: {
+                    ...(prev.output || {}),
+                    [idNode]: [
+                      ...(prev.output?.[idNode] || []),
+                      output.data[0],
+                    ],
+                  },
+                }));
+                latestOutputs[idNode] = output.data[0];
+              } catch (error) {
+                console.error("Error during Replicate API call:", error);
+              } finally {
+                setIsLoading(idNode, false);
+              }
+            }
+            flowPath.splice(current, 2);
+          }
+          if (nodeType == "fluxDevLora") {
+            const falDevLoraTemplate = JSON.parse(workflow.fluxDevLora!);
+            if (falDevLoraTemplate[idNode]) {
+              console.log("fluxDevLora Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              if (node.type === "Trigger") {
+                const output = nodeConnection.aiNode.output as unknown as {
+                  [key: string]: any[];
+                };
+                const contentarr = output[node.id];
+                const prmpt = contentarr[contentarr.length - 1];
+                chatHistory.user = prmpt;
+                content = prmpt;
+              } else {
+                content = latestOutputs[node.id];
+                chatHistory.user = content;
+              }
+              try {
+                setIsLoading(idNode, true);
+                const output = await axios.post("/api/ai/replicate/fluxDevlora", {
+                  prompt: content,
+                  hf_loras: falDevLoraTemplate[idNode]?.hf_loras,
+                  apiKey: falDevLoraTemplate[idNode]?.apiKey,
+                  num_outputs: falDevLoraTemplate[idNode]?.num_outputs,
+                  aspect_ratio: falDevLoraTemplate[idNode]?.aspect_ratio,
+                  output_format: falDevLoraTemplate[idNode]?.output_format,
+                  guidance_scale: falDevLoraTemplate[idNode]?.guidance_scale,
+                  output_quality: falDevLoraTemplate[idNode]?.output_quality,
+                  num_inference_steps:
+                    falDevLoraTemplate[idNode].num_inference_steps,
                 });
                 nodeConnection.setAINode((prev: any) => ({
                   ...prev,

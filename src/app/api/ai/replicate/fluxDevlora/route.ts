@@ -2,13 +2,12 @@ export const maxDuration = 300;
 import Replicate from "replicate";
 
 export async function POST(req: Request, res: Response) {
-
-    //TODO: Add security checks with clerk
+  //TODO: Add security checks with clerk
   try {
     const {
       prompt,
       apiKey,
-      temperature,
+      hf_loras,
       num_outputs,
       aspect_ratio,
       output_format,
@@ -16,6 +15,13 @@ export async function POST(req: Request, res: Response) {
       output_quality,
       num_inference_steps,
     } = await req.json();
+
+    if (!apiKey && !prompt) {
+      return new Response("API key, prompt  is required", {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     const replicate = new Replicate({
       auth: apiKey,
@@ -27,12 +33,14 @@ export async function POST(req: Request, res: Response) {
     const outputQualityInt = parseInt(output_quality, 10);
 
     const output = await replicate.run(
-      "lucataco/flux-dev-lora:a22c463f11808638ad5e2ebd582e07a469031f48dd567366fb4c6fdab91d614d",
+      "lucataco/flux-dev-multi-lora:a738942df15c8c788b076ddd052256ba7923aade687b12109ccc64b2c3483aa1",
       {
         input: {
           prompt: prompt,
-          hf_lora: "alvdansen/frosting_lane_flux",
-          temperature: temperature || 0.5,
+          hf_loras: hf_loras || [
+            "https://replicate.delivery/yhqm/xIUPCppeslXbaC6D8hzONTPKFURik2zRMLmmif0GRq2f55lmA/trained_model.tar",
+            "alvdansen/softserve_anime",
+          ],
           aspect_ratio: aspect_ratio || "1:1",
           output_format: output_format || "webp",
           guidance_scale: guidanceScaleNumber || 3.5,

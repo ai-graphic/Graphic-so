@@ -304,6 +304,42 @@ export const EditorCanvasDefaultCardTypes = {
     description: "Post messages to your discord server",
     type: "Action",
   },
+  "flux-dev": {
+    description: "Development tools for creating and testing flux models.",
+    type: "Action",
+  },
+  "image-to-image": {
+    description: "Convert one image to another using AI models.",
+    type: "Action",
+  },
+  "flux-lora": {
+    description: "Low-rank adaptation for fine-tuning flux models.",
+    type: "Action",
+  },
+  "train-flux": {
+    description: "Train flux models with custom datasets.",
+    type: "Action",
+  },
+  "stable-video": {
+    description: "Generate stable videos using AI techniques.",
+    type: "Action",
+  },
+  "consistent-character": {
+    description: "Create images of a given character in different poses.",
+    type: "Action",
+  },
+  "dreamShaper": {
+    description: "Generate a new image from an input image with DreamShaper V6.",
+    type: "Action",
+  },
+  "fluxGeneral": {
+    description: "Generate stable images with FLUX.1 [dev], next generation text-to-image model.",
+    type: "Action",
+  },
+  "fluxDevLora": {
+    description: "FLUX.1-Dev Multi LoRA Explorer.",
+    type: "Action",
+  },
   "Google Calendar": {
     description: "Create a calendar invite.",
     type: "Action",
@@ -324,26 +360,6 @@ export const EditorCanvasDefaultCardTypes = {
   },
   Condition: {
     description: "Boolean operator that creates different conditions lanes.",
-    type: "Action",
-  },
-  "flux-dev": {
-    description: "Development tools for creating and testing flux models.",
-    type: "Action",
-  },
-  "image-to-image": {
-    description: "Convert one image to another using AI models.",
-    type: "Action",
-  },
-  "flux-lora": {
-    description: "Low-rank adaptation for fine-tuning flux models.",
-    type: "Action",
-  },
-  "train-flux": {
-    description: "Train flux models with custom datasets.",
-    type: "Action",
-  },
-  "stable-video": {
-    description: "Generate stable videos using AI techniques.",
     type: "Action",
   },
 };

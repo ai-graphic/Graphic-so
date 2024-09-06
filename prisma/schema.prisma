@@ -119,4 +119,8 @@ model Workflows {
   fluxTrainTemplate     String?
   ImageToImageTemplate  String?
   videoTemplate         String?
+  fluxGeneralTemplate   String?
+  CharacterTemplate     String?
+  DreamShaperTemplate   String?
+  fluxDevLora           String?
 }

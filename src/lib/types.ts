@@ -39,7 +39,11 @@ export type EditorCanvasTypes =
   | "image-to-image"
   | "flux-lora"
   | "stable-video"
-  | "train-flux";
+  | "train-flux"
+  | "consistent-character"
+  | "dreamShaper"
+  | "fluxGeneral"
+  | "fluxDevLora";
 
 export type EditorCanvasCardType = {
   title: string;
@@ -102,6 +106,10 @@ export const nodeMapper: Record<string, string> = {
   "flux-lora": "fluxLoraNode",
   "stable-video": "stableVideoNode",
   "train-flux": "trainFluxNode",
+  "consistent-character": "consistentCharacterNode",
+  dreamShaper: "dreamShaperNode",
+  fluxGeneral: "fluxGeneralNode",
+  fluxDevLora: "fluxDevLoraNode",
 };
 
 export type Option = {

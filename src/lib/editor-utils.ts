@@ -145,6 +145,82 @@ export const onTrainFluxContent = (
   }));
 };
 
+export const onConsistentCharacterContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setconsistentCharacterNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+}
+
+export const onDreamShaperContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setDreamShaperNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+}
+
+export const onFluxGeneralContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setFluxGeneralNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+}
+
+export const onFluxDevLoraContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setFluxDevLoraNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+}
+
 
 
 export const onDiscordContent = (
@@ -193,7 +269,15 @@ export const onContentChange = (
     onStableVideoContent(state, nodeConnection, event, content);
   } else if (nodeType === "train-flux") {
     onTrainFluxContent(state, nodeConnection, event, content);
-  }
+  } else if (nodeType === "consistent-character") {
+    onConsistentCharacterContent(state, nodeConnection, event, content);
+  } else if (nodeType === "dreamShaper") {
+    onDreamShaperContent(state, nodeConnection, event, content);
+  } else if (nodeType === "fluxGeneral") {
+    onFluxGeneralContent(state, nodeConnection, event, content);
+  } else if (nodeType === "fluxDevLora") {
+    onFluxDevLoraContent(state, nodeConnection, event, content);
+  } 
 };
 
 export const onAddTemplateSlack = (

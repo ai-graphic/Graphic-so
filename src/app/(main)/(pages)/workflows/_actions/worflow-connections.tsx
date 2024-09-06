@@ -185,6 +185,63 @@ export const onCreateNodeTemplate = async (
             return 'train-flux template saved';
         }
     }
+    if (type === 'consistent-character') {
+        const response = await db.workflows.update({
+            where: {
+                id: workflowId,
+            },
+            data: {
+                CharacterTemplate: content,
+            },
+        });
+
+        if (response) {
+            return 'consistent-character template saved';
+        }
+    }
+    if (type === 'dreamShaper') {
+        const response = await db.workflows.update({
+            where: {
+                id: workflowId,
+            },
+            data: {
+                DreamShaperTemplate: content,
+            },
+        });
+
+        if (response) {
+            return 'dreamShaper template saved';
+        }
+    }
+    if (type === 'fluxGeneral') {
+        const response = await db.workflows.update({
+            where: {
+                id: workflowId,
+            },
+            data: {
+                fluxGeneralTemplate: content,
+            },
+        });
+
+        if (response) {
+            return 'fluxGeneral template saved';
+        }
+    }
+    if (type === 'fluxDevLora') {
+        const response = await db.workflows.update({
+            where: {
+                id: workflowId,
+            },
+            data: {
+                fluxDevLora: content,
+            },
+        });
+
+        if (response) {
+            return 'fluxDevLora template saved';
+        }
+    }
+
 }
 
 export const onGetWorkflows = async () => {

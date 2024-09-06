@@ -24,6 +24,10 @@ import ImageToImage from "./nodes/ImageToImage";
 import FluxLora from "./nodes/FluxLora";
 import TrainFlux from "./nodes/TrainFlux";
 import StableVideo from "./nodes/stableVideo";
+import DreamShaper from "./nodes/dreamshaper";
+import FluxGeneral from "./nodes/fluxGeneral";
+import FluxDevLora from "./nodes/fluxDevLora";
+import ConsistentChar from "./nodes/ConsistantChar";
 
 export interface Option {
   value: string;
@@ -490,23 +494,21 @@ const ContentBasedOnTitle = ({
             </div>
           ) : (
             <div className="flex flex-col gap-4">
-            <p className="text-lg underline">{title}</p>
-            {title === "flux-dev" && (
-              <FluxDev />
-            )}
-            {title === "image-to-image" && (
-             <ImageToImage />
-            )}
-            {title === "flux-lora" && (
-              <FluxLora />
-            )}
-            {title === "train-flux" && (
-              <TrainFlux  nodeConnectionType={nodeConnectionType} title={title}/>
-            )}
-            {title === "stable-video" && (
-              <StableVideo />
-            )}
-
+              <p className="text-lg underline">{title}</p>
+              {title === "flux-dev" && <FluxDev />}
+              {title === "image-to-image" && <ImageToImage />}
+              {title === "flux-lora" && <FluxLora />}
+              {title === "train-flux" && (
+                <TrainFlux
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "stable-video" && <StableVideo />}
+              {title === "consistent-character" && <ConsistentChar />}
+              {title === "dreamShaper" && <DreamShaper />}
+              {title === "fluxGeneral" && <FluxGeneral />}
+              {title === "fluxDevLora" && <FluxDevLora />}
             </div>
           )}
 

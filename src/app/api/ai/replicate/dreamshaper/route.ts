@@ -2,43 +2,48 @@ export const maxDuration = 300;
 import Replicate from "replicate";
 
 export async function POST(req: Request, res: Response) {
-
-    //TODO: Add security checks with clerk
+  //TODO: Add security checks with clerk
   try {
     const {
       prompt,
       apiKey,
-      temperature,
+      image,
       num_outputs,
-      aspect_ratio,
-      output_format,
+      negative_prompt,
+      strength,
       guidance_scale,
-      output_quality,
+      scheduler,
       num_inference_steps,
+      upscale,
     } = await req.json();
+
+    if (!apiKey && !prompt && !image) {
+      return new Response("API key, prompt and image is required", {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     const replicate = new Replicate({
       auth: apiKey,
     });
 
-    const guidanceScaleNumber = parseFloat(guidance_scale);
-    const numInferenceStepsInt = parseInt(num_inference_steps, 10);
     const numOutputsInt = parseInt(num_outputs, 10);
-    const outputQualityInt = parseInt(output_quality, 10);
+    const upscaleInt = parseInt(upscale, 10);
 
     const output = await replicate.run(
-      "lucataco/flux-dev-lora:a22c463f11808638ad5e2ebd582e07a469031f48dd567366fb4c6fdab91d614d",
+      "mcai/dreamshaper-v6-img2img:c7959eb3a86c09b449dacc11ce8bba295fda466fc6935ab8709e35f4f48c980c",
       {
         input: {
           prompt: prompt,
-          hf_lora: "alvdansen/frosting_lane_flux",
-          temperature: temperature || 0.5,
-          aspect_ratio: aspect_ratio || "1:1",
-          output_format: output_format || "webp",
-          guidance_scale: guidanceScaleNumber || 3.5,
-          num_inference_steps: numInferenceStepsInt || 20,
           num_outputs: numOutputsInt | 1,
-          output_quality: outputQualityInt || 80,
+          upscale: upscaleInt || 2,
+          image: image,
+          negative_prompt: negative_prompt || "",
+          strength: strength || 0.5,
+          guidance_scale: guidance_scale || 7.5,
+          scheduler: scheduler || "EulerAncestralDiscrete",
+          num_inference_steps: num_inference_steps || 30,
         },
       }
     );
