@@ -12,6 +12,8 @@ import { useNodeConnections } from "@/providers/connections-providers";
 import { useLoading } from "@/providers/loading-provider";
 import { onContentChange } from "@/lib/editor-utils";
 import { toast } from "sonner";
+import { useBilling } from "@/providers/billing-provider";
+
 
 interface ChatHistoryItem {
   user: string;
@@ -29,6 +31,7 @@ const Chat = () => {
   const [isUpdated, setIsUpdated] = useState(false);
   const [history, setHistory] = useState<ChatHistoryItem[]>([]);
   const [load, setLoad] = useState(false);
+  const {credits, setCredits} = useBilling()
 
   const cardContentRef = useRef<HTMLDivElement>(null);
 
@@ -67,7 +70,7 @@ const Chat = () => {
 
   const onsubmit = async () => {
     setLoad(true);
-    await runWorkFlow(workflow.id, nodeConnection, setIsLoading, setHistory);
+    await runWorkFlow(workflow.id, nodeConnection, setIsLoading, credits, setCredits, setHistory );
     setMessage("");
     nodeConnection.triggerNode.triggerValue = "";
     setLoad(false);

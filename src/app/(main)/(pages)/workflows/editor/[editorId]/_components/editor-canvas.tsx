@@ -288,15 +288,7 @@ const EditorCanvas = (workflow : any, setworkflow: any, ) => {
                   <Controls position="bottom-right" />
                 ) : (
                   <Controls position="top-right" />
-                )}
-                {!(isMobile < 726) && (
-                  <MiniMap
-                    position="bottom-left"
-                    className="!bg-background"
-                    zoomable
-                    pannable
-                  />
-                )}
+                )}   
 
                 <Background
                   //@ts-ignore

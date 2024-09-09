@@ -7,7 +7,6 @@ import React from "react";
 
 const FluxDevLoraOptions : Option[] = [
     { prompt: { placeholder: "Enter your prompt", type: "text" } },
-    { apiKey: { placeholder: "Enter API key", type: "text" } },
     { hf_loras: { placeholder: "Enter HF Loras", type: "text" }},
     { num_outputs: { placeholder: 1, type: "number" } },
     { aspect_ratio: { placeholder: "Enter aspect ratio", type: "text" } },
@@ -57,7 +56,6 @@ const FluxDevLora =  (nodeConnectionType: any, title: string) => {
                 );
               }}
             />
-            {optionKey === "apiKey" && <div>dfgd</div>}
           </div>
         );
       })}

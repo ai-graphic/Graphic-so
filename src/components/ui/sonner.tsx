@@ -9,7 +9,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
 
   return (
-    <Sonner
+    <Sonner position="top-right"
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       toastOptions={{

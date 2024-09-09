@@ -14,7 +14,7 @@ model User {
   email                 String                 @unique
   profileImage          String?
   tier                  String?                @default("Free")
-  credits               String?                @default("100")
+  credits               String?                @default("40")
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   localGoogleId         String?                @unique

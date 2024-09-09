@@ -8,11 +8,12 @@ import { getworkflow } from "../_actions/workflow-connections";
 import { Button } from "@/components/ui/button";
 import { SendIcon, User } from "lucide-react";
 import { useNodeConnections } from "@/providers/connections-providers";
-import { useLoading } from "@/providers/loading-provider";
 import { onContentChange } from "@/lib/editor-utils";
 import { toast } from "sonner";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
+import { useBilling } from "@/providers/billing-provider";
+import { onPaymentDetails } from "@/app/(main)/(pages)/billing/_actions/payment-connections";
 
 interface ChatHistoryItem {
   user: string;
@@ -30,6 +31,8 @@ const Chat = () => {
   const [load, setLoad] = useState(false);
   const cardContentRef = useRef<HTMLDivElement>(null);
   const [flowPath, setflowPath] = useState<any>([]);
+  const {credits, setCredits} = useBilling();
+  const { user } = useUser();
 
   useEffect(() => {
     if (cardContentRef.current) {
@@ -55,24 +58,34 @@ const Chat = () => {
   );
   const nodeId = triggerElement ? triggerElement.id : "";
 
+
   const onsubmit = async () => {
-    setLoad(true);
-    setMessage("");
-    const response = await axios.post("/api/workflow", {
-      workflowId: workflow.id,
-      prompt: message,
-      userid: workflow.userId,
-    });
-    const data = response.data;
-    console.log("data", data);
-    if (data) {
-      history.push({
-        user: message,
-        bot: data,
+    try {
+      setLoad(true);
+      setMessage("");
+      const response = await axios.post("/api/workflow", {
+        workflowId: workflow.id,
+        prompt: message,
+        userid: user?.id,
       });
+      const data = response.data;
+      console.log("data", data);
+      if (data) {
+        history.push({
+          user: message,
+          bot: data,
+        });
+      }
+      nodeConnection.triggerNode.triggerValue = "";
+      const Creditresponse = await onPaymentDetails();
+      if (Creditresponse) {
+          setCredits(Creditresponse.credits!);
+      }
+    } catch (error) {
+      toast.error("Error sending message, Check your Credits");
+    } finally {
+      setLoad(false);
     }
-    nodeConnection.triggerNode.triggerValue = "";
-    setLoad(false);
   };
   console.log("history", history);
 

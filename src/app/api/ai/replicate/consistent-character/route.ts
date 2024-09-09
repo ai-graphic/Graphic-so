@@ -1,4 +1,5 @@
 export const maxDuration = 300;
+import { db } from "@/lib/db";
 import Replicate from "replicate";
 
 export async function POST(req: Request, res: Response) {
@@ -6,7 +7,7 @@ export async function POST(req: Request, res: Response) {
   try {
     const {
       prompt,
-      apiKey,
+      userid,
       subject,
       num_outputs,
       negative_prompt,
@@ -18,15 +19,27 @@ export async function POST(req: Request, res: Response) {
       output_quality,
     } = await req.json();
 
-    if (!apiKey && !prompt && !subject) {
-      return new Response("API key, prompt and subject is required", {
+    if (!userid && !prompt && !subject) {
+      return new Response("API key and prompt is required", {
         status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const dbUser = await db.user.findFirst({
+      where: {
+        clerkId: userid,
+      },
+    });
+
+    if (Number(dbUser?.credits) < 1) {
+      return new Response("Insufficient credits", {
+        status: 402,
         headers: { "Content-Type": "application/json" },
       });
     }
 
     const replicate = new Replicate({
-      auth: apiKey,
+      auth: process.env.REPLICATE_API_KEY,
     });
 
     const numOutputsInt = parseInt(num_outputs, 10);
@@ -51,6 +64,14 @@ export async function POST(req: Request, res: Response) {
       }
     );
     console.log("Flux output :", output);
+    await db.user.update({
+      where: {
+        clerkId: userid,
+      },
+      data: {
+        credits: (Number(dbUser?.credits) - 1).toString(),
+      },
+    });
     const finaloutput = JSON.stringify(output);
     return new Response(finaloutput, {
       status: 200,

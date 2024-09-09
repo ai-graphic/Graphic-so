@@ -1,4 +1,5 @@
 export const maxDuration = 300;
+import { db } from "@/lib/db";
 import * as fal from "@fal-ai/serverless-client";
 import { v2 as cloudinary } from "cloudinary";
 interface FalResult {
@@ -10,22 +11,34 @@ export async function POST(req: Request, res: Response) {
   try {
     const {
       image_url,
-      apiKey,
+      userid,
       motion_bucket_id,
       fps,
       cond_aug,
     } = await req.json();
 
-    if (!apiKey && !image_url) {
-      return new Response("API key and prompt is required", {
+    if (!userid) {
+      return new Response("User is required", {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
+   const dbUser = await db.user.findFirst({
+      where: {
+        clerkId: userid,
+      }
+    })
+
+    if (Number(dbUser?.credits) < 1) {
+      return new Response("Insufficient credits", {
+        status: 402,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     fal.config({
-      credentials: apiKey,
+      credentials: process.env.FAL_API_KEY,
     });
 
     const result = await fal.subscribe("fal-ai/stable-video", {
@@ -42,6 +55,15 @@ export async function POST(req: Request, res: Response) {
         }
       },
     }) as FalResult;
+
+    await db.user.update({
+      where: {
+        clerkId: userid,
+      },
+      data: {
+        credits: (Number(dbUser?.credits) - 1).toString(),
+      },
+    });
 
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

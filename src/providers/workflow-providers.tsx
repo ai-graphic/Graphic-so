@@ -14,12 +14,16 @@ import axios, { AxiosResponse } from "axios";
 import { db } from "@/lib/db";
 import { onUpdateChatHistory } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
 import FluxDevLora from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/nodes/fluxDevLora";
+import { updateCredits } from "@/app/(main)/(pages)/billing/_actions/payment-connections";
+import { toast } from "sonner";
 
 type WorkflowContextType = {
   runWorkFlow: (
     workflowId: string,
     nodeConnection: any,
     setIsLoading: any,
+    credits: string,
+    setCredits: any,
     setHistory?: any
   ) => Promise<void>;
 };
@@ -47,6 +51,8 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
       workflowId: string,
       nodeConnection: any,
       setIsLoading: any,
+      credits: string,
+      setCredits: any,
       setHistory?: any
     ) => {
       async function updateAINodeOutput(
@@ -71,11 +77,14 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
           }
         });
       }
-
       let workflow = await getworkflow(workflowId);
       console.log(workflow);
       if (workflow) {
         const flowPath = JSON.parse(workflow.flowPath!);
+        if (parseInt(credits) <= Math.ceil(flowPath.length / 2) - 1) {
+          toast.error("Insufficient Credits");
+          return;
+        }
         console.log(flowPath);
         let current = 0;
         let latestOutputs: LatestOutputsType = {};
@@ -149,7 +158,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 const output = await axios.post("/api/ai/fal/flux-dev", {
                   prompt: content,
                   image_size: fluxDevTemplate[idNode].image_size,
-                  apiKey: fluxDevTemplate[idNode].apiKey,
+                  userid: workflow.userId,
                   num_inference_steps:
                     fluxDevTemplate[idNode].num_inference_steps,
                   guidance_scale: fluxDevTemplate[idNode].guidance_scale,
@@ -242,7 +251,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 const output = await axios.post("/api/ai/fal/flux-lora", {
                   prompt: content,
                   image_size: fluxLoraTemplate[idNode].image_size,
-                  apiKey: fluxLoraTemplate[idNode].apiKey,
+                  userid: workflow.userId,
                   num_inference_steps:
                     fluxLoraTemplate[idNode].num_inference_steps,
                   guidance_scale: fluxLoraTemplate[idNode].guidance_scale,
@@ -323,7 +332,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   prompt: falImageTemplate[idNode].prompt,
                   image_size: falImageTemplate[idNode].image_size,
                   image_url: content,
-                  apiKey: falImageTemplate[idNode].apiKey,
+                  userid: workflow.userId,
                   num_inference_steps:
                     falImageTemplate[idNode].num_inference_steps,
                   guidance_scale: falImageTemplate[idNode].guidance_scale,
@@ -401,7 +410,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, true);
                 const output = await axios.post("/api/ai/fal/stable-video", {
                   image_url: content,
-                  apiKey: falVideoTemplate[idNode].apiKey,
+                  userid: workflow.userId,
                   motion_bucket_id: falVideoTemplate[idNode].motion_bucket_id,
                   fps: falVideoTemplate[idNode].fps,
                   cond_aug: falVideoTemplate[idNode].cond_aug,
@@ -477,7 +486,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   "/api/ai/replicate/consistent-character",
                   {
                     prompt: falCharacterTemplate[idNode]?.prompt,
-                    apiKey: falCharacterTemplate[idNode]?.apiKey,
+                    userid: workflow.userId,
                     subject: content,
                     num_outputs: falCharacterTemplate[idNode]?.num_outputs,
                     negative_prompt:
@@ -566,7 +575,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   "/api/ai/replicate/dreamshaper",
                   {
                     prompt: falDreamShaperTemplate[idNode].prompt,
-                    apiKey: falDreamShaperTemplate[idNode].apiKey,
+                    userid: workflow.userId,
                     num_inference_steps:
                       falDreamShaperTemplate[idNode].num_inference_steps,
                     image: content,
@@ -646,7 +655,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, true);
                 const output = await axios.post("/api/ai/fal/flux-general", {
                   prompt: content,
-                  apiKey: falGeneralTemplate[idNode]?.apiKey,
+                  userid: workflow.userId,
                   num_inference_steps:
                     falGeneralTemplate[idNode]?.num_inference_steps,
                   guidance_scale: falGeneralTemplate[idNode]?.guidance_scale,
@@ -726,7 +735,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   {
                     prompt: content,
                     hf_loras: falDevLoraTemplate[idNode]?.hf_loras,
-                    apiKey: falDevLoraTemplate[idNode]?.apiKey,
+                    userid: workflow.userId,
                     num_outputs: falDevLoraTemplate[idNode]?.num_outputs,
                     aspect_ratio: falDevLoraTemplate[idNode]?.aspect_ratio,
                     output_format: falDevLoraTemplate[idNode]?.output_format,
@@ -824,71 +833,27 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   const nodeArray = JSON.parse(workflow.nodes || "[]");
                   const edge = edgesArray.find((e: any) => e.target === idNode);
                   const node = nodeArray.find((n: any) => n.id === edge.source);
-                  const messages = [
-                    {
-                      role: "system",
-                      content: "You are a helpful assistant.",
+                  console.log("content", content);
+                  const response = await axios.post("/api/ai/openai", {
+                    prompt: content,
+                    system: aiTemplate[idNode].system,
+                    userid: workflow.userId,
+                  });
+                  nodeConnection.setAINode((prev: any) => ({
+                    ...prev,
+                    output: {
+                      ...(prev.output || {}),
+                      [idNode]: [
+                        ...(prev.output?.[idNode] || []),
+                        response.data,
+                      ],
                     },
-                    {
-                      role: "user",
-                      content: content,
-                    },
-                  ];
-                  console.log("Messages:", messages);
-
-                  const makeRequest = async (
-                    retryCount = 0
-                  ): Promise<AxiosResponse<any>> => {
-                    const maxRetries = 5;
-                    const baseWaitTime = 1000; // 1 second
-
-                    try {
-                      const response = await axios.post(
-                        aiTemplate[idNode].endpoint ||
-                          "https://api.openai.com/v1/chat/completions",
-                        {
-                          model:
-                            aiTemplate[idNode].localModel || "gpt-3.5-turbo",
-                          messages: messages,
-                        },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${aiTemplate[idNode].ApiKey}`,
-                          },
-                        }
-                      );
-                      return response;
-                    } catch (error: any) {
-                      if (
-                        error.response &&
-                        error.response.status === 429 &&
-                        retryCount < maxRetries
-                      ) {
-                        const waitTime = Math.pow(2, retryCount) * baseWaitTime; // Exponential backoff
-                        console.log(
-                          `Rate limit hit, retrying in ${
-                            waitTime / 1000
-                          } seconds...`
-                        );
-                        await new Promise((resolve) =>
-                          setTimeout(resolve, waitTime)
-                        );
-                        return makeRequest(retryCount + 1);
-                      } else {
-                        throw error;
-                      }
-                    }
-                  };
-                  const response = await makeRequest();
-                  console.log(
-                    "AI Response:",
-                    response.data.choices[0].message.content.trim()
-                  );
-                  const aiResponseContent =
-                    response.data.choices[0].message.content.trim();
+                  }));
+                  console.log("AI Response:", response.data);
+                  const aiResponseContent = response.data;
                   const aiTemplateObj = JSON.parse(workflow.AiTemplate!);
                   if (!aiTemplateObj.output) {
-                    aiTemplateObj.output = {}; // Initialize output as an empty object if it doesn't exist
+                    aiTemplateObj.output = {};
                   }
                   aiTemplateObj.output[idNode] = [aiResponseContent];
 
@@ -907,7 +872,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
 
                   const output = await axios.post("/api/ai/FLUX-image", {
                     prompt: content,
-                    apiKey: aiTemplate[idNode].ApiKey,
+                    userid: workflow.userId,
                   });
                   nodeConnection.setAINode((prev: any) => ({
                     ...prev,
@@ -1021,6 +986,8 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             flowPath.splice(current, 2);
           }
         }
+        const newCredit = await updateCredits();
+        setCredits(newCredit);
       }
     },
     []

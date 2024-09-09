@@ -10,35 +10,35 @@ type Props = {
 }
 
 const Billing = async (props: Props) => {
-    const { session_id } = props.searchParams ?? {
-        session_id: '',
-    }
-    if (session_id) {
-        // @ts-ignore
-        const stripe = new Stripe(process.env.STRIPE_SECRET!, {
-            typescript: true,
-            apiVersion: '2024-04-10', 
-        })
+    // const { session_id } = props.searchParams ?? {
+    //     session_id: '',
+    // }
+    // if (session_id) {
+    //     // @ts-ignore
+    //     const stripe = new Stripe(process.env.STRIPE_SECRET!, {
+    //         typescript: true,
+    //         apiVersion: '2024-04-10', 
+    //     })
 
-        const session = await stripe.checkout.sessions.listLineItems(session_id)
-        const user = await currentUser()
-        if (user) {
-            await db.user.update({
-                where: {
-                    clerkId: user.id,
-                },
-                data: {
-                    tier: session.data[0].description,
-                    credits:
-                        session.data[0].description == 'Unlimited'
-                            ? 'Unlimited'
-                            : session.data[0].description == 'Pro'
-                                ? '100'
-                                : '10',
-                },
-            })
-        }
-    }
+    //     const session = await stripe.checkout.sessions.listLineItems(session_id)
+    //     const user = await currentUser()
+    //     if (user) {
+    //         await db.user.update({
+    //             where: {
+    //                 clerkId: user.id,
+    //             },
+    //             data: {
+    //                 tier: session.data[0].description,
+    //                 credits:
+    //                     session.data[0].description == 'Unlimited'
+    //                         ? 'Unlimited'
+    //                         : session.data[0].description == 'Pro'
+    //                             ? '100'
+    //                             : '10',
+    //             },
+    //         })
+    //     }
+    // }
 
     return (
         <div className="flex flex-col gap-4">

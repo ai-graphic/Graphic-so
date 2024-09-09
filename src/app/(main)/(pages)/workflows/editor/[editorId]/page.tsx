@@ -41,7 +41,7 @@ const Page = (props: Props) => {
         if (!nodeConnection.aiNode[nodeId] && nodeData.model) {
           nodeConnection.aiNode[nodeId] = {
             id: "",
-            ApiKey: "",
+            system: "",
             prompt: "",
             model: "",
             localModel: "",
@@ -76,8 +76,8 @@ const Page = (props: Props) => {
           nodeConnection.aiNode[nodeId] = {
             ...nodeConnection.aiNode[nodeId], // Preserve existing data
             model: nodeData.model,
-            ApiKey: nodeData.ApiKey,
             prompt: nodeData.prompt,
+            system: nodeData.system,
             localModel: nodeData.localModel,
             temperature: nodeData.temperature,
             maxTokens: nodeData.maxTokens,

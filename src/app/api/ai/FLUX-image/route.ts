@@ -1,13 +1,13 @@
 export const maxDuration = 300;
+import { db } from "@/lib/db";
 import Replicate from "replicate";
 
 export async function POST(req: Request, res: Response) {
-
-    //TODO: Add security checks with clerk
+  //TODO: Add security checks with clerk
   try {
     const {
       prompt,
-      apiKey,
+      userid,
       temperature,
       num_outputs,
       aspect_ratio,
@@ -17,8 +17,27 @@ export async function POST(req: Request, res: Response) {
       num_inference_steps,
     } = await req.json();
 
+    if (!userid && !prompt) {
+      return new Response("API key and prompt is required", {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const dbUser = await db.user.findFirst({
+      where: {
+        clerkId: userid,
+      },
+    });
+
+    if (Number(dbUser?.credits) < 1) {
+      return new Response("Insufficient credits", {
+        status: 402,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const replicate = new Replicate({
-      auth: apiKey,
+      auth: process.env.REPLICATE_API_KEY,
     });
 
     const guidanceScaleNumber = parseFloat(guidance_scale);
@@ -42,7 +61,16 @@ export async function POST(req: Request, res: Response) {
         },
       }
     );
+
     console.log("Flux output :", output);
+    await db.user.update({
+      where: {
+        clerkId: userid,
+      },
+      data: {
+        credits: (Number(dbUser?.credits) - 1).toString(),
+      },
+    });
     const finaloutput = JSON.stringify(output);
     return new Response(finaloutput, {
       status: 200,

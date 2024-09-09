@@ -25,7 +25,7 @@ export type ConnectionProviderProps = {
   aiNode: {
     [id: string]: {
       id: string;
-      ApiKey: string;
+      system: string;
       prompt: string;
       model: string;
       localModel: string;
@@ -59,7 +59,6 @@ export type ConnectionProviderProps = {
       output: string;
       prompt: string;
       image_size: string;
-      apiKey: string;
       num_inference_steps: number;
       guidance_scale: number;
       num_images: number;
@@ -74,7 +73,6 @@ export type ConnectionProviderProps = {
       prompt: string;
       image_size: string;
       image_url: string;
-      apiKey: string;
       num_inference_steps: number;
       guidance_scale: number;
       num_images: number;
@@ -89,7 +87,6 @@ export type ConnectionProviderProps = {
       id: string;
       prompt: string;
       image_size: string;
-      apiKey: string;
       num_inference_steps: number;
       guidance_scale: number;
       num_images: number;
@@ -104,7 +101,6 @@ export type ConnectionProviderProps = {
     [id: string]: {
       id: string;
       image_url: string;
-      apiKey: string;
       motion_bucket_id: string;
       fps: number;
       cond_aug: boolean;
@@ -115,7 +111,6 @@ export type ConnectionProviderProps = {
       id: string;
       images_data_url: string;
       trigger_word: string;
-      apiKey: string;
       iter_multiplier: number;
     };
   };
@@ -123,7 +118,6 @@ export type ConnectionProviderProps = {
     [id: string]: {
       id: string;
       prompt: string;
-      apiKey: string;
       subject : string;
       negative_prompt : string;
       randomise_poses : boolean;
@@ -139,7 +133,6 @@ export type ConnectionProviderProps = {
     [id: string]: {
       id: string;
       prompt: string;
-      apiKey: string;
       image : string;
       negative_prompt : string;
       num_inference_steps: number;
@@ -155,7 +148,6 @@ export type ConnectionProviderProps = {
       id: string;
       prompt: string;
       image_size: string;
-      apiKey: string;
       num_inference_steps: number;
       guidance_scale: number;
       num_images: number;
@@ -168,7 +160,6 @@ export type ConnectionProviderProps = {
     [id: string]: {
       id: string;
       prompt: string;
-      apiKey: string;
       hf_loras: string[];
       num_outputs: number;
       aspect_ratio: string;
@@ -308,7 +299,7 @@ const InitialValues: ConnectionProviderProps = {
 };
 const generateDefaultAINode = (id: string) => ({
   id,
-  ApiKey: "",
+  system: "",
   prompt: "",
   model: "",
   localModel: "",

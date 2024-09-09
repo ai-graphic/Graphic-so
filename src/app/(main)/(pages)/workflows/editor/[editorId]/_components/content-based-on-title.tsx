@@ -82,12 +82,6 @@ const ContentBasedOnTitle = ({
       locaModel: { placeholder: "alvdansen/frosting_lane_flux", type: "text" },
     },
     {
-      ApiKey: {
-        placeholder: "r8_BdC**********************************",
-        type: "password",
-      },
-    },
-    {
       prompt: {
         placeholder: "a beautiful castle frstingln illustration",
         type: "text",
@@ -101,16 +95,8 @@ const ContentBasedOnTitle = ({
     { num_inference_steps: { placeholder: 20, type: "number" } },
   ];
   const OpenaiOptions = [
-    { locaModel: { placeholder: "gpt-3.5-turbo", type: "text" } },
-    {
-      ApiKey: {
-        placeholder: "sk-proj-***************************************",
-        type: "password",
-      },
-    },
+    { system: { placeholder: "Enter your system Message", type: "text" } },
     { prompt: { placeholder: "Enter your prompt", type: "text" } },
-    { temperature: { placeholder: 0.7, type: "number" } },
-    { max_tokens: { placeholder: 150, type: "number" } },
   ];
   interface Model {
     key: string;
@@ -133,28 +119,8 @@ const ContentBasedOnTitle = ({
     Openai: OpenaiOptions,
   };
 
-  // useEffect(() => {
-  //   const reqGoogle = async () => {
-  //     const response: { data: { message: { files: any } } } = await axios.get(
-  //       "/api/drive"
-  //     );
-  //     if (response) {
-  //       const firstThreeFiles = response.data.message.files.slice(0, 3);
-  //       console.log(firstThreeFiles);
-  //       toast.success("Files fetched successfully");
-  //       setFile(firstThreeFiles);
-  //     } else {
-  //       toast.error("Something went wrong");
-  //     }
-  //   };
-  //   reqGoogle();
-  // }, [setFile]); //
-
   //@ts-ignore
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]];
-  const [selectedKey, setSelectedKey] = useState<string>(
-    nodeConnectionType[selectedNode.id]?.ApiKey
-  );
   const [triggerValue, setTriggerValue] = useState(
     nodeConnectionType.triggerValue
   );
@@ -337,54 +303,9 @@ const ContentBasedOnTitle = ({
                             </button>
                           ))
                       )}
-
-                  {!(
-                    nodeConnectionType[selectedNode.id]?.model === "SuperAgent"
-                  ) && (
-                    <div>
-                      <p className=" text-sm font-medium text-gray-300">
-                        Enter Your ApiKey Here
-                      </p>
-                      <div className="flex justify-center items-center gap-2">
-                        <Input
-                          type="text"
-                          placeholder="Click to select API Key"
-                          value={
-                            selectedKey ??
-                            nodeConnectionType[selectedNode.id]?.ApiKey
-                          }
-                          onChange={(event) => {
-                            const newValue = event.target.value;
-                            setSelectedKey(newValue);
-                            onContentChange(
-                              state,
-                              nodeConnection,
-                              title,
-                              event,
-                              "ApiKey"
-                            );
-                          }}
-                        />
-                        {modelArray
-                          .filter((modelObj) => modelObj.key === model)
-                          .map((modelObj) => (
-                            <Button
-                              key={modelObj.key}
-                              onClick={() => {
-                                console.log("model", modelObj);
-                                nodeConnectionType[selectedNode.id].ApiKey =
-                                  modelObj.name;
-                                setSelectedKey(modelObj.name);
-                              }}
-                            >
-                              Load
-                            </Button>
-                          ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
+
 
               {nodeConnectionType[selectedNode.id]?.model &&
                 modelOptionsMap[nodeConnectionType[selectedNode.id].model]?.map(
@@ -397,10 +318,7 @@ const ContentBasedOnTitle = ({
                     return (
                       <div key={optionKey}>
                         <p className="block text-sm font-medium text-gray-300">
-                          Enter Your{" "}
-                          {optionKey.charAt(0).toUpperCase() +
-                            optionKey.slice(1)}{" "}
-                          here
+                          {optionValue.placeholder}
                         </p>
                         <Input
                           type={optionValue.type}

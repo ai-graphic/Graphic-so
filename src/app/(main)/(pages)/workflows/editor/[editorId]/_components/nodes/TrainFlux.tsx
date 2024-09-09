@@ -8,7 +8,6 @@ import { Option } from "@/lib/types";
 const trainFluxNodeOptions: Option[] = [
   { images_data_url: { placeholder: "Enter images data URL", type: "text" } },
   { trigger_word: { placeholder: "Enter trigger word", type: "text" } },
-  { apiKey: { placeholder: "Enter API key", type: "password" } },
   { iter_multiplier: { placeholder: 1, type: "number" } },
 ];
 
@@ -51,7 +50,6 @@ const TrainFlux = (nodeConnectionType: any, title: string) => {
                 );
               }}
             />
-            {optionKey === "apiKey" && <div>dfgd</div>}
           </div>
         );
       })}

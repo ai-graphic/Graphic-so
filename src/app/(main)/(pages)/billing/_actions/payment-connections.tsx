@@ -22,3 +22,27 @@ export const onPaymentDetails = async () => {
         }
     }
 }
+
+export const updateCredits = async () => {
+    const user = await currentUser()
+
+    if (user) {
+        const dbUser = await db.user.findFirst({
+            where: {
+              clerkId: user.id,
+            }
+          })
+        const newCredit = (Number(dbUser?.credits) - 1).toString() 
+
+        await db.user.update({
+            where: {
+                clerkId: user.id,
+            },
+            data: {
+                credits:  newCredit,
+            },
+        })
+        return  newCredit;
+    }
+
+}

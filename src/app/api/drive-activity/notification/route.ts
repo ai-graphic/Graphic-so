@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
                         },
                         {
                           headers: {
-                            Authorization: `Bearer ${aiTemplate[nodeId].ApiKey}`, // Use environment variable for the API key
+                            Authorization: `Bearer ${aiTemplate[nodeId].ApiKey}`, 
                           },
                         }
                       );
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
                         error.response.status === 429 &&
                         retryCount < maxRetries
                       ) {
-                        const waitTime = Math.pow(2, retryCount) * baseWaitTime; // Exponential backoff
+                        const waitTime = Math.pow(2, retryCount) * baseWaitTime;
                         console.log(
                           `Rate limit hit, retrying in ${
                             waitTime / 1000

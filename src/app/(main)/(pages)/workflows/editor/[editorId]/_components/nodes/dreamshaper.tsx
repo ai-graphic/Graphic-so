@@ -7,7 +7,6 @@ import React from "react";
 
 const DreamShaperOptions : Option[] = [
     { prompt: { placeholder: "Enter your prompt", type: "text" } },
-    { apiKey: { placeholder: "Enter API key", type: "text" } },
     { image: { placeholder: "Enter image URL", type: "text" } },
     { num_outputs: { placeholder: 1, type: "number" } },
     { negative_prompt: { placeholder: "Enter negative prompt", type: "text" } },
@@ -58,7 +57,6 @@ const DreamShaper =  (nodeConnectionType: any, title: string) => {
                 );
               }}
             />
-            {optionKey === "apiKey" && <div>dfgd</div>}
           </div>
         );
       })}

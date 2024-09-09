@@ -7,7 +7,6 @@ import React from "react";
 
 const consistentCharOptions : Option[] = [
     { prompt: { placeholder: "Enter your prompt", type: "text" } },
-    { apiKey: { placeholder: "Enter API key", type: "text" } },
     { subject: { placeholder: "Enter subject", type: "text" } },
     { num_outputs: { placeholder: 1, type: "number" } },
     { negative_prompt: { placeholder: "Enter negative prompt", type: "text" } },
@@ -59,7 +58,6 @@ const ConsistentChar =  (nodeConnectionType: any, title: string) => {
                 );
               }}
             />
-            {optionKey === "apiKey" && <div>dfgd</div>}
           </div>
         );
       })}

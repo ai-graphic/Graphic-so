@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { MousePointerClickIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useWorkflow } from "@/providers/workflow-providers";
+import { useBilling } from "@/providers/billing-provider";
 
 type Props = {};
 type LatestOutputsType = {
@@ -35,6 +36,7 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
   }, [data]);
   const { isLoading, setIsLoading } = useLoading();
   const { nodeConnection } = useNodeConnections();
+  const {credits, setCredits} = useBilling();
   const [triggerValue, setTriggerValue] = useState(
     nodeConnection.triggerNode.triggerValue
   );
@@ -143,7 +145,9 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
                   runWorkFlow(
                     pathname.split("/").pop()!,
                     nodeConnection,
-                    setIsLoading
+                    setIsLoading,
+                    credits,
+                    setCredits
                   );
                 }}
                 variant="outline"

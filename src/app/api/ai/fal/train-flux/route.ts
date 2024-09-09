@@ -1,4 +1,5 @@
 export const maxDuration = 300;
+import { db } from "@/lib/db";
 import * as fal from "@fal-ai/serverless-client";
 
 export async function POST(req: Request, res: Response) {
@@ -6,15 +7,34 @@ export async function POST(req: Request, res: Response) {
   try {
     const {
       images_data_url,
+      userid,
       trigger_word,
-      apiKey,
       iter_multiplier,
     } = await req.json();
 
-    fal.config({
-      credentials: apiKey,
-    });
+    if (!userid) {
+      return new Response("User is required", {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
+   const dbUser = await db.user.findFirst({
+      where: {
+        clerkId: userid,
+      }
+    })
+
+    if (Number(dbUser?.credits) < 1) {
+      return new Response("Insufficient credits", {
+        status: 402,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    fal.config({
+      credentials: process.env.FAL_API_KEY,
+    });
     const result = await fal.subscribe("fal-ai/flux/dev", {
       input: {
         images_data_url: images_data_url,
@@ -26,6 +46,15 @@ export async function POST(req: Request, res: Response) {
         if (update.status === "IN_PROGRESS") {
           update.logs.map((log: any) => log.message).forEach(console.log);
         }
+      },
+    });
+
+    await db.user.update({
+      where: {
+        clerkId: userid,
+      },
+      data: {
+        credits: (Number(dbUser?.credits) - 1).toString(),
       },
     });
 

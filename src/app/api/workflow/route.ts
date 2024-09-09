@@ -1,5 +1,6 @@
 export const maxDuration = 300;
 
+import { updateCredits } from "@/app/(main)/(pages)/billing/_actions/payment-connections";
 import { postContentToWebHook } from "@/app/(main)/(pages)/connections/_actions/discord-connection";
 import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_actions/notion-connection";
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
@@ -10,15 +11,6 @@ import { auth } from "@clerk/nextjs/server";
 import axios, { AxiosResponse } from "axios";
 
 export async function POST(req: Request, res: Response) {
-  type WorkflowContextType = {
-    runWorkFlow: (
-      workflowId: string,
-      nodeConnection: any,
-      setIsLoading: any,
-      setHistory?: any
-    ) => Promise<void>;
-  };
-
   type LatestOutputsType = {
     [key: string]: string;
   };
@@ -33,6 +25,26 @@ export async function POST(req: Request, res: Response) {
     if (workflow) {
       const flowPath = JSON.parse(workflow.flowPath!);
       console.log(flowPath);
+      const dbUser = await db.user.findFirst({
+        where: {
+          clerkId: userid,
+        },
+      });
+      if (Number(dbUser?.credits) <= Math.ceil(flowPath.length / 2) - 1) {
+        return new Response("Insufficient Credits", {
+          status: 402,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      console.log((Number(dbUser?.credits) - 1).toString());
+      await db.user.update({
+        where: {
+          clerkId: userid,
+        },
+        data: {
+          credits: (Number(dbUser?.credits) - 1).toString(),
+        },
+      });
       let current = 0;
       while (current < flowPath.length) {
         const idNode = flowPath[current];
@@ -45,8 +57,7 @@ export async function POST(req: Request, res: Response) {
           const nodeArray = JSON.parse(workflow.nodes || "[]");
           const edge = edgesArray.find((e: any) => e.target === idNode);
           const node = nodeArray.find((n: any) => n.id === edge.source);
-          const content =
-            latestOutputs[node.id] || "default content if not found";
+          const content = latestOutputs[node.id] || prompt;
           const discordMessage = await db.discordWebhook.findFirst({
             where: {
               userId: workflow.userId,
@@ -60,6 +71,7 @@ export async function POST(req: Request, res: Response) {
             flowPath.splice(current, 2);
           }
         }
+
         if (nodeType == "AI") {
           const aiTemplate = JSON.parse(workflow.AiTemplate!);
           if (aiTemplate && aiTemplate[idNode]) {
@@ -99,67 +111,13 @@ export async function POST(req: Request, res: Response) {
                 const nodeArray = JSON.parse(workflow.nodes || "[]");
                 const edge = edgesArray.find((e: any) => e.target === idNode);
                 const node = nodeArray.find((n: any) => n.id === edge.source);
-                const messages = [
-                  {
-                    role: "system",
-                    content: "You are a helpful assistant.",
-                  },
-                  {
-                    role: "user",
-                    content: content,
-                  },
-                ];
-                console.log("Messages:", messages);
-
-                const makeRequest = async (
-                  retryCount = 0
-                ): Promise<AxiosResponse<any>> => {
-                  const maxRetries = 5;
-                  const baseWaitTime = 1000; // 1 second
-
-                  try {
-                    const response = await axios.post(
-                      aiTemplate[idNode].endpoint ||
-                        "https://api.openai.com/v1/chat/completions",
-                      {
-                        model: aiTemplate[idNode].localModel || "gpt-3.5-turbo",
-                        messages: messages,
-                      },
-                      {
-                        headers: {
-                          Authorization: `Bearer ${aiTemplate[idNode].ApiKey}`,
-                        },
-                      }
-                    );
-                    return response;
-                  } catch (error: any) {
-                    if (
-                      error.response &&
-                      error.response.status === 429 &&
-                      retryCount < maxRetries
-                    ) {
-                      const waitTime = Math.pow(2, retryCount) * baseWaitTime; // Exponential backoff
-                      console.log(
-                        `Rate limit hit, retrying in ${
-                          waitTime / 1000
-                        } seconds...`
-                      );
-                      await new Promise((resolve) =>
-                        setTimeout(resolve, waitTime)
-                      );
-                      return makeRequest(retryCount + 1);
-                    } else {
-                      throw error;
-                    }
-                  }
-                };
-                const response = await makeRequest();
-                console.log(
-                  "AI Response:",
-                  response.data.choices[0].message.content.trim()
-                );
-                const aiResponseContent =
-                  response.data.choices[0].message.content.trim();
+                const response = await axios.post( `${process.env.NEXT_PUBLIC_URL}/api/ai/openai`, {
+                  prompt: content,
+                  system : aiTemplate[idNode].system,
+                  userid: userid,
+                });
+                console.log("AI Response:", response.data);
+                const aiResponseContent = response.data;
                 latestOutputs[idNode] = aiResponseContent;
               } catch (error) {
                 console.error("Error during OpenAI API call:", error);
@@ -167,10 +125,13 @@ export async function POST(req: Request, res: Response) {
               }
             } else if (aiTemplate[idNode].model === "FLUX-image") {
               try {
-                const output = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/ai/FLUX-image`, {
-                  prompt: content,
-                  apiKey: aiTemplate[idNode].ApiKey,
-                });
+                const output = await axios.post(
+                  `${process.env.NEXT_PUBLIC_URL}/api/ai/FLUX-image`,
+                  {
+                    prompt: content,
+                    userid: userid,
+                  }
+                );
                 latestOutputs[idNode] = output.data[0];
               } catch (error) {
                 console.error("Error during Replicate API call:", error);
@@ -209,6 +170,498 @@ export async function POST(req: Request, res: Response) {
             const history = published?.map((item: string) => JSON.parse(item));
           }
           continue;
+        }
+        if (nodeType == "flux-dev") {
+          const fluxDevTemplate = JSON.parse(workflow.fluxDevTemplate!);
+          if (fluxDevTemplate[idNode]) {
+            console.log("fluxDev Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              console.log("Trigger Node", node.id);
+              let prmpt = fluxDevTemplate[idNode].prompt;
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", prompt);
+                } else {
+                  content = prmpt;
+                }
+                chatHistory.user = content;
+              }
+            } else {
+              let prmpt = fluxDevTemplate[idNode].prompt;
+              console.log("Prompt:", prmpt);
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", latestOutputs[node.id]);
+                } else {
+                  content = prmpt;
+                }
+              } else {
+                content = latestOutputs[node.id];
+              }
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/fal/flux-dev`,
+                {
+                  prompt: content,
+                  image_size: fluxDevTemplate[idNode].image_size,
+                  userid: userid,
+                  num_inference_steps:
+                    fluxDevTemplate[idNode].num_inference_steps,
+                  guidance_scale: fluxDevTemplate[idNode].guidance_scale,
+                  num_images: fluxDevTemplate[idNode].num_images,
+                  seed: fluxDevTemplate[idNode].seed,
+                  enable_safety_checker:
+                    fluxDevTemplate[idNode].enable_safety_checker,
+                  sync_mode: fluxDevTemplate[idNode].sync_mode,
+                }
+              );
+
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          console.log("flow", flowPath, chatHistory);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "flux-lora") {
+          const fluxLoraTemplate = JSON.parse(workflow.fluxloraTemplate!);
+          if (fluxLoraTemplate[idNode]) {
+            console.log("fluxLora Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              console.log("Trigger Node", node.id);
+              let prmpt = fluxLoraTemplate[idNode].prompt;
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", prompt);
+                } else {
+                  content = prmpt;
+                }
+                chatHistory.user = content;
+              }
+            } else {
+              let prmpt = fluxLoraTemplate[idNode].prompt;
+              console.log("Prompt:", prmpt);
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", latestOutputs[node.id]);
+                } else {
+                  content = prmpt;
+                }
+              } else {
+                content = latestOutputs[node.id];
+              }
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/fal/flux-lora`,
+                {
+                  prompt: content,
+                  image_size: fluxLoraTemplate[idNode].image_size,
+                  userid: userid,
+                  num_inference_steps:
+                    fluxLoraTemplate[idNode].num_inference_steps,
+                  guidance_scale: fluxLoraTemplate[idNode].guidance_scale,
+                  num_images: fluxLoraTemplate[idNode].num_images,
+                  seed: fluxLoraTemplate[idNode].seed,
+                  enable_safety_checker:
+                    fluxLoraTemplate[idNode].enable_safety_checker,
+                  loras: fluxLoraTemplate[idNode].loras,
+                  sync_mode: fluxLoraTemplate[idNode].sync_mode,
+                  output_format: fluxLoraTemplate[idNode].output_format,
+                }
+              );
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          console.log("flow", flowPath, chatHistory);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "image-to-image") {
+          const falImageTemplate = JSON.parse(workflow.ImageToImageTemplate!);
+          if (falImageTemplate[idNode]) {
+            console.log("image-to-image Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              const prmpt = prompt;
+              chatHistory.user = prmpt;
+              content = prmpt;
+            } else {
+              content = latestOutputs[node.id];
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/fal/image-to-image`,
+                {
+                  prompt: falImageTemplate[idNode].prompt,
+                  image_size: falImageTemplate[idNode].image_size,
+                  image_url: content,
+                  userid: userid,
+                  num_inference_steps:
+                    falImageTemplate[idNode].num_inference_steps,
+                  guidance_scale: falImageTemplate[idNode].guidance_scale,
+                  num_images: falImageTemplate[idNode].num_images,
+                  seed: falImageTemplate[idNode].seed,
+                  enable_safety_checker:
+                    falImageTemplate[idNode].enable_safety_checker,
+                  sync_mode: falImageTemplate[idNode].sync_mode,
+                  strength: falImageTemplate[idNode].strength,
+                }
+              );
+
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          console.log("flow", flowPath, chatHistory);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "stable-video") {
+          const falVideoTemplate = JSON.parse(workflow.videoTemplate!);
+          if (falVideoTemplate[idNode]) {
+            console.log("stable-video Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              const prmpt = prompt;
+              chatHistory.user = prmpt;
+              content = prmpt;
+            } else {
+              content = latestOutputs[node.id];
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/fal/stable-video`,
+                {
+                  image_url: content,
+                  userid: userid,
+                  motion_bucket_id: falVideoTemplate[idNode].motion_bucket_id,
+                  fps: falVideoTemplate[idNode].fps,
+                  cond_aug: falVideoTemplate[idNode].cond_aug,
+                }
+              );
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          console.log("flow", flowPath, chatHistory);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "consistent-character") {
+          const falCharacterTemplate = JSON.parse(workflow.CharacterTemplate!);
+          if (falCharacterTemplate[idNode]) {
+            console.log("consistent-character Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              const prmpt = prompt;
+              chatHistory.user = prmpt;
+              content = prmpt;
+            } else {
+              content = latestOutputs[node.id];
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/replicate/consistent-character`,
+                {
+                  prompt: falCharacterTemplate[idNode]?.prompt,
+                  userid: userid,
+                  subject: content,
+                  num_outputs: falCharacterTemplate[idNode]?.num_outputs,
+                  negative_prompt:
+                    falCharacterTemplate[idNode]?.negative_prompt,
+                  randomise_poses:
+                    falCharacterTemplate[idNode]?.randomise_poses,
+                  number_of_outputs:
+                    falCharacterTemplate[idNode]?.number_of_outputs,
+                  disable_safety_checker:
+                    falCharacterTemplate[idNode]?.disable_safety_checker,
+                  number_of_images_per_pose:
+                    falCharacterTemplate[idNode]?.number_of_images_per_pose,
+                  output_format: falCharacterTemplate[idNode]?.output_format,
+                  output_quality: falCharacterTemplate[idNode]?.output_quality,
+                }
+              );
+
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during Replicate API call:", error);
+            } finally {
+            }
+          }
+          console.log("flow", flowPath, chatHistory);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "dreamShaper") {
+          const falDreamShaperTemplate = JSON.parse(
+            workflow.DreamShaperTemplate!
+          );
+          if (falDreamShaperTemplate[idNode]) {
+            console.log("dreamShaper Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              const prmpt = prompt;
+              chatHistory.user = prmpt;
+              content = prmpt;
+            } else {
+              content = latestOutputs[node.id];
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/replicate/dreamshaper`,
+                {
+                  prompt: falDreamShaperTemplate[idNode].prompt,
+                  userid: userid,
+                  num_inference_steps:
+                    falDreamShaperTemplate[idNode].num_inference_steps,
+                  image: content,
+                  negative_prompt:
+                    falDreamShaperTemplate[idNode]?.negative_prompt,
+                  strength: falDreamShaperTemplate[idNode]?.strength,
+                  scheduler: falDreamShaperTemplate[idNode]?.scheduler,
+                  upscale: falDreamShaperTemplate[idNode]?.upscale,
+                }
+              );
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during Replicate API call:", error);
+            } finally {
+            }
+          }
+          console.log("flow", flowPath, chatHistory);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "fluxGeneral") {
+          const falGeneralTemplate = JSON.parse(workflow.fluxGeneralTemplate!);
+          if (falGeneralTemplate[idNode]) {
+            console.log("fluxGeneral Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              console.log("Trigger Node", node.id);
+              let prmpt = falGeneralTemplate[idNode]?.prompt;
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", prompt);
+                } else {
+                  content = prmpt;
+                }
+                chatHistory.user = content;
+              }
+            } else {
+              let prmpt = falGeneralTemplate[idNode]?.prompt;
+              console.log("Prompt:", prmpt);
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", latestOutputs[node.id]);
+                } else {
+                  content = prmpt;
+                }
+              } else {
+                content = latestOutputs[node.id];
+              }
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/fal/flux-general`,
+                {
+                  prompt: content,
+                  userid: userid,
+                  num_inference_steps:
+                    falGeneralTemplate[idNode]?.num_inference_steps,
+                  guidance_scale: falGeneralTemplate[idNode]?.guidance_scale,
+                  num_images: falGeneralTemplate[idNode]?.num_images,
+                  seed: falGeneralTemplate[idNode]?.seed,
+                  sync_mode: falGeneralTemplate[idNode]?.sync_mode,
+                  enable_safety_checker:
+                    falGeneralTemplate[idNode]?.enable_safety_checker,
+                }
+              );
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          console.log("flow", flowPath, chatHistory);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "fluxDevLora") {
+          const falDevLoraTemplate = JSON.parse(workflow.fluxDevLora!);
+          if (falDevLoraTemplate[idNode]) {
+            console.log("fluxDevLora Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              console.log("Trigger Node", node.id);
+              let prmpt = falDevLoraTemplate[idNode].prompt;
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", prompt);
+                } else {
+                  content = prmpt;
+                }
+                chatHistory.user = content;
+              }
+            } else {
+              let prmpt = falDevLoraTemplate[idNode].prompt;
+              console.log("Prompt:", prmpt);
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", latestOutputs[node.id]);
+                } else {
+                  content = prmpt;
+                }
+              } else {
+                content = latestOutputs[node.id];
+              }
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/replicate/fluxDevlora`,
+                {
+                  prompt: content,
+                  hf_loras: falDevLoraTemplate[idNode]?.hf_loras,
+                  userid: userid,
+                  num_outputs: falDevLoraTemplate[idNode]?.num_outputs,
+                  aspect_ratio: falDevLoraTemplate[idNode]?.aspect_ratio,
+                  output_format: falDevLoraTemplate[idNode]?.output_format,
+                  guidance_scale: falDevLoraTemplate[idNode]?.guidance_scale,
+                  output_quality: falDevLoraTemplate[idNode]?.output_quality,
+                  num_inference_steps:
+                    falDevLoraTemplate[idNode].num_inference_steps,
+                }
+              );
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during Replicate API call:", error);
+            } finally {
+            }
+          }
+          console.log("flow", flowPath, chatHistory);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "train-flux") {
+          flowPath.splice(current, 2);
         }
         if (nodeType == "Slack") {
           console.log(workflow.slackChannels);

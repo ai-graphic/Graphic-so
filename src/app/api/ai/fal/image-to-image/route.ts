@@ -1,4 +1,5 @@
 export const maxDuration = 300;
+import { db } from "@/lib/db";
 import * as fal from "@fal-ai/serverless-client";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -14,7 +15,7 @@ export async function POST(req: Request, res: Response) {
       prompt,
       image_size,
       image_url,
-      apiKey,
+      userid,
       num_inference_steps,
       guidance_scale,
       num_images,
@@ -24,19 +25,28 @@ export async function POST(req: Request, res: Response) {
       strength,
     } = await req.json();
 
-    fal.config({
-      credentials: apiKey,
-    });
-
-    if (!apiKey && !prompt) {
-      return new Response("API key and prompt is required", {
+    if (!userid) {
+      return new Response("User is required", {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
+   const dbUser = await db.user.findFirst({
+      where: {
+        clerkId: userid,
+      }
+    })
+
+    if (Number(dbUser?.credits) < 1) {
+      return new Response("Insufficient credits", {
+        status: 402,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     fal.config({
-      credentials: apiKey,
+      credentials: process.env.FAL_API_KEY,
     });
 
     const guidanceScaleNumber = parseFloat(guidance_scale);
@@ -62,6 +72,15 @@ export async function POST(req: Request, res: Response) {
         }
       },
     }) as FalResult;
+
+    await db.user.update({
+      where: {
+        clerkId: userid,
+      },
+      data: {
+        credits: (Number(dbUser?.credits) - 1).toString(),
+      },
+    });
 
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

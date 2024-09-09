@@ -13,16 +13,32 @@ import { clsx } from "clsx";
 // Removed unused imports for brevity
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import { ModeToggle } from "@/components/global/mode-toggle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { motion } from "framer-motion";
 import { UserButton } from "@clerk/nextjs";
+import { useBilling } from "@/providers/billing-provider";
+import { onPaymentDetails } from "@/app/(main)/(pages)/billing/_actions/payment-connections";
 
 type Props = {};
 const MenuOptions = (props: Props) => {
   const pathName = usePathname();
   const [isVisible, setIsVisible] = useState(true);
   const isControllable = pathName.includes("editor");
+  const {credits, tier, setCredits, setTier} = useBilling();
+
+  const onGetPayment = async () => {
+      const response = await onPaymentDetails();
+      console.log(response)
+      if (response) {
+          setTier(response.tier!);
+          setCredits(response.credits!);
+      }
+  }
+
+  useEffect(() => {
+      onGetPayment()
+  }, [credits])
 
   const sidebarVariants = {
     open: { x: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
@@ -81,6 +97,7 @@ const MenuOptions = (props: Props) => {
                   </Tooltip>
                 </ul>
               ))}
+              
               {isControllable && (
                 <Button
                   variant="outline"
@@ -93,6 +110,15 @@ const MenuOptions = (props: Props) => {
             </TooltipProvider>
           </div>
           <div className="flex items-center justify-center flex-col gap-8">
+          <div className="flex text-sm">
+                {tier == 'Unlimited' ? (
+                    <span>Unlimited</span>
+                ) : (
+                    <span>
+                        {credits}/{tier == 'Free' ? '40' : tier == 'Pro' && '100'}
+                    </span>
+                )}
+                </div>
             <ModeToggle />
             <UserButton />
           </div>

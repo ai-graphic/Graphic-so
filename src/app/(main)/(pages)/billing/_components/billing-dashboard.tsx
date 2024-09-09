@@ -10,20 +10,20 @@ type Props = {};
 const BillingDashboard = (props: Props) => {
     const {credits, tier} = useBilling();
     const [stripeProducts, setStripeProducts] = useState<any>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
 
-    const onStripeProducts = async () => {
-        setLoading(true);
-        const {data} = await axios.get('/api/payment');
-        if (data) {
-            setStripeProducts(data);
-            setLoading(false);
-        }
-    }
+    // const onStripeProducts = async () => {
+    //     setLoading(true);
+    //     const {data} = await axios.get('/api/payment');
+    //     if (data) {
+    //         setStripeProducts(data);
+    //         setLoading(false);
+    //     }
+    // }
 
-    useEffect(() => {
-        onStripeProducts();
-    }, [])
+    // useEffect(() => {
+    //     onStripeProducts();
+    // }, [])
 
     const onPayment = async (id: string) => {
         const {data} = await axios.post(
@@ -75,7 +75,7 @@ const BillingDashboard = (props: Props) => {
                         credits={parseInt(credits)}
                     />
                 </>
-            )};
+            )}
         </>
     )
 }

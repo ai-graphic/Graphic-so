@@ -16,6 +16,7 @@ import FlowInstance from "./flow-instance";
 import { EditorNodeType } from "@/lib/types";
 import { useUser } from "@clerk/nextjs";
 import { on } from "events";
+import { useBilling } from "@/providers/billing-provider";
 
 type Props = {
   currentService: string;
@@ -41,6 +42,7 @@ const ActionButton = ({
   const pathname = usePathname();
   const { isLoading, setIsLoading } = useLoading();
   const { user } = useUser();
+  const { credits, setCredits } = useBilling();
   const onSendDiscordMessage = useCallback(async () => {
     const response = await postContentToWebHook(
       nodeConnection.discordNode.content,
@@ -101,7 +103,8 @@ const ActionButton = ({
         const response = await axios.post("/api/ai/fal/flux-dev", {
           prompt: nodeConnection.fluxDevNode[id].prompt,
           image_size: nodeConnection.fluxDevNode[id].image_size,
-          apiKey: nodeConnection.fluxDevNode[id].apiKey,
+          userid: user?.id,
+          credits: credits,
           num_inference_steps:
             nodeConnection.fluxDevNode[id].num_inference_steps,
           guidance_scale: nodeConnection.fluxDevNode[id].guidance_scale,
@@ -118,9 +121,12 @@ const ActionButton = ({
             [id]: [...(prev.output?.[id] || []), response.data],
           },
         }));
+        setCredits((prev) => (Number(prev) - 1).toString());
         console.log("Flux Dev Response:", response.data);
       } catch (error) {
         console.error("Error during Flux Dev API call:", error);
+        toast.error("Error during Flux Dev API call");
+        toast.error("Please check your credits");
       } finally {
         setIsLoading(id, false);
       }
@@ -137,7 +143,7 @@ const ActionButton = ({
         prompt: nodeConnection.imageToImageNode[id].prompt,
         image_size: nodeConnection.imageToImageNode[id].image_size,
         image_url: nodeConnection.imageToImageNode[id].image_url,
-        apiKey: nodeConnection.imageToImageNode[id].apiKey,
+        userid: user?.id,
         num_inference_steps:
           nodeConnection.imageToImageNode[id].num_inference_steps,
         guidance_scale: nodeConnection.imageToImageNode[id].guidance_scale,
@@ -155,6 +161,7 @@ const ActionButton = ({
           [id]: [...(prev.output?.[id] || []), response.data],
         },
       }));
+      setCredits((prev) => (Number(prev) - 1).toString());
       console.log("Image to Image Response:", response.data);
     } catch (error) {
       console.error("Error during Image to Image API call:", error);
@@ -170,7 +177,7 @@ const ActionButton = ({
       const response = await axios.post("/api/ai/fal/flux-lora", {
         prompt: nodeConnection.fluxLoraNode[id].prompt,
         image_size: nodeConnection.fluxLoraNode[id].image_size,
-        apiKey: nodeConnection.fluxLoraNode[id].apiKey,
+        userid: user?.id,
         num_inference_steps:
           nodeConnection.fluxLoraNode[id].num_inference_steps,
         guidance_scale: nodeConnection.fluxLoraNode[id].guidance_scale,
@@ -189,6 +196,7 @@ const ActionButton = ({
           [id]: [...(prev.output?.[id] || []), response.data],
         },
       }));
+      setCredits((prev) => (Number(prev) - 1).toString());
       console.log("Flux Lora Response:", response.data);
     } catch (error) {
       console.error("Error during Flux Lora API call:", error);
@@ -203,7 +211,7 @@ const ActionButton = ({
       const response = await axios.post("/api/ai/fal/train-flux", {
         images_data_url: nodeConnection.trainFluxNode[id].images_data_url,
         trigger_word: nodeConnection.trainFluxNode[id].trigger_word,
-        apiKey: nodeConnection.trainFluxNode[id].apiKey,
+        userid: user?.id,
         iter_multiplier: nodeConnection.trainFluxNode[id].iter_multiplier,
       });
       nodeConnection.setAINode((prev: any) => ({
@@ -213,6 +221,7 @@ const ActionButton = ({
           [id]: [...(prev.output?.[id] || []), response.data],
         },
       }));
+      setCredits((prev) => (Number(prev) - 1).toString());
       console.log("Train Flux Response:", response.data);
     } catch (error) {
       console.error("Error during Train Flux API call:", error);
@@ -228,7 +237,7 @@ const ActionButton = ({
       console.log("Stable Video Node:", nodeConnection.stableVideoNode);
       const response = await axios.post("/api/ai/fal/stable-video", {
         image_url: nodeConnection.stableVideoNode[id].image_url,
-        apiKey: nodeConnection.stableVideoNode[id].apiKey,
+        userid: user?.id,
         motion_bucket_id: nodeConnection.stableVideoNode[id].motion_bucket_id,
         fps: nodeConnection.stableVideoNode[id].fps,
         cond_aug: nodeConnection.stableVideoNode[id].cond_aug,
@@ -240,6 +249,7 @@ const ActionButton = ({
           [id]: [...(prev.output?.[id] || []), response.data],
         },
       }));
+      setCredits((prev) => (Number(prev) - 1).toString());
       console.log("Stable Video Response:", response.data);
     } catch (error) {
       console.error("Error during Stable Video API call:", error);
@@ -252,26 +262,34 @@ const ActionButton = ({
     console.log("Consistant Character Node:", id);
     try {
       setIsLoading(id, true);
-      console.log("Consistant Character Node:", nodeConnection.consistentCharacterNode[id]);
-      const response = await axios.post("/api/ai/replicate/consistent-character", {
-        prompt: nodeConnection.consistentCharacterNode[id]?.prompt,
-        apiKey: nodeConnection.consistentCharacterNode[id]?.apiKey,
-        subject: nodeConnection.consistentCharacterNode[id]?.subject,
-        num_outputs: nodeConnection.consistentCharacterNode[id]?.num_outputs,
-        negative_prompt:
-          nodeConnection.consistentCharacterNode[id]?.negative_prompt,
-        randomise_poses:
-          nodeConnection.consistentCharacterNode[id]?.randomise_poses,
-        number_of_outputs:
-          nodeConnection.consistentCharacterNode[id]?.number_of_outputs,
-        disable_safety_checker:
-          nodeConnection.consistentCharacterNode[id]?.disable_safety_checker,
-        number_of_images_per_pose:
-          nodeConnection.consistentCharacterNode[id]?.number_of_images_per_pose,
-        output_format: nodeConnection.consistentCharacterNode[id]?.output_format,
-        output_quality:
-          nodeConnection.consistentCharacterNode[id]?.output_quality,
-      });
+      console.log(
+        "Consistant Character Node:",
+        nodeConnection.consistentCharacterNode[id]
+      );
+      const response = await axios.post(
+        "/api/ai/replicate/consistent-character",
+        {
+          prompt: nodeConnection.consistentCharacterNode[id]?.prompt,
+          userid: user?.id,
+          subject: nodeConnection.consistentCharacterNode[id]?.subject,
+          num_outputs: nodeConnection.consistentCharacterNode[id]?.num_outputs,
+          negative_prompt:
+            nodeConnection.consistentCharacterNode[id]?.negative_prompt,
+          randomise_poses:
+            nodeConnection.consistentCharacterNode[id]?.randomise_poses,
+          number_of_outputs:
+            nodeConnection.consistentCharacterNode[id]?.number_of_outputs,
+          disable_safety_checker:
+            nodeConnection.consistentCharacterNode[id]?.disable_safety_checker,
+          number_of_images_per_pose:
+            nodeConnection.consistentCharacterNode[id]
+              ?.number_of_images_per_pose,
+          output_format:
+            nodeConnection.consistentCharacterNode[id]?.output_format,
+          output_quality:
+            nodeConnection.consistentCharacterNode[id]?.output_quality,
+        }
+      );
       nodeConnection.setAINode((prev: any) => ({
         ...prev,
         output: {
@@ -279,6 +297,7 @@ const ActionButton = ({
           [id]: [...(prev.output?.[id] || []), response.data],
         },
       }));
+      setCredits((prev) => (Number(prev) - 1).toString());
       console.log("Consistant Character Response:", response.data);
     } catch (error) {
       console.error("Error during Consistant Character API call:", error);
@@ -295,7 +314,7 @@ const ActionButton = ({
       const response = await axios.post("/api/ai/replicate/fluxDevlora", {
         prompt: nodeConnection.fluxDevLoraNode[id]?.prompt,
         hf_loras: nodeConnection.fluxDevLoraNode[id]?.hf_loras,
-        apiKey: nodeConnection.fluxDevLoraNode[id]?.apiKey,
+        userid: user?.id,
         num_outputs: nodeConnection.fluxDevLoraNode[id]?.num_outputs,
         aspect_ratio: nodeConnection.fluxDevLoraNode[id]?.aspect_ratio,
         output_format: nodeConnection.fluxDevLoraNode[id]?.output_format,
@@ -311,6 +330,7 @@ const ActionButton = ({
           [id]: [...(prev.output?.[id] || []), response.data],
         },
       }));
+      setCredits((prev) => (Number(prev) - 1).toString());
       console.log("Flux Dev Lora Response:", response.data);
     } catch (error) {
       console.error("Error during Flux Dev Lora API call:", error);
@@ -326,7 +346,7 @@ const ActionButton = ({
       console.log("Dream Shaper Node:", nodeConnection.dreamShaperNode[id]);
       const response = await axios.post("/api/ai/replicate/dreamshaper", {
         prompt: nodeConnection.dreamShaperNode[id]?.prompt,
-        apiKey: nodeConnection.dreamShaperNode[id]?.apiKey,
+        userid: user?.id,
         num_inference_steps:
           nodeConnection.dreamShaperNode[id]?.num_inference_steps,
         image: nodeConnection.dreamShaperNode[id]?.image,
@@ -342,6 +362,7 @@ const ActionButton = ({
           [id]: [...(prev.output?.[id] || []), response.data],
         },
       }));
+      setCredits((prev) => (Number(prev) - 1).toString());
       console.log("Dream Shaper Response:", response.data);
     } catch (error) {
       console.error("Error during Dream Shaper API call:", error);
@@ -357,7 +378,7 @@ const ActionButton = ({
       console.log("Flux General Node:", nodeConnection.fluxGeneralNode[id]);
       const response = await axios.post("/api/ai/fal/fluxGeneral", {
         prompt: nodeConnection.fluxGeneralNode[id]?.prompt,
-        apiKey: nodeConnection.fluxGeneralNode[id]?.apiKey,
+        userid: user?.id,
         num_inference_steps:
           nodeConnection.fluxGeneralNode[id]?.num_inference_steps,
         guidance_scale: nodeConnection.fluxGeneralNode[id]?.guidance_scale,
@@ -374,6 +395,7 @@ const ActionButton = ({
           [id]: [...(prev.output?.[id] || []), response.data],
         },
       }));
+      setCredits((prev) => (Number(prev) - 1).toString());
       console.log("Flux General Response:", response.data);
     } catch (error) {
       console.error("Error during Flux General API call:", error);
@@ -389,10 +411,9 @@ const ActionButton = ({
         return;
       }
       if (
-        !nodeConnection.aiNode[id].ApiKey &&
         !nodeConnection.aiNode[id].prompt
       ) {
-        toast.error("Please enter an API key and prompt first");
+        toast.error("Please enter a prompt first");
         return;
       }
       setIsLoading(id, true);
@@ -400,37 +421,18 @@ const ActionButton = ({
       if (nodeConnection.aiNode[id].model === "Openai") {
         try {
           setIsLoading(id, true);
-          const messages = [
-            {
-              role: "system",
-              content: "You are a helpful assistant.",
-            },
-            {
-              role: "user",
-              content: nodeConnection.aiNode[id].prompt,
-            },
-          ];
-          console.log("Messages:", messages);
-          const response = await axios.post(
-            nodeConnection.aiNode[id].endpoint ||
-              "https://api.openai.com/v1/chat/completions",
-            {
-              model: nodeConnection.aiNode.localModel || "gpt-3.5-turbo",
-              messages: messages,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${nodeConnection.aiNode[id].ApiKey}`,
-              },
-            }
-          );
+          const response = await axios.post("/api/ai/openai", {
+            prompt : nodeConnection.aiNode[id]?.prompt,
+            system: nodeConnection.aiNode[id]?.system,
+            userid: user?.id,
+          })
           nodeConnection.setAINode((prev: any) => ({
             ...prev,
             output: {
               ...(prev.output || {}),
               [id]: [
                 ...(prev.output?.[id] || []),
-                response.data.choices[0].message.content.trim(),
+                response.data,
               ],
             },
           }));
@@ -446,7 +448,7 @@ const ActionButton = ({
           setIsLoading(id, true);
           const response = await axios.post("/api/ai/FLUX-image", {
             prompt: nodeConnection.aiNode[id].prompt,
-            apiKey: nodeConnection.aiNode[id].ApiKey,
+            userid: user?.id,
             temperature: nodeConnection.aiNode[id].temperature,
             maxTokens: nodeConnection.aiNode[id].maxTokens,
             num_outputs: nodeConnection.aiNode[id].num_outputs,
@@ -463,6 +465,7 @@ const ActionButton = ({
               [id]: [...(prev.output?.[id] || []), response.data[0]],
             },
           }));
+          setCredits((prev) => (Number(prev) - 1).toString());
           console.log("Replicate API Response:", response.data[0]);
         } catch (error) {
           console.error("Error during Replicate API call:", error);
@@ -905,7 +908,7 @@ const ActionButton = ({
       case "consistent-character":
         return (
           <>
-           {nodeConnection.consistentCharacterNode[selectedNode.id] &&
+            {nodeConnection.consistentCharacterNode[selectedNode.id] &&
               aiOutput.length > 0 && (
                 <div className="flex flex-col space-y-2">
                   {aiOutput.map((output, index) => (
@@ -933,7 +936,7 @@ const ActionButton = ({
       case "fluxDevLora":
         return (
           <>
-           {nodeConnection.fluxDevLoraNode[selectedNode.id] &&
+            {nodeConnection.fluxDevLoraNode[selectedNode.id] &&
               aiOutput.length > 0 && (
                 <div className="flex flex-col space-y-2">
                   {aiOutput.map((output, index) => (
@@ -961,7 +964,7 @@ const ActionButton = ({
       case "dreamShaper":
         return (
           <>
-           {nodeConnection.dreamShaperNode[selectedNode.id] &&
+            {nodeConnection.dreamShaperNode[selectedNode.id] &&
               aiOutput.length > 0 && (
                 <div className="flex flex-col space-y-2">
                   {aiOutput.map((output, index) => (
@@ -989,7 +992,7 @@ const ActionButton = ({
       case "fluxGeneral":
         return (
           <>
-           {nodeConnection.fluxGeneralNode[selectedNode.id] &&
+            {nodeConnection.fluxGeneralNode[selectedNode.id] &&
               aiOutput.length > 0 && (
                 <div className="flex flex-col space-y-2">
                   {aiOutput.map((output, index) => (

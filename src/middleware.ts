@@ -6,9 +6,18 @@ export default authMiddleware({
         '/api/clerk-webhook',
         '/api/drive-activity/notification',
         '/api/payment/success',
-        '/api/workflow',
         '/api/ai/superagent/getoutput',
-        '/api/ai/FLUX-image'
+        '/api/ai/FLUX-image',
+        '/api/ai/fal/flux-dev',
+        '/api/ai/fal/flux-general',
+        '/api/ai/fal/flux-lora',
+        '/api/ai/fal/image-to-image',
+        '/api/ai/fal/stable-video',
+        '/api/ai/fal/train-flux',
+        '/api/ai/replicate/consistent-character',
+        '/api/ai/replicate/dreamshaper',
+        '/api/ai/replicate/fluxDevlora',
+        '/api/ai/openai'
     ],
     ignoredRoutes: [
         '/api/auth/callback/discord',

@@ -8,7 +8,6 @@ import React from "react";
 
 const stableVideoNodeOptions : Option[]  = [
     { image_url: { placeholder: "Enter image URL", type: "text" } },
-    { apiKey: { placeholder: "Enter API key", type: "password" } },
     { motion_bucket_id: { placeholder: "Enter motion bucket ID", type: "text" } },
     { fps: { placeholder: 30, type: "number" } },
     { cond_aug: { placeholder: true, type: "checkbox" } },
@@ -52,7 +51,6 @@ const StableVideo = (nodeConnectionType: any, title: string) => {
                 );
               }}
             />
-              {optionKey === "apiKey" && <div>dfgd</div>}
             </div>
           );
         })}
