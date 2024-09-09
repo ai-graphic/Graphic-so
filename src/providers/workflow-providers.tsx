@@ -176,7 +176,30 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
+            console.log("flow", flowPath, chatHistory);
+            const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
+                setHistory(history);
+              }
+            }
           }
           if (nodeType == "flux-lora") {
             const fluxLoraTemplate = JSON.parse(workflow.fluxloraTemplate!);
@@ -248,7 +271,30 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
+            console.log("flow", flowPath, chatHistory);
+            const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
+                setHistory(history);
+              }
+            }
           }
           if (nodeType == "image-to-image") {
             const falImageTemplate = JSON.parse(workflow.ImageToImageTemplate!);
@@ -305,7 +351,30 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
+            console.log("flow", flowPath, chatHistory);
+            const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
+                setHistory(history);
+              }
+            }
           }
           if (nodeType == "stable-video") {
             const falVideoTemplate = JSON.parse(workflow.videoTemplate!);
@@ -354,7 +423,30 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
+            console.log("flow", flowPath, chatHistory);
+            const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
+                setHistory(history);
+              }
+            }
           }
           if (nodeType == "consistent-character") {
             const falCharacterTemplate = JSON.parse(
@@ -420,7 +512,30 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
+            console.log("flow", flowPath, chatHistory);
+            const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
+                setHistory(history);
+              }
+            }
           }
           if (nodeType == "dreamShaper") {
             const falDreamShaperTemplate = JSON.parse(
@@ -447,18 +562,21 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               }
               try {
                 setIsLoading(idNode, true);
-                const output = await axios.post("/api/ai/replicate/dreamshaper", {
-                  prompt: falDreamShaperTemplate[idNode].prompt,
-                  apiKey: falDreamShaperTemplate[idNode].apiKey,
-                  num_inference_steps:
-                    falDreamShaperTemplate[idNode].num_inference_steps,
-                  image: content,
-                  negative_prompt:
-                    falDreamShaperTemplate[idNode]?.negative_prompt,
-                  strength: falDreamShaperTemplate[idNode]?.strength,
-                  scheduler: falDreamShaperTemplate[idNode]?.scheduler,
-                  upscale: falDreamShaperTemplate[idNode]?.upscale,
-                });
+                const output = await axios.post(
+                  "/api/ai/replicate/dreamshaper",
+                  {
+                    prompt: falDreamShaperTemplate[idNode].prompt,
+                    apiKey: falDreamShaperTemplate[idNode].apiKey,
+                    num_inference_steps:
+                      falDreamShaperTemplate[idNode].num_inference_steps,
+                    image: content,
+                    negative_prompt:
+                      falDreamShaperTemplate[idNode]?.negative_prompt,
+                    strength: falDreamShaperTemplate[idNode]?.strength,
+                    scheduler: falDreamShaperTemplate[idNode]?.scheduler,
+                    upscale: falDreamShaperTemplate[idNode]?.upscale,
+                  }
+                );
                 nodeConnection.setAINode((prev: any) => ({
                   ...prev,
                   output: {
@@ -476,7 +594,30 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
+            console.log("flow", flowPath, chatHistory);
+            const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
+                setHistory(history);
+              }
+            }
           }
           if (nodeType == "fluxGeneral") {
             const falGeneralTemplate = JSON.parse(
@@ -532,7 +673,30 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
+            console.log("flow", flowPath, chatHistory);
+            const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
+                setHistory(history);
+              }
+            }
           }
           if (nodeType == "fluxDevLora") {
             const falDevLoraTemplate = JSON.parse(workflow.fluxDevLora!);
@@ -557,18 +721,21 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               }
               try {
                 setIsLoading(idNode, true);
-                const output = await axios.post("/api/ai/replicate/fluxDevlora", {
-                  prompt: content,
-                  hf_loras: falDevLoraTemplate[idNode]?.hf_loras,
-                  apiKey: falDevLoraTemplate[idNode]?.apiKey,
-                  num_outputs: falDevLoraTemplate[idNode]?.num_outputs,
-                  aspect_ratio: falDevLoraTemplate[idNode]?.aspect_ratio,
-                  output_format: falDevLoraTemplate[idNode]?.output_format,
-                  guidance_scale: falDevLoraTemplate[idNode]?.guidance_scale,
-                  output_quality: falDevLoraTemplate[idNode]?.output_quality,
-                  num_inference_steps:
-                    falDevLoraTemplate[idNode].num_inference_steps,
-                });
+                const output = await axios.post(
+                  "/api/ai/replicate/fluxDevlora",
+                  {
+                    prompt: content,
+                    hf_loras: falDevLoraTemplate[idNode]?.hf_loras,
+                    apiKey: falDevLoraTemplate[idNode]?.apiKey,
+                    num_outputs: falDevLoraTemplate[idNode]?.num_outputs,
+                    aspect_ratio: falDevLoraTemplate[idNode]?.aspect_ratio,
+                    output_format: falDevLoraTemplate[idNode]?.output_format,
+                    guidance_scale: falDevLoraTemplate[idNode]?.guidance_scale,
+                    output_quality: falDevLoraTemplate[idNode]?.output_quality,
+                    num_inference_steps:
+                      falDevLoraTemplate[idNode].num_inference_steps,
+                  }
+                );
                 nodeConnection.setAINode((prev: any) => ({
                   ...prev,
                   output: {
@@ -586,7 +753,30 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
+            console.log("flow", flowPath, chatHistory);
+            const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
+                setHistory(history);
+              }
+            }
           }
           if (nodeType == "train-flux") {
             flowPath.splice(current, 2);
@@ -768,7 +958,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             console.log("flow", flowPath, chatHistory);
             const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
-            const isNextNotAI = nextNodeType !== "AI";
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
