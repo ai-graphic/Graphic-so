@@ -790,7 +790,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const edge = edgesArray.find((e: any) => e.target === idNode);
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
-              let prompt = nodeConnection.aiNode[idNode].prompt;
+              let prompt = nodeConnection.aiNode[idNode]?.prompt;
               console.log("Prompt:", prompt);
               if (node.type === "Trigger") {
                 const output = nodeConnection.aiNode.output as unknown as {

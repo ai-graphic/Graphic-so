@@ -1,4 +1,3 @@
-import { AI } from "@/lib/actions";
 import { nanoid } from "@/lib/utils";
 import type React from "react";
 
@@ -11,11 +10,9 @@ export default async function ChatLayout({ children }: ChatLayoutProps) {
 
   return (
     <>
-      <AI>
-        <div className="flex flex-col min-h-screen">
-          <main className="flex flex-col flex-1">{children}</main>
-        </div>
-      </AI>
+      <div className="flex flex-col h-screen w-full justify-center items-center">
+        <main className="flex flex-col mt-10 min-w-[70vh] flex-1">{children}</main>
+      </div>
     </>
   );
 }
