@@ -25,20 +25,20 @@ const MenuOptions = (props: Props) => {
   const pathName = usePathname();
   const [isVisible, setIsVisible] = useState(true);
   const isControllable = pathName.includes("editor");
-  const {credits, tier, setCredits, setTier} = useBilling();
+  const { credits, tier, setCredits, setTier } = useBilling();
 
   const onGetPayment = async () => {
-      const response = await onPaymentDetails();
-      console.log(response)
-      if (response) {
-          setTier(response.tier!);
-          setCredits(response.credits!);
-      }
-  }
+    const response = await onPaymentDetails();
+    console.log(response);
+    if (response) {
+      setTier(response.tier!);
+      setCredits(response.credits!);
+    }
+  };
 
   useEffect(() => {
-      onGetPayment()
-  }, [credits])
+    onGetPayment();
+  }, [credits]);
 
   const sidebarVariants = {
     open: { x: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
@@ -97,7 +97,7 @@ const MenuOptions = (props: Props) => {
                   </Tooltip>
                 </ul>
               ))}
-              
+
               {isControllable && (
                 <Button
                   variant="outline"
@@ -110,15 +110,15 @@ const MenuOptions = (props: Props) => {
             </TooltipProvider>
           </div>
           <div className="flex items-center justify-center flex-col gap-8">
-          <div className="flex text-sm">
-                {tier == 'Unlimited' ? (
-                    <span>Unlimited</span>
-                ) : (
-                    <span>
-                        {credits}/{tier == 'Free' ? '40' : tier == 'Pro' && '100'}
-                    </span>
-                )}
-                </div>
+            <div className="flex text-sm text-orange-400">
+              {tier == "Unlimited" ? (
+                <span>Unlimited</span>
+              ) : (
+                <span>
+                  {credits}/{tier == "Free" ? "40" : tier == "Pro" && "100"}
+                </span>
+              )}
+            </div>
             <ModeToggle />
             <UserButton />
           </div>

@@ -347,9 +347,9 @@ const ActionButton = ({
       const response = await axios.post("/api/ai/replicate/dreamshaper", {
         prompt: nodeConnection.dreamShaperNode[id]?.prompt,
         userid: user?.id,
+        image: nodeConnection.dreamShaperNode[id]?.image,
         num_inference_steps:
           nodeConnection.dreamShaperNode[id]?.num_inference_steps,
-        image: nodeConnection.dreamShaperNode[id]?.image,
         negative_prompt: nodeConnection.dreamShaperNode[id]?.negative_prompt,
         strength: nodeConnection.dreamShaperNode[id]?.strength,
         scheduler: nodeConnection.dreamShaperNode[id]?.scheduler,
