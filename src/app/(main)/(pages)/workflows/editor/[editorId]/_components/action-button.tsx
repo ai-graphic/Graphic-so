@@ -376,11 +376,12 @@ const ActionButton = ({
     try {
       setIsLoading(id, true);
       console.log("Flux General Node:", nodeConnection.fluxGeneralNode[id]);
-      const response = await axios.post("/api/ai/fal/fluxGeneral", {
+      const response = await axios.post("/api/ai/fal/flux-general", {
         prompt: nodeConnection.fluxGeneralNode[id]?.prompt,
         userid: user?.id,
         num_inference_steps:
           nodeConnection.fluxGeneralNode[id]?.num_inference_steps,
+          image_size: nodeConnection.fluxGeneralNode[id]?.image_size,
         guidance_scale: nodeConnection.fluxGeneralNode[id]?.guidance_scale,
         num_images: nodeConnection.fluxGeneralNode[id]?.num_images,
         seed: nodeConnection.fluxGeneralNode[id]?.seed,
@@ -501,7 +502,7 @@ const ActionButton = ({
   );
 
   // ...
-  const onCreateLocalNodeTempate = useCallback(async () => {
+  const  onCreateLocalNodeTempate= useCallback(async (currentService : any) => {
     if (currentService === "AI") {
       console.log("AI Node:", nodeConnection.aiNode);
       const aiNodeAsString = JSON.stringify(nodeConnection.aiNode);
@@ -698,7 +699,7 @@ const ActionButton = ({
             <Button variant="outline" onClick={onSendDiscordMessage}>
               Test Message
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
               Save Template
             </Button>
           </>
@@ -747,7 +748,7 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
               Save Template
             </Button>
           </>
@@ -759,7 +760,7 @@ const ActionButton = ({
             <Button variant="outline" onClick={onStoreNotionContent}>
               Test
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
               Save Template
             </Button>
           </>
@@ -771,7 +772,7 @@ const ActionButton = ({
             <Button variant="outline" onClick={onStoreSlackContent}>
               Send Message
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
               Save Template
             </Button>
           </>
@@ -799,8 +800,8 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
-              Save Template
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+              Save {currentService}  Template
             </Button>
           </>
         );
@@ -827,8 +828,8 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
-              Save Template
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+              Save {currentService} Template
             </Button>
           </>
         );
@@ -855,8 +856,8 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
-              Save Template
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+              Save {currentService} Template
             </Button>
           </>
         );
@@ -869,8 +870,8 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
-              Save Template
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+              Save {currentService} Template
             </Button>
           </>
         );
@@ -900,8 +901,8 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
-              Save Template
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+              Save {currentService} Template
             </Button>
           </>
         );
@@ -928,8 +929,8 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
-              Save Template
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+              Save {currentService} Template
             </Button>
           </>
         );
@@ -956,8 +957,8 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
-              Save Template
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+              Save {currentService} Template
             </Button>
           </>
         );
@@ -984,8 +985,8 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
-              Save Template
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+              Save {currentService} Template
             </Button>
           </>
         );
@@ -1012,8 +1013,8 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={onCreateLocalNodeTempate} variant="outline">
-              Save Template
+            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+              Save {currentService} Template
             </Button>
           </>
         );

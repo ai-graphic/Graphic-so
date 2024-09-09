@@ -8,8 +8,8 @@ export async function POST(req: Request, res: Response) {
   try {
     const {
       prompt,
-      image_size,
       userid,
+      image_size,
       num_inference_steps,
       guidance_scale,
       num_images,

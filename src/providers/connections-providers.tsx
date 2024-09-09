@@ -9,6 +9,8 @@ export type ConnectionProviderProps = {
     webhookName: string;
     guildName: string;
   };
+  isFlow: any[];
+  setisFlow: React.Dispatch<React.SetStateAction<any[]>>;
   setDiscordNode: React.Dispatch<React.SetStateAction<any>>;
   triggerNode: {
     triggerType: string;
@@ -180,7 +182,7 @@ export type ConnectionProviderProps = {
   settrainFluxNode: React.Dispatch<React.SetStateAction<any>>;
   output: string[];
   setAINode: React.Dispatch<React.SetStateAction<any>>;
-  addAINode: (id: string) => void; // Add this line
+  addAINode: (id: string, type: string) => void; // Add this line
   googleNode: any[];
   setGoogleNode: React.Dispatch<React.SetStateAction<any>>;
   notionNode: {
@@ -231,7 +233,8 @@ const InitialValues: ConnectionProviderProps = {
     chatHistory: [],
     chatinput: "",
   },
-
+  isFlow: [],
+  setisFlow: () => undefined,
   discordNode: {
     webhookURL: "",
     content: "",
@@ -340,6 +343,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [chatNode, setChatNode] = useState(InitialValues.chatNode);
   const [triggerNode, setTriggerNode] = useState(InitialValues.triggerNode);
   const [fluxDevNode, setfluxDevNode] = useState(InitialValues.fluxDevNode);
+  const [isFlow, setisFlow] = useState(InitialValues.isFlow);
   const [imageToImageNode, setimageToImageNode] = useState(
     InitialValues.imageToImageNode
   );
@@ -365,11 +369,159 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [workflowTemplate, setWorkFlowTemplate] = useState(
     InitialValues.workflowTemplate
   );
-  const addAINode = (id: string) => {
-    setAINode((prev) => ({
-      ...prev,
-      [id]: generateDefaultAINode(id),
-    }));
+  const addAINode = (id: string, type: string) => {
+    console.log("id", id, type);
+    if (type === "AI") {
+      setAINode((prev) => ({
+        ...prev,
+        [id]: generateDefaultAINode(id),
+      }));
+    } else if (type === "flux-dev") {
+      setfluxDevNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          model: "",
+          output: "",
+          prompt: "",
+          image_size: "",
+          num_inference_steps: 0,
+          guidance_scale: 0,
+          num_images: 0,
+          seed: 0,
+          enable_safety_checker: false,
+          sync_mode: false,
+        },
+      }));
+    }
+    else if (type === "image-to-image") {
+      setimageToImageNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          prompt: "",
+          image_size: "",
+          image_url: "",
+          num_inference_steps: 0,
+          guidance_scale: 0,
+          num_images: 0,
+          seed: 0,
+          enable_safety_checker: false,
+          sync_mode: false,
+          strength: 0,
+        },
+      }));
+    }
+    else if (type === "flux-lora") {
+      setfluxLoraNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          prompt: "",
+          image_size: "",
+          num_inference_steps: 0,
+          guidance_scale: 0,
+          num_images: 0,
+          seed: 0,
+          enable_safety_checker: false,
+          loras: [],
+          sync_mode: false,
+          output_format: "",
+        },
+      }));
+    }
+    else if (type === "stable-video") {
+      setstableVideoNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          image_url: "",
+          motion_bucket_id: "",
+          fps: 0,
+          cond_aug: false,
+        },
+      }));
+    }
+    else if (type === "train-flux") {
+      settrainFluxNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          images_data_url: "",
+          trigger_word: "",
+          iter_multiplier: 0,
+        },
+      }));
+    }
+    else if (type === "consistent-character") {
+      setconsistentCharacterNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          prompt: "",
+          subject: "",
+          negative_prompt: "",
+          randomise_poses: false,
+          number_of_outputs: 0,
+          number_of_images_per_pose: 0,
+          num_outputs: 0,
+          output_format: "",
+          disable_safety_checker: false,
+          output_quality: 0,
+        },
+      }));
+    } else if (type === "dreamShaper") {
+      setDreamShaperNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          prompt: "",
+          image: "",
+          negative_prompt: "",
+          num_inference_steps: 0,
+          guidance_scale: 0,
+          num_outputs: 0,
+          scheduler: "",
+          upscale: 0,
+          strength: 0,
+        },
+      }));
+    }
+    else if (type === "fluxGeneral") {
+      setFluxGeneralNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          prompt: "",
+          image_size: "",
+          num_inference_steps: 0,
+          guidance_scale: 0,
+          num_images: 0,
+          seed: 0,
+          sync_mode: false,
+          enable_safety_checker: false,
+        },
+      }));
+    }
+    else if (type === "fluxDevLora") {
+      setFluxDevLoraNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          prompt: "",
+          hf_loras: [],
+          num_outputs: 0,
+          aspect_ratio: "",
+          output_format: "",
+          guidance_scale: 0,
+          output_quality: "",
+          num_inference_steps: 0,
+        },
+      }));
+    }
+
+   
+   
   };
 
   const values = {
@@ -412,6 +564,8 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     setFluxGeneralNode,
     fluxDevLoraNode,
     setFluxDevLoraNode,
+    isFlow,
+    setisFlow,
   };
 
   return <Provider value={values}>{children}</Provider>;

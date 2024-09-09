@@ -20,17 +20,17 @@ type Props = {
 
 const FlowInstance = ({ edges, nodes, setNodes, setEdges }: Props) => {
   const pathname = usePathname();
-  const [isFlow, setIsFlow] = useState([]);
-  const { nodeConnection } = useNodeConnections();
+  const { nodeConnection, } = useNodeConnections();
   const {dispatch, state } = useEditor();
 
   const onFlowAutomation = useCallback(async () => {
-    console.log("saving flow", edges, nodes, isFlow);
+    await onAutomateFlow();
+    console.log("saving flow", edges, nodes, nodeConnection.isFlow);
     const flow = await onCreateNodesEdges(
       pathname.split("/").pop()!,
       JSON.stringify(nodes),
       JSON.stringify(edges),
-      JSON.stringify(isFlow)
+      JSON.stringify(nodeConnection.isFlow)
     );
 
     if (flow) toast.message(flow.message);
@@ -51,7 +51,7 @@ const FlowInstance = ({ edges, nodes, setNodes, setEdges }: Props) => {
         }
       });
     });
-    setIsFlow(flows);
+    nodeConnection.setisFlow(flows);
   };
 
   useEffect(() => {
@@ -102,7 +102,7 @@ const FlowInstance = ({ edges, nodes, setNodes, setEdges }: Props) => {
           className="w-full"
           variant="outline"
           onClick={onFlowAutomation}
-          disabled={isFlow.length < 1}
+          disabled={nodeConnection.isFlow.length < 1}
         >
           Save Workflow
         </Button>

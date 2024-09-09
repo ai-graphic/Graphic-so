@@ -448,9 +448,9 @@ const ContentBasedOnTitle = ({
           )}
           {title === "Google Drive" && <GoogleDriveFiles />}
           <ActionButton
+            currentService={title}
             nodes={nodes}
             edges={edges}
-            currentService={title}
             nodeConnection={nodeConnection}
             channels={selectedSlackChannels}
             setChannels={setSelectedSlackChannels}

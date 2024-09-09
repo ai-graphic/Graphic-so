@@ -123,7 +123,7 @@ const EditorCanvas = (workflow : any, setworkflow: any, ) => {
       };
       //@ts-ignore
       setNodes((nds) => nds.concat(newNode));
-      addAINode(newNode.id);
+      addAINode(newNode.id, newNode.type);
       toast("Node added successfully");
     },
     [reactFlowInstance, state]
@@ -160,7 +160,7 @@ const EditorCanvas = (workflow : any, setworkflow: any, ) => {
       };
       //@ts-ignore
       setNodes((nds) => nds.concat(newNode));
-      addAINode(newNode.id);
+      addAINode(newNode.id, newNode.type);
       toast("Node added successfully");
       reactFlowInstance.setCenter(position.x, position.y, {
         duration: 1000,
