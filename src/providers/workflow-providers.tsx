@@ -324,7 +324,6 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 content = prmpt;
               } else {
                 content = latestOutputs[node.id];
-                chatHistory.user = content;
               }
               try {
                 setIsLoading(idNode, true);
@@ -404,7 +403,6 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 content = prmpt;
               } else {
                 content = latestOutputs[node.id];
-                chatHistory.user = content;
               }
               try {
                 setIsLoading(idNode, true);
@@ -478,7 +476,6 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 content = prmpt;
               } else {
                 content = latestOutputs[node.id];
-                chatHistory.user = content;
               }
               try {
                 setIsLoading(idNode, true);
@@ -567,7 +564,6 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 content = prmpt;
               } else {
                 content = latestOutputs[node.id];
-                chatHistory.user = content;
               }
               try {
                 setIsLoading(idNode, true);
@@ -649,7 +645,6 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 content = prmpt;
               } else {
                 content = latestOutputs[node.id];
-                chatHistory.user = content;
               }
               try {
                 setIsLoading(idNode, true);
@@ -726,7 +721,6 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 content = prmpt;
               } else {
                 content = latestOutputs[node.id];
-                chatHistory.user = content;
               }
               try {
                 setIsLoading(idNode, true);

@@ -164,10 +164,7 @@ const Chat = () => {
                       {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(item.bot) ? (
                         <img src={item.bot} width={200} alt="bot" />
                       ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(item.bot) ? (
-                        <video width={200} controls>
-                          <source src={item.bot} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
+                        <video src={item.bot} controls width="320" height="240" />
                       ) : (
                         <p>{item.bot}</p>
                       )}

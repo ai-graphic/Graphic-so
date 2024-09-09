@@ -139,6 +139,8 @@ const Chat = () => {
                     <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
                       {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(item.bot) ? (
                         <img src={item.bot} width={200} alt="bot" />
+                      ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(item.bot) ? (
+                        <video src={item.bot} controls width="320" height="240" autoPlay/>
                       ) : (
                         <p>{item.bot}</p>
                       )}
