@@ -75,7 +75,7 @@ const Chat = () => {
     nodeConnection.triggerNode.triggerValue = "";
     setLoad(false);
   };
-  console.log("history", history);
+
 
   useEffect(() => {
     if (isUpdated) {

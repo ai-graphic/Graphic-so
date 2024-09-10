@@ -37,7 +37,6 @@ const Page = (props: Props) => {
         : {};
       Object.keys(aiTemplate).forEach((nodeId) => {
         const nodeData = aiTemplate[nodeId];
-        console.log("hello", nodeData);
 
         if (!nodeConnection.aiNode[nodeId] && nodeData.model) {
           nodeConnection.aiNode[nodeId] = {
@@ -95,7 +94,6 @@ const Page = (props: Props) => {
           };
         }
       });
-      console.log("Updated nodeConnection:", nodeConnection);
         setShow(true);
         setLoading(false);
       }

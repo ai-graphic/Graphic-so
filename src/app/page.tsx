@@ -16,7 +16,6 @@ export default async function Home() {
   };
 
   const workflows = await getAllWorkflows();
-  console.log("hello", workflows);
 
   const data = workflows.map((workflow: any) => {
     const chatHistory = workflow.chatHistory || [];

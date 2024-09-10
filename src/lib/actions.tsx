@@ -66,7 +66,6 @@ async function submitUserMessage(
         `,
         messages: [...history],
       });
-      console.log(result);
       let textContent = "";
       spinnerStream.done(null);
       let responded = false;
@@ -76,7 +75,6 @@ async function submitUserMessage(
           const { textDelta } = delta;
   
           textContent += textDelta;
-          console.log(textContent);
           messageStream.update(<TextContentDisplay content={textContent} />);
   
           aiState.update({

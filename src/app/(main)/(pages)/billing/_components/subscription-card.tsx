@@ -17,7 +17,6 @@ import {
 import { Button } from '@/components/ui/button'
 
 export const SubscriptionCard = ({ onPayment, products, tier }: Props) => {
-    console.log(products)
     return (
         <section className="flex w-full justify-center md:flex-row flex-col gap-6">
             {products &&

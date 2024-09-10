@@ -65,7 +65,6 @@ export async function listBotChannels(
             headers: { Authorization: `Bearer ${slackAccessToken}` },
         })
 
-        // console.log('SLACK_LIST_BOT_CHANNELS: ', data);
 
         if (!data.ok) throw new Error(data.error)
 
@@ -113,7 +112,6 @@ export const postMessageToSlack = async (
     selectedSlackChannels: Option[],
     content: string
 ): Promise<{ message: string }> => {
-    console.log('Selected Slack Channels:', selectedSlackChannels, content)
     if (!content) return { message: 'Content is empty' }
     if (!selectedSlackChannels?.length) return { message: 'Channel not selected' }
 

@@ -58,11 +58,6 @@ const ActionButton = ({
   }, [nodeConnection.discordNode]);
 
   const onStoreNotionContent = useCallback(async () => {
-    console.log(
-      nodeConnection.notionNode.databaseId,
-      nodeConnection.notionNode.accessToken,
-      nodeConnection.notionNode.content
-    );
     const response = await onCreateNewPageInDatabase(
       nodeConnection.notionNode.databaseId,
       nodeConnection.notionNode.accessToken,
@@ -96,10 +91,8 @@ const ActionButton = ({
 
   const onFluxDev = useCallback(
     async (id: string) => {
-      console.log("Flux Dev Node:", id);
       try {
         setIsLoading(id, true);
-        console.log("Flux Dev Node:", nodeConnection.fluxDevNode);
         const response = await axios.post("/api/ai/fal/flux-dev", {
           prompt: nodeConnection.fluxDevNode[id].prompt,
           image_size: nodeConnection.fluxDevNode[id].image_size,
@@ -122,7 +115,6 @@ const ActionButton = ({
           },
         }));
         setCredits((prev) => (Number(prev) - 1).toString());
-        console.log("Flux Dev Response:", response.data);
       } catch (error) {
         console.error("Error during Flux Dev API call:", error);
         toast.error("Error during Flux Dev API call");
@@ -135,10 +127,9 @@ const ActionButton = ({
   );
 
   const onImageToImage = useCallback(async (id: string) => {
-    console.log("Image to Image Node:", id);
     try {
       setIsLoading(id, true);
-      console.log("Flux Dev Node:", nodeConnection.imageToImageNode);
+
       const response = await axios.post("/api/ai/fal/image-to-image", {
         prompt: nodeConnection.imageToImageNode[id].prompt,
         image_size: nodeConnection.imageToImageNode[id].image_size,
@@ -162,7 +153,6 @@ const ActionButton = ({
         },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
-      console.log("Image to Image Response:", response.data);
     } catch (error) {
       console.error("Error during Image to Image API call:", error);
     } finally {
@@ -170,10 +160,9 @@ const ActionButton = ({
     }
   }, []);
   const onFluxLora = useCallback(async (id: string) => {
-    console.log("Flux Lora Node:", id);
     try {
       setIsLoading(id, true);
-      console.log("Flux Dev Node:", nodeConnection.fluxLoraNode);
+
       const response = await axios.post("/api/ai/fal/flux-lora", {
         prompt: nodeConnection.fluxLoraNode[id].prompt,
         image_size: nodeConnection.fluxLoraNode[id].image_size,
@@ -197,7 +186,6 @@ const ActionButton = ({
         },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
-      console.log("Flux Lora Response:", response.data);
     } catch (error) {
       console.error("Error during Flux Lora API call:", error);
     } finally {
@@ -205,7 +193,6 @@ const ActionButton = ({
     }
   }, []);
   const onTrainFlux = useCallback(async (id: string) => {
-    console.log("Train Flux Node:", id);
     try {
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/fal/train-flux", {
@@ -222,7 +209,6 @@ const ActionButton = ({
         },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
-      console.log("Train Flux Response:", response.data);
     } catch (error) {
       console.error("Error during Train Flux API call:", error);
     } finally {
@@ -230,11 +216,8 @@ const ActionButton = ({
     }
   }, []);
   const onStableVideo = useCallback(async (id: string) => {
-    console.log("Stable Video Node:", id);
     try {
       setIsLoading(id, true);
-      console.log("Stable Video Node:", nodeConnection);
-      console.log("Stable Video Node:", nodeConnection.stableVideoNode);
       const response = await axios.post("/api/ai/fal/stable-video", {
         image_url: nodeConnection.stableVideoNode[id].image_url,
         userid: user?.id,
@@ -250,7 +233,6 @@ const ActionButton = ({
         },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
-      console.log("Stable Video Response:", response.data);
     } catch (error) {
       console.error("Error during Stable Video API call:", error);
     } finally {
@@ -259,13 +241,9 @@ const ActionButton = ({
   }, []);
 
   const onConsistantChar = useCallback(async (id: string) => {
-    console.log("Consistant Character Node:", id);
     try {
       setIsLoading(id, true);
-      console.log(
-        "Consistant Character Node:",
-        nodeConnection.consistentCharacterNode[id]
-      );
+      nodeConnection.consistentCharacterNode[id];
       const response = await axios.post(
         "/api/ai/replicate/consistent-character",
         {
@@ -298,7 +276,6 @@ const ActionButton = ({
         },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
-      console.log("Consistant Character Response:", response.data);
     } catch (error) {
       console.error("Error during Consistant Character API call:", error);
     } finally {
@@ -307,10 +284,8 @@ const ActionButton = ({
   }, []);
 
   const onFluxDevLora = useCallback(async (id: string) => {
-    console.log("Flux Dev Lora Node:", id);
     try {
       setIsLoading(id, true);
-      console.log("Flux Dev Lora Node:", nodeConnection.fluxDevLoraNode[id]);
       const response = await axios.post("/api/ai/replicate/fluxDevlora", {
         prompt: nodeConnection.fluxDevLoraNode[id]?.prompt,
         hf_loras: nodeConnection.fluxDevLoraNode[id]?.hf_loras,
@@ -331,7 +306,6 @@ const ActionButton = ({
         },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
-      console.log("Flux Dev Lora Response:", response.data);
     } catch (error) {
       console.error("Error during Flux Dev Lora API call:", error);
     } finally {
@@ -340,10 +314,8 @@ const ActionButton = ({
   }, []);
 
   const onDreamShaper = useCallback(async (id: string) => {
-    console.log("Dream Shaper Node:", id);
     try {
       setIsLoading(id, true);
-      console.log("Dream Shaper Node:", nodeConnection.dreamShaperNode[id]);
       const response = await axios.post("/api/ai/replicate/dreamshaper", {
         prompt: nodeConnection.dreamShaperNode[id]?.prompt,
         userid: user?.id,
@@ -363,7 +335,6 @@ const ActionButton = ({
         },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
-      console.log("Dream Shaper Response:", response.data);
     } catch (error) {
       console.error("Error during Dream Shaper API call:", error);
     } finally {
@@ -372,16 +343,14 @@ const ActionButton = ({
   }, []);
 
   const onFluxGeneral = useCallback(async (id: string) => {
-    console.log("Flux General Node:", id);
     try {
       setIsLoading(id, true);
-      console.log("Flux General Node:", nodeConnection.fluxGeneralNode[id]);
       const response = await axios.post("/api/ai/fal/flux-general", {
         prompt: nodeConnection.fluxGeneralNode[id]?.prompt,
         userid: user?.id,
         num_inference_steps:
           nodeConnection.fluxGeneralNode[id]?.num_inference_steps,
-          image_size: nodeConnection.fluxGeneralNode[id]?.image_size,
+        image_size: nodeConnection.fluxGeneralNode[id]?.image_size,
         guidance_scale: nodeConnection.fluxGeneralNode[id]?.guidance_scale,
         num_images: nodeConnection.fluxGeneralNode[id]?.num_images,
         seed: nodeConnection.fluxGeneralNode[id]?.seed,
@@ -397,7 +366,6 @@ const ActionButton = ({
         },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
-      console.log("Flux General Response:", response.data);
     } catch (error) {
       console.error("Error during Flux General API call:", error);
     } finally {
@@ -411,40 +379,32 @@ const ActionButton = ({
         toast.error("Please select a model first");
         return;
       }
-      if (
-        !nodeConnection.aiNode[id].prompt
-      ) {
+      if (!nodeConnection.aiNode[id].prompt) {
         toast.error("Please enter a prompt first");
         return;
       }
       setIsLoading(id, true);
-      console.log("AI Node:", id);
       if (nodeConnection.aiNode[id].model === "Openai") {
         try {
           setIsLoading(id, true);
           const response = await axios.post("/api/ai/openai", {
-            prompt : nodeConnection.aiNode[id]?.prompt,
+            prompt: nodeConnection.aiNode[id]?.prompt,
             system: nodeConnection.aiNode[id]?.system,
             userid: user?.id,
-          })
+          });
           nodeConnection.setAINode((prev: any) => ({
             ...prev,
             output: {
               ...(prev.output || {}),
-              [id]: [
-                ...(prev.output?.[id] || []),
-                response.data,
-              ],
+              [id]: [...(prev.output?.[id] || []), response.data],
             },
           }));
-          console.log("AI Response:", response.data);
         } catch (error) {
           console.error("Error during AI search:", error);
         } finally {
           setIsLoading(id, false);
         }
       } else if (nodeConnection.aiNode[id].model === "FLUX-image") {
-        console.log("AI model:", nodeConnection.aiNode[id].model);
         try {
           setIsLoading(id, true);
           const response = await axios.post("/api/ai/FLUX-image", {
@@ -467,23 +427,21 @@ const ActionButton = ({
             },
           }));
           setCredits((prev) => (Number(prev) - 1).toString());
-          console.log("Replicate API Response:", response.data[0]);
         } catch (error) {
           console.error("Error during Replicate API call:", error);
         } finally {
           setIsLoading(id, false);
         }
       } else if (nodeConnection.aiNode[id].model === "SuperAgent") {
-        console.log("AI model:");
+        ("AI model:");
         try {
-          console.log("yo");
+          ("yo");
           const response = await axios.post("/api/ai/superagent/getoutput", {
             prompt: nodeConnection.aiNode[id].prompt,
             workflowId: nodeConnection.aiNode[id].id,
             userid: user?.id,
             history: nodeConnection.aiNode[id].history,
           });
-          console.log("chup", response.data);
           nodeConnection.setAINode((prev: any) => ({
             ...prev,
             output: {
@@ -502,184 +460,176 @@ const ActionButton = ({
   );
 
   // ...
-  const  onCreateLocalNodeTempate= useCallback(async (currentService : any) => {
-    if (currentService === "AI") {
-      console.log("AI Node:", nodeConnection.aiNode);
-      const aiNodeAsString = JSON.stringify(nodeConnection.aiNode);
-      const response = await onCreateNodeTemplate(
-        aiNodeAsString,
-        currentService,
-        pathname.split("/").pop()!
-      );
+  const onCreateLocalNodeTempate = useCallback(
+    async (currentService: any) => {
+      if (currentService === "AI") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.aiNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
-    if (currentService === "flux-dev") {
-      console.log("AI Node:", nodeConnection.fluxDevNode);
-      const aiNodeAsString = JSON.stringify(nodeConnection.fluxDevNode);
-      const response = await onCreateNodeTemplate(
-        aiNodeAsString,
-        currentService,
-        pathname.split("/").pop()!
-      );
+      if (currentService === "flux-dev") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.fluxDevNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
-    if (currentService === "image-to-image") {
-      console.log("AI Node:", nodeConnection.imageToImageNode);
-      const aiNodeAsString = JSON.stringify(nodeConnection.imageToImageNode);
-      const response = await onCreateNodeTemplate(
-        aiNodeAsString,
-        currentService,
-        pathname.split("/").pop()!
-      );
+      if (currentService === "image-to-image") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.imageToImageNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
-    if (currentService === "flux-lora") {
-      console.log("AI Node:", nodeConnection.fluxLoraNode);
-      const aiNodeAsString = JSON.stringify(nodeConnection.fluxLoraNode);
-      const response = await onCreateNodeTemplate(
-        aiNodeAsString,
-        currentService,
-        pathname.split("/").pop()!
-      );
+      if (currentService === "flux-lora") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.fluxLoraNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
-    if (currentService === "train-flux") {
-      console.log("AI Node:", nodeConnection.trainFluxNode);
-      const aiNodeAsString = JSON.stringify(nodeConnection.trainFluxNode);
-      const response = await onCreateNodeTemplate(
-        aiNodeAsString,
-        currentService,
-        pathname.split("/").pop()!
-      );
+      if (currentService === "train-flux") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.trainFluxNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
-    if (currentService === "stable-video") {
-      console.log("AI Node:", nodeConnection.stableVideoNode);
-      const aiNodeAsString = JSON.stringify(nodeConnection.stableVideoNode);
-      const response = await onCreateNodeTemplate(
-        aiNodeAsString,
-        currentService,
-        pathname.split("/").pop()!
-      );
+      if (currentService === "stable-video") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.stableVideoNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
-    if (currentService === "consistent-character") {
-      console.log("AI Node:", nodeConnection.consistentCharacterNode);
-      const aiNodeAsString = JSON.stringify(
-        nodeConnection.consistentCharacterNode
-      );
-      const response = await onCreateNodeTemplate(
-        aiNodeAsString,
-        currentService,
-        pathname.split("/").pop()!
-      );
+      if (currentService === "consistent-character") {
+        const aiNodeAsString = JSON.stringify(
+          nodeConnection.consistentCharacterNode
+        );
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
-    if (currentService === "dreamShaper") {
-      console.log("AI Node:", nodeConnection.dreamShaperNode);
-      const aiNodeAsString = JSON.stringify(nodeConnection.dreamShaperNode);
-      const response = await onCreateNodeTemplate(
-        aiNodeAsString,
-        currentService,
-        pathname.split("/").pop()!
-      );
+      if (currentService === "dreamShaper") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.dreamShaperNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
-    if (currentService === "fluxGeneral") {
-      console.log("AI Node:", nodeConnection.fluxGeneralNode);
-      const aiNodeAsString = JSON.stringify(nodeConnection.fluxGeneralNode);
-      const response = await onCreateNodeTemplate(
-        aiNodeAsString,
-        currentService,
-        pathname.split("/").pop()!
-      );
+      if (currentService === "fluxGeneral") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.fluxGeneralNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
-    if (currentService === "fluxDevLora") {
-      console.log("AI Node:", nodeConnection.fluxDevLoraNode);
-      const aiNodeAsString = JSON.stringify(nodeConnection.fluxDevLoraNode);
-      const response = await onCreateNodeTemplate(
-        aiNodeAsString,
-        currentService,
-        pathname.split("/").pop()!
-      );
+      if (currentService === "fluxDevLora") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.fluxDevLoraNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
 
-    if (currentService === "Discord") {
-      const response = await onCreateNodeTemplate(
-        nodeConnection.discordNode.content,
-        currentService,
-        pathname.split("/").pop()!
-      );
+      if (currentService === "Discord") {
+        const response = await onCreateNodeTemplate(
+          nodeConnection.discordNode.content,
+          currentService,
+          pathname.split("/").pop()!
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
-    if (currentService === "Slack") {
-      const response = await onCreateNodeTemplate(
-        nodeConnection.slackNode.content,
-        currentService,
-        pathname.split("/").pop()!,
-        channels,
-        nodeConnection.slackNode.slackAccessToken
-      );
+      if (currentService === "Slack") {
+        const response = await onCreateNodeTemplate(
+          nodeConnection.slackNode.content,
+          currentService,
+          pathname.split("/").pop()!,
+          channels,
+          nodeConnection.slackNode.slackAccessToken
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
 
-    if (currentService === "Notion") {
-      const response = await onCreateNodeTemplate(
-        JSON.stringify(nodeConnection.notionNode.content),
-        currentService,
-        pathname.split("/").pop()!,
-        [],
-        nodeConnection.notionNode.accessToken,
-        nodeConnection.notionNode.databaseId
-      );
+      if (currentService === "Notion") {
+        const response = await onCreateNodeTemplate(
+          JSON.stringify(nodeConnection.notionNode.content),
+          currentService,
+          pathname.split("/").pop()!,
+          [],
+          nodeConnection.notionNode.accessToken,
+          nodeConnection.notionNode.databaseId
+        );
 
-      if (response) {
-        toast.message(response);
+        if (response) {
+          toast.message(response);
+        }
       }
-    }
-  }, [nodeConnection, channels]);
+    },
+    [nodeConnection, channels]
+  );
 
   const { selectedNode } = useEditor().state.editor;
   const [aiOutput, setAiOutput] = useState<string[]>([]);
-  console.log("aioutput:", aiOutput);
 
   useEffect(() => {
     if (nodeConnection.aiNode.output && selectedNode.id) {
@@ -699,7 +649,10 @@ const ActionButton = ({
             <Button variant="outline" onClick={onSendDiscordMessage}>
               Test Message
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save Template
             </Button>
           </>
@@ -748,7 +701,10 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save Template
             </Button>
           </>
@@ -760,7 +716,10 @@ const ActionButton = ({
             <Button variant="outline" onClick={onStoreNotionContent}>
               Test
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save Template
             </Button>
           </>
@@ -772,7 +731,10 @@ const ActionButton = ({
             <Button variant="outline" onClick={onStoreSlackContent}>
               Send Message
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save Template
             </Button>
           </>
@@ -800,8 +762,11 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
-              Save {currentService}  Template
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
+              Save {currentService} Template
             </Button>
           </>
         );
@@ -828,7 +793,10 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save {currentService} Template
             </Button>
           </>
@@ -856,7 +824,10 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save {currentService} Template
             </Button>
           </>
@@ -870,7 +841,10 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save {currentService} Template
             </Button>
           </>
@@ -901,7 +875,10 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save {currentService} Template
             </Button>
           </>
@@ -929,7 +906,10 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save {currentService} Template
             </Button>
           </>
@@ -957,7 +937,10 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save {currentService} Template
             </Button>
           </>
@@ -985,7 +968,10 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save {currentService} Template
             </Button>
           </>
@@ -1013,7 +999,10 @@ const ActionButton = ({
             >
               Test
             </Button>
-            <Button onClick={() => onCreateLocalNodeTempate(currentService)} variant="outline">
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
               Save {currentService} Template
             </Button>
           </>

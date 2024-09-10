@@ -370,7 +370,6 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     InitialValues.workflowTemplate
   );
   const addAINode = (id: string, type: string) => {
-    console.log("id", id, type);
     if (type === "AI") {
       setAINode((prev) => ({
         ...prev,

@@ -29,7 +29,6 @@ const MenuOptions = (props: Props) => {
 
   const onGetPayment = async () => {
     const response = await onPaymentDetails();
-    console.log(response);
     if (response) {
       setTier(response.tier!);
       setCredits(response.credits!);

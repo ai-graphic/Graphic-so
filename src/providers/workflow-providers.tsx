@@ -78,14 +78,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
         });
       }
       let workflow = await getworkflow(workflowId);
-      console.log(workflow);
       if (workflow) {
         const flowPath = JSON.parse(workflow.flowPath!);
         if (parseInt(credits) <= Math.ceil(flowPath.length / 2) - 1) {
           toast.error("Insufficient Credits");
           return;
         }
-        console.log(flowPath);
+
         let current = 0;
         let latestOutputs: LatestOutputsType = {};
         let chatHistory: any = { user: "", bot: "" };

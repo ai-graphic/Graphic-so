@@ -21,8 +21,7 @@ const FluxDev =  (nodeConnectionType: any, title: string) => {
   const { selectedNode } = useEditor().state.editor;
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
-  console.log("nodeConnectionType", nodeConnectionType);
-  console.log(nodeConnection)
+
   return (
     <div className="flex flex-col gap-2">
       {fluxDevNodeOption.map((optionObj) => {

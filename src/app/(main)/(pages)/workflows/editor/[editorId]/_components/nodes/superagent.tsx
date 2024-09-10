@@ -25,7 +25,7 @@ const SuperAgent = ({
   node: any;
   ishistoryChecked: boolean;
 }) => {
-  console.log(ishistoryChecked);
+
   const { selectedNode } = useEditor().state.editor;
   const methods = useForm({
     defaultValues: {
@@ -103,7 +103,6 @@ const SuperAgent = ({
             : 0,
         })
         .then((res) => {
-          console.log(res.data);
           if (workflowId) {
             findWorkflow(workflowId);
           } else {
@@ -144,10 +143,8 @@ const SuperAgent = ({
     getdata();
   }, []);
 
-  console.log(llms);
-  console.log(tools);
+
   const CreateAgents = agentsMethod.handleSubmit(async (data) => {
-    console.log("data", data);
     try {
       const { name, prompt } = data;
       setLoading(true);
@@ -229,7 +226,6 @@ const SuperAgent = ({
       });
       toast.success("Tools Added");
     } catch (error) {
-      console.log(error);
       toast.error("Error adding tools or tool already added");
     } finally {
       setLoading(false);
@@ -248,7 +244,6 @@ const SuperAgent = ({
       node[selectedNode.id] = {
         model: "SuperAgent",
       };
-      console.log(node[selectedNode.id]);
       toast.success("Workflow removed successfully");
     }
   };
@@ -284,7 +279,6 @@ const SuperAgent = ({
           llmId: selectedLlm,
         })
         .then((res) => {
-          console.log(res.data);
           toast.success("LLM added successfully");
         });
     } catch (error) {
@@ -318,7 +312,6 @@ const SuperAgent = ({
                         onClick={() => {
                           node[selectedNode.id].history =
                             !node[selectedNode.id].history;
-                          console.log(node[selectedNode.id]);
                         }}
                       />
                       history

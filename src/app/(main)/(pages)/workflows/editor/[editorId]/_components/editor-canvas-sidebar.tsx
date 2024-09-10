@@ -94,7 +94,6 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges, setNodes, setEdg
                   }}
                   onClick={() => {
                     if (!isDisabled) {
-                      console.log("Adding node:", cardKey);
                       addNodeAtPosition(cardKey as EditorCanvasTypes);
                     } else {
                       console.log(

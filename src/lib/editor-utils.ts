@@ -250,7 +250,6 @@ export const onContentChange = (
   event: React.ChangeEvent<HTMLInputElement>,
   content: string
 ) => {
-  console.log("content type", content);
   if (nodeType === "Slack") {
     onSlackContent(nodeConnection, event);
   } else if (nodeType === "Discord") {

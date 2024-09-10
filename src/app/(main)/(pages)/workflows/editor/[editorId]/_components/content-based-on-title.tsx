@@ -69,7 +69,6 @@ const ContentBasedOnTitle = ({
 }: Props) => {
   const [showButtons, setShowButtons] = useState(false);
   const [selectedOutput, setSelectedOutput] = useState<string | null>(null);
-  console.log("btn", showButtons);
   const { state } = useEditor();
 
   const { selectedNode } = newState.editor;
@@ -147,7 +146,6 @@ const ContentBasedOnTitle = ({
     setShowSuperAgent(isSuperAgent);
   }, [selectedNode.id, nodeConnectionType]);
 
-  console.log("Node Connection Type:", nodeConnectionType);
   const [ishistoryChecked, setHistory] = useState(
     nodeConnectionType[selectedNode.id]?.model &&
       nodeConnectionType[selectedNode.id]?.history
@@ -168,7 +166,6 @@ const ContentBasedOnTitle = ({
 
   if (!nodeConnectionType) return <p>Not connected</p>;
 
-  console.log("Model Array:", modelArray);
 
   const isConnected =
     title === "Google Drive"

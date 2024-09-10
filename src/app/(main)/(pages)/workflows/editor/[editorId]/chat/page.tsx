@@ -61,7 +61,6 @@ const Chat = () => {
     };
     workflowfunction();
   }, [pathname]);
-  console.log("pathname", flowPath);
   const triggerElement = state.editor.elements.find(
     (element) => element.type === "Trigger"
   );
@@ -77,7 +76,6 @@ const Chat = () => {
         userid: user?.id,
       });
       const data = response.data;
-      console.log("data", data);
       if (data) {
         history.push({
           user: message,
@@ -95,7 +93,6 @@ const Chat = () => {
       setLoad(false);
     }
   };
-  console.log("history", history);
 
   useEffect(() => {
     if (isUpdated) {
