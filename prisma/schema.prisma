@@ -112,7 +112,7 @@ model Workflows {
   description           String
   userId                String
   User                  User     @relation(fields: [userId], references: [clerkId])
-  chatTemplate          String?
+  thumbnail             String?
   chatHistory           String[]
   fluxDevTemplate       String?
   fluxloraTemplate      String?
@@ -123,4 +123,5 @@ model Workflows {
   CharacterTemplate     String?
   DreamShaperTemplate   String?
   fluxDevLora           String?
+  featured              Boolean?
 }

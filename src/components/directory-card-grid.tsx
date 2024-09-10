@@ -114,34 +114,34 @@ export const FeaturedGrid: React.FC<{ featuredData: Product[] }> = ({
 export const EmptyFeaturedGrid = () => {
   const emptyData = [
     {
-      codename: "Join the cult",
-      punchline: "Next.j, Supabase & Tailwind Starters",
-      product_website: "https://newcult.co",
+      codename: "Explore Features",
+      punchline: "Discover the capabilities of our platform",
+      product_website: "https://yourapp.com/features",
       description:
-        "Check out newcult.co for the premium version of this template",
-      logo_src: "/ad-placeholder-metrics.png",
-      tags: ["featured"],
-      labels: ["featured-ad"],
+        "Learn about the various features that make our platform unique and powerful.",
+      logo_src: "/images/feature-placeholder.png",
+      tags: ["feature"],
+      labels: ["feature-ad"],
     },
     {
-      codename: "To get Admin Dashboard",
-      product_website: "https://newcult.co",
-      punchline: "Next.j, Supabase & Tailwind Starters",
+      codename: "Get Started",
+      product_website: "https://yourapp.com/get-started",
+      punchline: "Begin your journey with our platform",
       description:
-        "Join the cult and get access to the admin dashboard for this template.",
-      logo_src: "/ad-placeholder-1.png",
-      tags: ["featured"],
-      labels: ["featured-ad"],
+        "Follow our guide to get started quickly and efficiently.",
+      logo_src: "/images/get-started-placeholder.png",
+      tags: ["guide"],
+      labels: ["guide-ad"],
     },
     {
-      codename: "And AI scripts",
-      product_website: "https://newcult.co",
-      punchline: "Next.j, Supabase & Tailwind Starters",
+      codename: "Join the Community",
+      product_website: "https://yourapp.com/community",
+      punchline: "Connect with other users and experts",
       description:
-        "Includes AI scripts to quickly add new products to your directory..",
-      logo_src: "/ad-placeholder-tags.png",
-      tags: ["featured"],
-      labels: ["featured-ad"],
+        "Become a part of our community to share insights and get support.",
+      logo_src: "/images/community-placeholder.png",
+      tags: ["community"],
+      labels: ["community-ad"],
     },
   ]
 
