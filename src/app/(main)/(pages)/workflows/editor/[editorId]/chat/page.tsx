@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { getworkflow } from "../_actions/workflow-connections";
 import { Button } from "@/components/ui/button";
-import { SendIcon, User } from "lucide-react";
+import { SendIcon, Settings, User } from "lucide-react";
 import { useNodeConnections } from "@/providers/connections-providers";
 import { onContentChange } from "@/lib/editor-utils";
 import { toast } from "sonner";
@@ -14,6 +14,15 @@ import axios from "axios";
 import { useUser } from "@clerk/nextjs";
 import { useBilling } from "@/providers/billing-provider";
 import { onPaymentDetails } from "@/app/(main)/(pages)/billing/_actions/payment-connections";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import DublicateWorkflow from "@/components/forms/dublicate-forms";
 
 interface ChatHistoryItem {
   user: string;
@@ -31,7 +40,7 @@ const Chat = () => {
   const [load, setLoad] = useState(false);
   const cardContentRef = useRef<HTMLDivElement>(null);
   const [flowPath, setflowPath] = useState<any>([]);
-  const {credits, setCredits} = useBilling();
+  const { credits, setCredits } = useBilling();
   const { user } = useUser();
 
   useEffect(() => {
@@ -58,7 +67,6 @@ const Chat = () => {
   );
   const nodeId = triggerElement ? triggerElement.id : "";
 
-
   const onsubmit = async () => {
     try {
       setLoad(true);
@@ -79,7 +87,7 @@ const Chat = () => {
       nodeConnection.triggerNode.triggerValue = "";
       const Creditresponse = await onPaymentDetails();
       if (Creditresponse) {
-          setCredits(Creditresponse.credits!);
+        setCredits(Creditresponse.credits!);
       }
     } catch (error) {
       toast.error("Error sending message, Check your Credits");
@@ -117,7 +125,21 @@ const Chat = () => {
   }, [requestUpdate, nodeConnection, nodeId]);
 
   return (
-    <div className="h-[90vh] pb-3">
+    <div className="h-[95vh] relative">
+      <Sheet>
+        <SheetTrigger className="absolute text-gray-400 hover:text-black dark:hover:text-white top-0 right-0">
+          <Settings />
+        </SheetTrigger>
+        <SheetContent className="w-[400px] sm:w-[540px]">
+          <SheetHeader>
+            <SheetTitle>Duplicate this Workflow?</SheetTitle>
+            <SheetDescription className="flex flex-col gap-2 w-full">
+              You can duplicate this workflow by clicking the button below.
+              <DublicateWorkflow id={pathname.split("/").slice(-2, -1)[0]} />
+            </SheetDescription>
+          </SheetHeader>
+        </SheetContent>
+      </Sheet>
       {workflow?.name ? (
         <div className="flex flex-col w-full h-full items-center justify-between">
           <CardHeader className="flex flex-col justify-center items-center">
@@ -125,19 +147,18 @@ const Chat = () => {
               Chat with {workflow?.name ? workflow.name : "Workflow"}
             </CardTitle>
             <div className="flex gap-2 justify-center items-center text-sm">
-                workflow path:
-                <div className="flex flex-wrap gap-2 ">
-                  
-                  {flowPath?.map(
-                    (node: string, index: number) =>
-                      index % 2 !== 0 && (
-                        <span key={index} className=" px-1 rounded">
-                          {node}
-                        </span>
-                      )
-                  )}
-                </div>
-                </div>
+              workflow path:
+              <div className="flex flex-wrap gap-2 ">
+                {flowPath?.map(
+                  (node: string, index: number) =>
+                    index % 2 !== 0 && (
+                      <span key={index} className=" px-1 rounded">
+                        {node}
+                      </span>
+                    )
+                )}
+              </div>
+            </div>
             <p className="text-sm">{workflow.description}</p>
           </CardHeader>
           <CardContent
@@ -148,7 +169,6 @@ const Chat = () => {
               <div className="flex flex-col items-center justify-center h-full">
                 <img src="/ai.png" alt="Logo" className="w-20 h-20 mb-4" />
                 <p className="text-lg">How can I help you today?</p>
-                
               </div>
             ) : (
               history.map((item, index) => (
@@ -164,7 +184,12 @@ const Chat = () => {
                       {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(item.bot) ? (
                         <img src={item.bot} width={200} alt="bot" />
                       ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(item.bot) ? (
-                        <video src={item.bot} controls width="320" height="240" />
+                        <video
+                          src={item.bot}
+                          controls
+                          width="320"
+                          height="240"
+                        />
                       ) : (
                         <p>{item.bot}</p>
                       )}

@@ -8,6 +8,7 @@ import { getworkflow } from "./_actions/workflow-connections";
 import { usePathname, useRouter } from "next/navigation"; // Updated import
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import { ReactFlowProvider } from "@xyflow/react";
 
 type Props = {};
 const Page = (props: Props) => {
