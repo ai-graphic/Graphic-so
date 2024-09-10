@@ -132,9 +132,9 @@ const Chat = () => {
         </SheetTrigger>
         <SheetContent className="w-[400px] sm:w-[540px]">
           <SheetHeader>
-            <SheetTitle>Duplicate this Workflow?</SheetTitle>
+            <SheetTitle>Dublicate this Workflow?</SheetTitle>
             <SheetDescription className="flex flex-col gap-2 w-full">
-              You can duplicate this workflow by clicking the button below.
+              You can dublicate this workflow by clicking the button below.
               <DublicateWorkflow id={pathname.split("/").slice(-2, -1)[0]} />
             </SheetDescription>
           </SheetHeader>
