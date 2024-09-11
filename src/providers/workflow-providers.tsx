@@ -61,15 +61,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
       ) {
         return new Promise((resolve, reject) => {
           try {
-            nodeConnection.setAINode((prev: any) => ({
+            nodeConnection.setOutput((prev: any) => ({
               ...prev,
-              output: {
                 ...(prev.output || {}),
                 [idNode ?? ""]: [
                   ...(prev.output?.[idNode ?? ""] || []),
                   aiResponseContent,
                 ],
-              },
             }));
             resolve(true);
           } catch (error) {
@@ -128,16 +126,15 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               let prompt = nodeConnection.fluxDevNode[idNode]?.prompt;
               console.log("Prompt:", prompt);
               if (node.type === "Trigger") {
-                const output = nodeConnection.aiNode.output as unknown as {
-                  [key: string]: any[];
-                };
+                const output = nodeConnection.output
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
+                content = prmpt
                 if (prompt) {
                   if (prompt.includes(":input:")) {
                     content = prompt.replace(":input:", prmpt);
                   } else {
-                    content = prompt;
+                    content = prmpt;
                   }
                 }
                 chatHistory.user = prmpt;
@@ -221,16 +218,15 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               let prompt = nodeConnection.fluxLoraNode[idNode]?.prompt;
               console.log("Prompt:", prompt);
               if (node.type === "Trigger") {
-                const output = nodeConnection.aiNode.output as unknown as {
-                  [key: string]: any[];
-                };
+                const output = nodeConnection.output
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
+                content = prmpt
                 if (prompt) {
                   if (prompt.includes(":input:")) {
                     content = prompt.replace(":input:", prmpt);
                   } else {
-                    content = prompt;
+                    content = prmpt;
                   }
                 }
                 chatHistory.user = prmpt;
@@ -314,11 +310,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.aiNode.output as unknown as {
-                  [key: string]: any[];
-                };
+                const output = nodeConnection.output
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
+                content = prmpt
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -393,11 +388,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.aiNode.output as unknown as {
-                  [key: string]: any[];
-                };
+                const output = nodeConnection.output
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
+                content = prmpt
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -466,11 +460,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.aiNode.output as unknown as {
-                  [key: string]: any[];
-                };
+                const output = nodeConnection.output
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
+                content = prmpt
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -554,11 +547,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.aiNode.output as unknown as {
-                  [key: string]: any[];
-                };
+                const output = nodeConnection.output
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
+                content = prmpt
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -635,11 +627,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.aiNode.output as unknown as {
-                  [key: string]: any[];
-                };
+                const output = nodeConnection.output
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
+                content = prmpt
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -711,11 +702,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.aiNode.output as unknown as {
-                  [key: string]: any[];
-                };
+                const output = nodeConnection.output
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
+                content = prmpt
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -795,20 +785,20 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               let prompt = nodeConnection.aiNode[idNode]?.prompt;
               console.log("Prompt:", prompt);
               if (node.type === "Trigger") {
-                const output = nodeConnection.aiNode.output as unknown as {
-                  [key: string]: any[];
-                };
+                const output = nodeConnection.output 
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
+                content = prmpt
                 if (prompt) {
                   if (prompt.includes(":input:")) {
                     content = prompt.replace(":input:", prmpt);
                   } else {
-                    content = prompt;
+                    content = prmpt;
                   }
                 }
                 chatHistory.user = prmpt;
               } else {
+                console.log("Not Trigger Node");
                 if (prompt) {
                   if (prompt.includes(":input:")) {
                     content = prompt.replace(":input:", latestOutputs[node.id]);
@@ -834,13 +824,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   });
                   nodeConnection.setAINode((prev: any) => ({
                     ...prev,
-                    output: {
                       ...(prev.output || {}),
                       [idNode]: [
                         ...(prev.output?.[idNode] || []),
                         response.data,
                       ],
-                    },
                   }));
                   console.log("AI Response:", response.data);
                   const aiResponseContent = response.data;

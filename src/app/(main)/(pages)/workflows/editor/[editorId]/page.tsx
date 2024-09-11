@@ -328,7 +328,6 @@ const Page = (props: Props) => {
                 prompt: "",
                 model: "",
                 localModel: "",
-                output: "",
                 temperature: 0,
                 maxTokens: 0,
                 endpoint: "",

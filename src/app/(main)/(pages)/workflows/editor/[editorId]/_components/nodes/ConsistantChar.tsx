@@ -122,9 +122,9 @@ const ConsistentChar =  (nodeConnectionType: any, title: string) => {
           </Button>
         </div>
         {showButtons[0] &&
-          nodeConnection.aiNode.output &&
+          nodeConnection.output &&
           state.editor.edges &&
-          Object.entries(nodeConnection.aiNode.output)
+          Object.entries(nodeConnection.output)
             .filter(([id]) =>
               state.editor.edges.some(
                 (edge) => edge.target === selectedNode.id && edge.source === id
@@ -208,9 +208,9 @@ const ConsistentChar =  (nodeConnectionType: any, title: string) => {
           </Button>
         </div>
         {showButtons[1] &&
-          nodeConnection.aiNode.output &&
+          nodeConnection.output &&
           state.editor.edges &&
-          Object.entries(nodeConnection.aiNode.output)
+          Object.entries(nodeConnection.output)
             .filter(([id]) =>
               state.editor.edges.some(
                 (edge) => edge.target === selectedNode.id && edge.source === id

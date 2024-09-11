@@ -50,14 +50,14 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
   }, [state.editor.elements, nodeId]);
 
   useEffect(() => {
-    const outputsObject = nodeConnection.aiNode.output as OutputType;
+    const outputsObject = nodeConnection.output as OutputType;
     if (nodeId != null && outputsObject && outputsObject[nodeId]) {
       const outputsArray = outputsObject[nodeId];
       if (outputsArray.length > 0) {
         setOutput(outputsArray[outputsArray.length - 1]);
       }
     }
-  }, [nodeConnection.aiNode.output, nodeId]);
+  }, [nodeConnection.output, nodeId]);
   const { runWorkFlow } = useWorkflow();
 
   return (

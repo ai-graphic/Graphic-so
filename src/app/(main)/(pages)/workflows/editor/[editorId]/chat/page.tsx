@@ -103,16 +103,15 @@ const Chat = () => {
   const [requestUpdate, setRequestUpdate] = useState(false);
   useEffect(() => {
     if (requestUpdate) {
-      nodeConnection.setAINode((prev: any) => {
+      nodeConnection.setOutput((prev: any) => {
         const newState = {
           ...prev,
-          output: {
-            ...(prev.output || {}),
-            [nodeId ?? ""]: [
-              ...(prev.output?.[nodeId ?? ""] || []),
-              nodeConnection.triggerNode.triggerValue,
-            ],
-          },
+
+          ...(prev.output || {}),
+          [nodeId ?? ""]: [
+            ...(prev.output?.[nodeId ?? ""] || []),
+            nodeConnection.triggerNode.triggerValue,
+          ],
         };
         return newState;
       });

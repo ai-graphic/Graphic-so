@@ -31,7 +31,6 @@ export type ConnectionProviderProps = {
       prompt: string;
       model: string;
       localModel: string;
-      output: string;
       temperature: number;
       maxTokens: number;
       endpoint: string;
@@ -181,6 +180,7 @@ export type ConnectionProviderProps = {
   setstableVideoNode: React.Dispatch<React.SetStateAction<any>>;
   settrainFluxNode: React.Dispatch<React.SetStateAction<any>>;
   output: string[];
+  setOutput: React.Dispatch<React.SetStateAction<string[]>>;
   setAINode: React.Dispatch<React.SetStateAction<any>>;
   addAINode: (id: string, type: string) => void; // Add this line
   googleNode: any[];
@@ -273,6 +273,7 @@ const InitialValues: ConnectionProviderProps = {
   fluxDevLoraNode: {},
   trainFluxNode: {},
   output: [],
+  setOutput: () => undefined,
   workflowTemplate: {
     discord: "",
     notion: "",
@@ -538,6 +539,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     setWorkFlowTemplate,
     aiNode,
     output,
+    setOutput,
     setAINode,
     addAINode,
     triggerNode,

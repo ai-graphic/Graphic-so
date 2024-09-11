@@ -273,9 +273,9 @@ const ContentBasedOnTitle = ({
                     </Button>
                   </div>
                   {showButtons &&
-                    nodeConnection.aiNode.output &&
+                    nodeConnection.output &&
                     state.editor.edges &&
-                    Object.entries(nodeConnection.aiNode.output)
+                    Object.entries(nodeConnection.output)
                       .filter(([id]) =>
                         state.editor.edges.some(
                           (edge) =>
@@ -379,9 +379,9 @@ const ContentBasedOnTitle = ({
                 }}
               />
               {showButtons &&
-                nodeConnection.aiNode.output &&
+                nodeConnection.output &&
                 state.editor.edges &&
-                Object.entries(nodeConnection.aiNode.output)
+                Object.entries(nodeConnection.output)
                   .filter(([id]) =>
                     state.editor.edges.some(
                       (edge) =>

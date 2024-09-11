@@ -107,7 +107,7 @@ const ActionButton = ({
             nodeConnection.fluxDevNode[id].enable_safety_checker,
           sync_mode: nodeConnection.fluxDevNode[id].sync_mode,
         });
-        nodeConnection.setAINode((prev: any) => ({
+        nodeConnection.setOutput((prev: any) => ({
           ...prev,
           output: {
             ...(prev.output || {}),
@@ -145,12 +145,10 @@ const ActionButton = ({
         sync_mode: nodeConnection.imageToImageNode[id].sync_mode,
         strength: nodeConnection.imageToImageNode[id].strength,
       });
-      nodeConnection.setAINode((prev: any) => ({
+      nodeConnection.setOutput((prev: any) => ({
         ...prev,
-        output: {
           ...(prev.output || {}),
           [id]: [...(prev.output?.[id] || []), response.data],
-        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -178,12 +176,10 @@ const ActionButton = ({
         sync_mode: nodeConnection.fluxLoraNode[id].sync_mode,
         output_format: nodeConnection.fluxLoraNode[id].output_format,
       });
-      nodeConnection.setAINode((prev: any) => ({
+      nodeConnection.setOutput((prev: any) => ({
         ...prev,
-        output: {
           ...(prev.output || {}),
           [id]: [...(prev.output?.[id] || []), response.data],
-        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -201,12 +197,10 @@ const ActionButton = ({
         userid: user?.id,
         iter_multiplier: nodeConnection.trainFluxNode[id].iter_multiplier,
       });
-      nodeConnection.setAINode((prev: any) => ({
+      nodeConnection.setOutput((prev: any) => ({
         ...prev,
-        output: {
           ...(prev.output || {}),
           [id]: [...(prev.output?.[id] || []), response.data],
-        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -225,12 +219,10 @@ const ActionButton = ({
         fps: nodeConnection.stableVideoNode[id].fps,
         cond_aug: nodeConnection.stableVideoNode[id].cond_aug,
       });
-      nodeConnection.setAINode((prev: any) => ({
+      nodeConnection.setOutput((prev: any) => ({
         ...prev,
-        output: {
           ...(prev.output || {}),
           [id]: [...(prev.output?.[id] || []), response.data],
-        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -268,12 +260,10 @@ const ActionButton = ({
             nodeConnection.consistentCharacterNode[id]?.output_quality,
         }
       );
-      nodeConnection.setAINode((prev: any) => ({
+      nodeConnection.setOutput((prev: any) => ({
         ...prev,
-        output: {
           ...(prev.output || {}),
           [id]: [...(prev.output?.[id] || []), response.data],
-        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -298,12 +288,10 @@ const ActionButton = ({
         num_inference_steps:
           nodeConnection.fluxDevLoraNode[id].num_inference_steps,
       });
-      nodeConnection.setAINode((prev: any) => ({
+      nodeConnection.setOutput((prev: any) => ({
         ...prev,
-        output: {
           ...(prev.output || {}),
           [id]: [...(prev.output?.[id] || []), response.data],
-        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -328,12 +316,10 @@ const ActionButton = ({
         scheduler: nodeConnection.dreamShaperNode[id]?.scheduler,
         upscale: nodeConnection.dreamShaperNode[id]?.upscale,
       });
-      nodeConnection.setAINode((prev: any) => ({
+      nodeConnection.setOutput((prev: any) => ({
         ...prev,
-        output: {
           ...(prev.output || {}),
           [id]: [...(prev.output?.[id] || []), response.data],
-        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -359,12 +345,10 @@ const ActionButton = ({
         enable_safety_checker:
           nodeConnection.fluxGeneralNode[id]?.enable_safety_checker,
       });
-      nodeConnection.setAINode((prev: any) => ({
+      nodeConnection.setOutput((prev: any) => ({
         ...prev,
-        output: {
           ...(prev.output || {}),
           [id]: [...(prev.output?.[id] || []), response.data],
-        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -393,12 +377,10 @@ const ActionButton = ({
             system: nodeConnection.aiNode[id]?.system,
             userid: user?.id,
           });
-          nodeConnection.setAINode((prev: any) => ({
+          nodeConnection.setOutput((prev: any) => ({
             ...prev,
-            output: {
               ...(prev.output || {}),
               [id]: [...(prev.output?.[id] || []), response.data],
-            },
           }));
         } catch (error) {
           console.error("Error during AI search:", error);
@@ -420,12 +402,12 @@ const ActionButton = ({
             output_quality: nodeConnection.aiNode[id].output_quality,
             num_inference_steps: nodeConnection.aiNode[id].num_inference_steps,
           });
-          nodeConnection.setAINode((prev: any) => ({
+          nodeConnection.setOutput((prev: any) => ({
             ...prev,
-            output: {
+
               ...(prev.output || {}),
               [id]: [...(prev.output?.[id] || []), response.data[0]],
-            },
+
           }));
           setCredits((prev) => (Number(prev) - 1).toString());
         } catch (error) {
@@ -443,12 +425,10 @@ const ActionButton = ({
             userid: user?.id,
             history: nodeConnection.aiNode[id].history,
           });
-          nodeConnection.setAINode((prev: any) => ({
+          nodeConnection.setOutput((prev: any) => ({
             ...prev,
-            output: {
               ...(prev.output || {}),
               [id]: [...(prev.output?.[id] || []), response.data.output],
-            },
           }));
         } catch (error) {
           console.error("Error during superAgent API call:", error);
@@ -633,15 +613,16 @@ const ActionButton = ({
   const [aiOutput, setAiOutput] = useState<string[]>([]);
 
   useEffect(() => {
-    if (nodeConnection.aiNode.output && selectedNode.id) {
+    if (nodeConnection.output && selectedNode.id) {
       setAiOutput(
-        (nodeConnection.aiNode.output as unknown as Record<string, string[]>)[
+        (nodeConnection.output as unknown as Record<string, string[]>)[
           selectedNode.id
         ] || []
       );
     }
-  }, [nodeConnection.aiNode.output, selectedNode.id]);
 
+  }, [nodeConnection.output, selectedNode.id]);
+console.log("aiOutput", aiOutput);
   const renderActionButton = () => {
     switch (currentService) {
       case "Discord":
