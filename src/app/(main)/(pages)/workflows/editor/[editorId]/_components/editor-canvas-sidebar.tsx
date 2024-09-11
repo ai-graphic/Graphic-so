@@ -38,10 +38,17 @@ type Props = {
   setNodes: (nodes: EditorNodeType[]) => void;
   setEdges: (edges: any) => void;
 };
-const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges, setNodes, setEdges }: Props) => {
+const EditorCanvasSidebar = ({
+  nodes,
+  addNodeAtPosition,
+  edges,
+  setNodes,
+  setEdges,
+}: Props) => {
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
   const { googleFile, setSlackChannels } = usegraphicStore();
+  const [activeTab, setActiveTab] = useState(nodes.length === 0 ? "actions" : "settings");
 
   useEffect(() => {
     if (state) {
@@ -56,12 +63,22 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges, setNodes, setEdg
         setSlackChannels
       );
     }
-  }, [nodeConnection])
+  }, [nodeConnection]);
 
+  useEffect(() => {
+    if (state.editor.selectedNode.data.title) {
+      setActiveTab("settings");
+    }
+  }, [state.editor.selectedNode]);
 
   return (
     <aside className="overflow-hidden">
- <Tabs defaultValue={nodes.length === 0 ? "actions" : "settings"} className="h-screen overflow-scroll">
+      <Tabs
+        defaultValue={activeTab}
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="h-screen overflow-scroll"
+      >
         <TabsList className="bg-transparent">
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="actions">Actions</TabsTrigger>
@@ -144,8 +161,8 @@ const EditorCanvasSidebar = ({ nodes, addNodeAtPosition, edges, setNodes, setEdg
         </TabsContent>
         {state.editor.selectedNode.data.title ? (
           <TabsContent value="settings" className="-mt-20">
-            {state.editor.selectedNode.data.title === "Chat" ? (      
-                <Chat />
+            {state.editor.selectedNode.data.title === "Chat" ? (
+              <Chat />
             ) : (
               <div>
                 <div className="px-2 py-4 text-center text-xl font-bold">

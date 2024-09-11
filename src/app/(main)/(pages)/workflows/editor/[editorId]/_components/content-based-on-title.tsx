@@ -166,7 +166,6 @@ const ContentBasedOnTitle = ({
 
   if (!nodeConnectionType) return <p>Not connected</p>;
 
-
   const isConnected =
     title === "Google Drive"
       ? !nodeConnection.isLoading
@@ -303,7 +302,6 @@ const ContentBasedOnTitle = ({
                 </div>
               )}
 
-
               {nodeConnectionType[selectedNode.id]?.model &&
                 modelOptionsMap[nodeConnectionType[selectedNode.id].model]?.map(
                   (optionObj) => {
@@ -410,20 +408,60 @@ const ContentBasedOnTitle = ({
           ) : (
             <div className="flex flex-col gap-4">
               <p className="text-lg underline">{title}</p>
-              {title === "flux-dev" && <FluxDev />}
-              {title === "image-to-image" && <ImageToImage />}
-              {title === "flux-lora" && <FluxLora />}
+              {title === "flux-dev" && (
+                <FluxDev
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "image-to-image" && (
+                <ImageToImage
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "flux-lora" && (
+                <FluxLora
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
               {title === "train-flux" && (
                 <TrainFlux
                   nodeConnectionType={nodeConnectionType}
                   title={title}
                 />
               )}
-              {title === "stable-video" && <StableVideo />}
-              {title === "consistent-character" && <ConsistentChar />}
-              {title === "dreamShaper" && <DreamShaper />}
-              {title === "fluxGeneral" && <FluxGeneral />}
-              {title === "fluxDevLora" && <FluxDevLora />}
+              {title === "stable-video" && (
+                <StableVideo
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "consistent-character" && (
+                <ConsistentChar
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+               {title === "dreamShaper" && (
+                <DreamShaper
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "fluxGeneral" && (
+                <FluxGeneral
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "fluxDevLora" && (
+                <FluxDevLora
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
             </div>
           )}
 
@@ -448,7 +486,6 @@ const ContentBasedOnTitle = ({
             currentService={title}
             nodes={nodes}
             edges={edges}
-            nodeConnection={nodeConnection}
             channels={selectedSlackChannels}
             setChannels={setSelectedSlackChannels}
             setNodes={setNodes}

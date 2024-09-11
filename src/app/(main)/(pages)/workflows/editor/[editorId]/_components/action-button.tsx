@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Option } from "./content-based-on-title";
-import { ConnectionProviderProps } from "@/providers/connections-providers";
+import { ConnectionProviderProps, useNodeConnections } from "@/providers/connections-providers";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { postContentToWebHook } from "@/app/(main)/(pages)/connections/_actions/discord-connection";
@@ -20,7 +20,6 @@ import { useBilling } from "@/providers/billing-provider";
 
 type Props = {
   currentService: string;
-  nodeConnection: ConnectionProviderProps;
   channels?: Option[];
   setChannels?: (value: Option[]) => void;
   nodes: EditorNodeType[];
@@ -31,7 +30,6 @@ type Props = {
 
 const ActionButton = ({
   currentService,
-  nodeConnection,
   channels,
   setChannels,
   nodes,
@@ -43,6 +41,8 @@ const ActionButton = ({
   const { isLoading, setIsLoading } = useLoading();
   const { user } = useUser();
   const { credits, setCredits } = useBilling();
+  const {nodeConnection} = useNodeConnections();
+  console.log("nodeConnection from", nodeConnection);
   const onSendDiscordMessage = useCallback(async () => {
     const response = await postContentToWebHook(
       nodeConnection.discordNode.content,
@@ -90,7 +90,7 @@ const ActionButton = ({
   }, [nodeConnection.slackNode, channels]);
 
   const onFluxDev = useCallback(
-    async (id: string) => {
+    async (id: string, nodeConnection : any) => {
       try {
         setIsLoading(id, true);
         const response = await axios.post("/api/ai/fal/flux-dev", {
@@ -126,7 +126,7 @@ const ActionButton = ({
     [nodeConnection.fluxDevNode, pathname]
   );
 
-  const onImageToImage = useCallback(async (id: string) => {
+  const onImageToImage = useCallback(async (id: string, nodeConnection : any) => {
     try {
       setIsLoading(id, true);
 
@@ -159,7 +159,7 @@ const ActionButton = ({
       setIsLoading(id, false);
     }
   }, []);
-  const onFluxLora = useCallback(async (id: string) => {
+  const onFluxLora = useCallback(async (id: string, nodeConnection : any) => {
     try {
       setIsLoading(id, true);
 
@@ -192,7 +192,7 @@ const ActionButton = ({
       setIsLoading(id, false);
     }
   }, []);
-  const onTrainFlux = useCallback(async (id: string) => {
+  const onTrainFlux = useCallback(async (id: string, nodeConnection : any) => {
     try {
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/fal/train-flux", {
@@ -215,7 +215,7 @@ const ActionButton = ({
       setIsLoading(id, false);
     }
   }, []);
-  const onStableVideo = useCallback(async (id: string) => {
+  const onStableVideo = useCallback(async (id: string, nodeConnection : any) => {
     try {
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/fal/stable-video", {
@@ -240,7 +240,7 @@ const ActionButton = ({
     }
   }, []);
 
-  const onConsistantChar = useCallback(async (id: string) => {
+  const onConsistantChar = useCallback(async (id: string, nodeConnection : any) => {
     try {
       setIsLoading(id, true);
       nodeConnection.consistentCharacterNode[id];
@@ -283,7 +283,7 @@ const ActionButton = ({
     }
   }, []);
 
-  const onFluxDevLora = useCallback(async (id: string) => {
+  const onFluxDevLora = useCallback(async (id: string, nodeConnection : any) => {
     try {
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/replicate/fluxDevlora", {
@@ -313,9 +313,10 @@ const ActionButton = ({
     }
   }, []);
 
-  const onDreamShaper = useCallback(async (id: string) => {
+  const onDreamShaper = useCallback(async (id: string, nodeConnection : any) => {
     try {
       setIsLoading(id, true);
+      console.log("from api", nodeConnection.dreamShaperNode[id]);
       const response = await axios.post("/api/ai/replicate/dreamshaper", {
         prompt: nodeConnection.dreamShaperNode[id]?.prompt,
         userid: user?.id,
@@ -342,7 +343,7 @@ const ActionButton = ({
     }
   }, []);
 
-  const onFluxGeneral = useCallback(async (id: string) => {
+  const onFluxGeneral = useCallback(async (id: string, nodeConnection : any) => {
     try {
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/fal/flux-general", {
@@ -374,7 +375,7 @@ const ActionButton = ({
   }, []);
 
   const onAiSearch = useCallback(
-    async (id: string) => {
+    async (id: string, nodeConnection : any) => {
       if (!nodeConnection.aiNode[id]) {
         toast.error("Please select a model first");
         return;
@@ -696,7 +697,7 @@ const ActionButton = ({
             )}
             <Button
               variant="outline"
-              onClick={() => onAiSearch(selectedNode.id)}
+              onClick={() => onAiSearch(selectedNode.id, nodeConnection)}
               disabled={isLoading[selectedNode.id]}
             >
               Test
@@ -758,7 +759,7 @@ const ActionButton = ({
               )}
             <Button
               variant="outline"
-              onClick={() => onFluxDev(selectedNode.id)}
+              onClick={() => onFluxDev(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>
@@ -789,7 +790,7 @@ const ActionButton = ({
               )}
             <Button
               variant="outline"
-              onClick={() => onImageToImage(selectedNode.id)}
+              onClick={() => onImageToImage(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>
@@ -820,7 +821,7 @@ const ActionButton = ({
               )}
             <Button
               variant="outline"
-              onClick={() => onFluxLora(selectedNode.id)}
+              onClick={() => onFluxLora(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>
@@ -837,7 +838,7 @@ const ActionButton = ({
           <>
             <Button
               variant="outline"
-              onClick={() => onTrainFlux(selectedNode.id)}
+              onClick={() => onTrainFlux(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>
@@ -871,7 +872,7 @@ const ActionButton = ({
               )}
             <Button
               variant="outline"
-              onClick={() => onStableVideo(selectedNode.id)}
+              onClick={() => onStableVideo(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>
@@ -902,7 +903,7 @@ const ActionButton = ({
               )}
             <Button
               variant="outline"
-              onClick={() => onConsistantChar(selectedNode.id)}
+              onClick={() => onConsistantChar(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>
@@ -933,7 +934,7 @@ const ActionButton = ({
               )}
             <Button
               variant="outline"
-              onClick={() => onFluxDevLora(selectedNode.id)}
+              onClick={() => onFluxDevLora(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>
@@ -964,7 +965,7 @@ const ActionButton = ({
               )}
             <Button
               variant="outline"
-              onClick={() => onDreamShaper(selectedNode.id)}
+              onClick={() => onDreamShaper(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>
@@ -995,7 +996,7 @@ const ActionButton = ({
               )}
             <Button
               variant="outline"
-              onClick={() => onFluxGeneral(selectedNode.id)}
+              onClick={() => onFluxGeneral(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>
