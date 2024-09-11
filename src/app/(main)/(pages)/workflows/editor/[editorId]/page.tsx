@@ -11,6 +11,7 @@ import { getworkflow } from "./_actions/workflow-connections";
 import { usePathname, useRouter } from "next/navigation"; // Updated import
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import FluxLora from "./_components/nodes/FluxLora";
 
 type Props = {};
 const Page = (props: Props) => {
@@ -77,7 +78,8 @@ const Page = (props: Props) => {
             : {};
           Object.keys(consistentChar).forEach((nodeId) => {
             const nodeData = consistentChar[nodeId];
-            if (!nodeConnection.consistentCharacterNode[nodeId]) {
+            console.log(nodeData);
+            if (!consistentChar[nodeId]) {
               nodeConnection.consistentCharacterNode[nodeId] = {
                 id: nodeId,
                 prompt: "",
@@ -114,7 +116,7 @@ const Page = (props: Props) => {
             : {};
           Object.keys(fluxDev).forEach((nodeId) => {
             const nodeData = fluxDev[nodeId];
-            if (!nodeConnection.fluxDevNode[nodeId]) {
+            if (!fluxDev[nodeId]) {
               nodeConnection.fluxDevNode[nodeId] = {
                 id: nodeId,
                 model: "", // Added missing property
@@ -145,48 +147,13 @@ const Page = (props: Props) => {
             }
           });
         }
-        if (workflow?.DreamShaperTemplate) {
-          const dreamshaper = workflow.DreamShaperTemplate
-            ? JSON.parse(workflow.DreamShaperTemplate)
-            : {};
-          Object.keys(dreamshaper).forEach((nodeId) => {
-            const nodeData = dreamshaper[nodeId];
-            if (!nodeConnection.dreamShaperNode[nodeId]) {
-              nodeConnection.dreamShaperNode[nodeId] = {
-                id: nodeId,
-                prompt: "",
-                image: "",
-                num_outputs: 0,
-                negative_prompt: "",
-                strength: 0,
-                guidance_scale: 0,
-                scheduler: "",
-                num_inference_steps: 0,
-                upscale: 0,
-              };
-            } else {
-              nodeConnection.dreamShaperNode[nodeId] = {
-                ...nodeConnection.dreamShaperNode[nodeId],
-                prompt: nodeData.prompt,
-                image: nodeData.image,
-                num_outputs: nodeData.num_outputs,
-                negative_prompt: nodeData.negative_prompt,
-                strength: nodeData.strength,
-                guidance_scale: nodeData.guidance_scale,
-                scheduler: nodeData.scheduler,
-                num_inference_steps: nodeData.num_inference_steps,
-                upscale: nodeData.upscale,
-              };
-            }
-          });
-        }
         if (workflow?.fluxGeneralTemplate) {
           const fluxGeneral = workflow.fluxGeneralTemplate
             ? JSON.parse(workflow.fluxGeneralTemplate)
             : {};
           Object.keys(fluxGeneral).forEach((nodeId) => {
             const nodeData = fluxGeneral[nodeId];
-            if (!nodeConnection.fluxGeneralNode[nodeId]) {
+            if (!fluxGeneral[nodeId]) {
               nodeConnection.fluxGeneralNode[nodeId] = {
                 id: nodeId,
                 prompt: "",
@@ -219,7 +186,7 @@ const Page = (props: Props) => {
             : {};
           Object.keys(fluxDevLora).forEach((nodeId) => {
             const nodeData = fluxDevLora[nodeId];
-            if (!nodeConnection.fluxDevLoraNode[nodeId]) {
+            if (!fluxDevLora[nodeId]) {
               nodeConnection.fluxDevLoraNode[nodeId] = {
                 id: nodeId,
                 prompt: "",
@@ -252,7 +219,7 @@ const Page = (props: Props) => {
             : {};
           Object.keys(imageToImage).forEach((nodeId) => {
             const nodeData = imageToImage[nodeId];
-            if (!nodeConnection.imageToImageNode[nodeId]) {
+            if (!imageToImage[nodeId]) {
               nodeConnection.imageToImageNode[nodeId] = {
                 id: nodeId,
                 prompt: "",
@@ -289,7 +256,7 @@ const Page = (props: Props) => {
             : {};
           Object.keys(video).forEach((nodeId) => {
             const nodeData = video[nodeId];
-            if (!nodeConnection.stableVideoNode[nodeId]) {
+            if (!video[nodeId]) {
               nodeConnection.stableVideoNode[nodeId] = {
                 id: nodeId,
                 image_url: "",
@@ -307,6 +274,44 @@ const Page = (props: Props) => {
               };
             }
           });
+        }
+        {workflow?.fluxloraTemplate} {
+          const fluxlora = workflow?.fluxloraTemplate
+            ? JSON.parse(workflow.fluxloraTemplate)
+            : {};
+          Object.keys(fluxlora).forEach((nodeId) => {
+            const nodeData = fluxlora[nodeId];
+            if (!fluxlora[nodeId]) {
+              nodeConnection.fluxLoraNode[nodeId] = {
+                id: nodeId,
+                prompt: "",
+                image_size: "",
+                num_inference_steps: 0,
+                guidance_scale: 0,
+                num_images: 0,
+                seed: 0,
+                enable_safety_checker: false,
+                loras: [],
+                sync_mode: false,
+                output_format: "",
+              };
+            } else {
+              nodeConnection.fluxLoraNode[nodeId] = {
+                ...nodeConnection.fluxLoraNode[nodeId],
+                prompt: nodeData.prompt,
+                image_size: nodeData.image_size,
+                num_inference_steps: nodeData.num_inference_steps,
+                guidance_scale: nodeData.guidance_scale,
+                num_images: nodeData.num_images,
+                seed: nodeData.seed,
+                enable_safety_checker: nodeData.enable_safety_checker,
+                loras: nodeData.loras,
+                sync_mode: nodeData.sync_mode,
+                output_format: nodeData.output_format,
+              };
+            }
+          });
+
         }
 
         if (workflow?.AiTemplate) {

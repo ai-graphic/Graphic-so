@@ -6,7 +6,6 @@ import { Option } from "@/lib/types";
 import { useNodeConnections } from "@/providers/connections-providers";
 import { useEditor } from "@/providers/editor-provider";
 import axios from "axios";
-import { read } from "fs";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
 
