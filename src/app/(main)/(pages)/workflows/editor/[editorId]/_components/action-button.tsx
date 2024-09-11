@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Option } from "./content-based-on-title";
-import { ConnectionProviderProps, useNodeConnections } from "@/providers/connections-providers";
+import {
+  ConnectionProviderProps,
+  useNodeConnections,
+} from "@/providers/connections-providers";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { postContentToWebHook } from "@/app/(main)/(pages)/connections/_actions/discord-connection";
@@ -41,7 +44,7 @@ const ActionButton = ({
   const { isLoading, setIsLoading } = useLoading();
   const { user } = useUser();
   const { credits, setCredits } = useBilling();
-  const {nodeConnection} = useNodeConnections();
+  const { nodeConnection } = useNodeConnections();
   console.log("nodeConnection from", nodeConnection);
   const onSendDiscordMessage = useCallback(async () => {
     const response = await postContentToWebHook(
@@ -90,7 +93,7 @@ const ActionButton = ({
   }, [nodeConnection.slackNode, channels]);
 
   const onFluxDev = useCallback(
-    async (id: string, nodeConnection : any) => {
+    async (id: string, nodeConnection: any) => {
       try {
         setIsLoading(id, true);
         const response = await axios.post("/api/ai/fal/flux-dev", {
@@ -109,9 +112,11 @@ const ActionButton = ({
         });
         nodeConnection.setOutput((prev: any) => ({
           ...prev,
-          output: {
-            ...(prev.output || {}),
-            [id]: [...(prev.output?.[id] || []), response.data],
+          ...(prev.output || {}),
+          [id]: {
+            image: [...(prev.output?.[id]?.image || []), response.data],
+            text: [...(prev.output?.[id]?.text || [])],
+            video: [...(prev.output?.[id]?.video || [])],
           },
         }));
         setCredits((prev) => (Number(prev) - 1).toString());
@@ -126,38 +131,45 @@ const ActionButton = ({
     [nodeConnection.fluxDevNode, pathname]
   );
 
-  const onImageToImage = useCallback(async (id: string, nodeConnection : any) => {
-    try {
-      setIsLoading(id, true);
+  const onImageToImage = useCallback(
+    async (id: string, nodeConnection: any) => {
+      try {
+        setIsLoading(id, true);
 
-      const response = await axios.post("/api/ai/fal/image-to-image", {
-        prompt: nodeConnection.imageToImageNode[id].prompt,
-        image_size: nodeConnection.imageToImageNode[id].image_size,
-        image_url: nodeConnection.imageToImageNode[id].image_url,
-        userid: user?.id,
-        num_inference_steps:
-          nodeConnection.imageToImageNode[id].num_inference_steps,
-        guidance_scale: nodeConnection.imageToImageNode[id].guidance_scale,
-        num_images: nodeConnection.imageToImageNode[id].num_images,
-        seed: nodeConnection.imageToImageNode[id].seed,
-        enable_safety_checker:
-          nodeConnection.imageToImageNode[id].enable_safety_checker,
-        sync_mode: nodeConnection.imageToImageNode[id].sync_mode,
-        strength: nodeConnection.imageToImageNode[id].strength,
-      });
-      nodeConnection.setOutput((prev: any) => ({
-        ...prev,
+        const response = await axios.post("/api/ai/fal/image-to-image", {
+          prompt: nodeConnection.imageToImageNode[id].prompt,
+          image_size: nodeConnection.imageToImageNode[id].image_size,
+          image_url: nodeConnection.imageToImageNode[id].image_url,
+          userid: user?.id,
+          num_inference_steps:
+            nodeConnection.imageToImageNode[id].num_inference_steps,
+          guidance_scale: nodeConnection.imageToImageNode[id].guidance_scale,
+          num_images: nodeConnection.imageToImageNode[id].num_images,
+          seed: nodeConnection.imageToImageNode[id].seed,
+          enable_safety_checker:
+            nodeConnection.imageToImageNode[id].enable_safety_checker,
+          sync_mode: nodeConnection.imageToImageNode[id].sync_mode,
+          strength: nodeConnection.imageToImageNode[id].strength,
+        });
+        nodeConnection.setOutput((prev: any) => ({
+          ...prev,
           ...(prev.output || {}),
-          [id]: [...(prev.output?.[id] || []), response.data],
-      }));
-      setCredits((prev) => (Number(prev) - 1).toString());
-    } catch (error) {
-      console.error("Error during Image to Image API call:", error);
-    } finally {
-      setIsLoading(id, false);
-    }
-  }, []);
-  const onFluxLora = useCallback(async (id: string, nodeConnection : any) => {
+          [id]: {
+            image: [...(prev.output?.[id]?.image || []), response.data],
+            text: [...(prev.output?.[id]?.text || [])],
+            video: [...(prev.output?.[id]?.video || [])],
+          },
+        }));
+        setCredits((prev) => (Number(prev) - 1).toString());
+      } catch (error) {
+        console.error("Error during Image to Image API call:", error);
+      } finally {
+        setIsLoading(id, false);
+      }
+    },
+    []
+  );
+  const onFluxLora = useCallback(async (id: string, nodeConnection: any) => {
     try {
       setIsLoading(id, true);
 
@@ -178,8 +190,12 @@ const ActionButton = ({
       });
       nodeConnection.setOutput((prev: any) => ({
         ...prev,
-          ...(prev.output || {}),
-          [id]: [...(prev.output?.[id] || []), response.data],
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || []), response.data],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || [])],
+        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -188,7 +204,7 @@ const ActionButton = ({
       setIsLoading(id, false);
     }
   }, []);
-  const onTrainFlux = useCallback(async (id: string, nodeConnection : any) => {
+  const onTrainFlux = useCallback(async (id: string, nodeConnection: any) => {
     try {
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/fal/train-flux", {
@@ -199,8 +215,12 @@ const ActionButton = ({
       });
       nodeConnection.setOutput((prev: any) => ({
         ...prev,
-          ...(prev.output || {}),
-          [id]: [...(prev.output?.[id] || []), response.data],
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || []), response.data],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || [])],
+        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -209,7 +229,7 @@ const ActionButton = ({
       setIsLoading(id, false);
     }
   }, []);
-  const onStableVideo = useCallback(async (id: string, nodeConnection : any) => {
+  const onStableVideo = useCallback(async (id: string, nodeConnection: any) => {
     try {
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/fal/stable-video", {
@@ -221,8 +241,17 @@ const ActionButton = ({
       });
       nodeConnection.setOutput((prev: any) => ({
         ...prev,
-          ...(prev.output || {}),
-          [id]: [...(prev.output?.[id] || []), response.data],
+        ...(prev.output || {}),
+        [id]: [...(prev.output?.[id] || []), response.data],
+      }));
+      nodeConnection.setOutput((prev: any) => ({
+        ...prev,
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || [])],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || []), response.data],
+        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -232,48 +261,57 @@ const ActionButton = ({
     }
   }, []);
 
-  const onConsistantChar = useCallback(async (id: string, nodeConnection : any) => {
-    try {
-      setIsLoading(id, true);
-      nodeConnection.consistentCharacterNode[id];
-      const response = await axios.post(
-        "/api/ai/replicate/consistent-character",
-        {
-          prompt: nodeConnection.consistentCharacterNode[id]?.prompt,
-          userid: user?.id,
-          subject: nodeConnection.consistentCharacterNode[id]?.subject,
-          num_outputs: nodeConnection.consistentCharacterNode[id]?.num_outputs,
-          negative_prompt:
-            nodeConnection.consistentCharacterNode[id]?.negative_prompt,
-          randomise_poses:
-            nodeConnection.consistentCharacterNode[id]?.randomise_poses,
-          number_of_outputs:
-            nodeConnection.consistentCharacterNode[id]?.number_of_outputs,
-          disable_safety_checker:
-            nodeConnection.consistentCharacterNode[id]?.disable_safety_checker,
-          number_of_images_per_pose:
-            nodeConnection.consistentCharacterNode[id]
-              ?.number_of_images_per_pose,
-          output_format:
-            nodeConnection.consistentCharacterNode[id]?.output_format,
-          output_quality:
-            nodeConnection.consistentCharacterNode[id]?.output_quality,
-        }
-      );
-      nodeConnection.setOutput((prev: any) => ({
-        ...prev,
+  const onConsistantChar = useCallback(
+    async (id: string, nodeConnection: any) => {
+      try {
+        setIsLoading(id, true);
+        nodeConnection.consistentCharacterNode[id];
+        const response = await axios.post(
+          "/api/ai/replicate/consistent-character",
+          {
+            prompt: nodeConnection.consistentCharacterNode[id]?.prompt,
+            userid: user?.id,
+            subject: nodeConnection.consistentCharacterNode[id]?.subject,
+            num_outputs:
+              nodeConnection.consistentCharacterNode[id]?.num_outputs,
+            negative_prompt:
+              nodeConnection.consistentCharacterNode[id]?.negative_prompt,
+            randomise_poses:
+              nodeConnection.consistentCharacterNode[id]?.randomise_poses,
+            number_of_outputs:
+              nodeConnection.consistentCharacterNode[id]?.number_of_outputs,
+            disable_safety_checker:
+              nodeConnection.consistentCharacterNode[id]
+                ?.disable_safety_checker,
+            number_of_images_per_pose:
+              nodeConnection.consistentCharacterNode[id]
+                ?.number_of_images_per_pose,
+            output_format:
+              nodeConnection.consistentCharacterNode[id]?.output_format,
+            output_quality:
+              nodeConnection.consistentCharacterNode[id]?.output_quality,
+          }
+        );
+        nodeConnection.setOutput((prev: any) => ({
+          ...prev,
           ...(prev.output || {}),
-          [id]: [...(prev.output?.[id] || []), response.data],
-      }));
-      setCredits((prev) => (Number(prev) - 1).toString());
-    } catch (error) {
-      console.error("Error during Consistant Character API call:", error);
-    } finally {
-      setIsLoading(id, false);
-    }
-  }, []);
+          [id]: {
+            image: [...(prev.output?.[id]?.image || []), response.data],
+            text: [...(prev.output?.[id]?.text || [])],
+            video: [...(prev.output?.[id]?.video || [])],
+          },
+        }));
+        setCredits((prev) => (Number(prev) - 1).toString());
+      } catch (error) {
+        console.error("Error during Consistant Character API call:", error);
+      } finally {
+        setIsLoading(id, false);
+      }
+    },
+    []
+  );
 
-  const onFluxDevLora = useCallback(async (id: string, nodeConnection : any) => {
+  const onFluxDevLora = useCallback(async (id: string, nodeConnection: any) => {
     try {
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/replicate/fluxDevlora", {
@@ -290,8 +328,12 @@ const ActionButton = ({
       });
       nodeConnection.setOutput((prev: any) => ({
         ...prev,
-          ...(prev.output || {}),
-          [id]: [...(prev.output?.[id] || []), response.data],
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || []), response.data],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || [])],
+        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -301,7 +343,7 @@ const ActionButton = ({
     }
   }, []);
 
-  const onDreamShaper = useCallback(async (id: string, nodeConnection : any) => {
+  const onDreamShaper = useCallback(async (id: string, nodeConnection: any) => {
     try {
       setIsLoading(id, true);
       console.log("from api", nodeConnection.dreamShaperNode[id]);
@@ -318,8 +360,12 @@ const ActionButton = ({
       });
       nodeConnection.setOutput((prev: any) => ({
         ...prev,
-          ...(prev.output || {}),
-          [id]: [...(prev.output?.[id] || []), response.data],
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || []), response.data],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || [])],
+        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -329,7 +375,7 @@ const ActionButton = ({
     }
   }, []);
 
-  const onFluxGeneral = useCallback(async (id: string, nodeConnection : any) => {
+  const onFluxGeneral = useCallback(async (id: string, nodeConnection: any) => {
     try {
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/fal/flux-general", {
@@ -347,8 +393,12 @@ const ActionButton = ({
       });
       nodeConnection.setOutput((prev: any) => ({
         ...prev,
-          ...(prev.output || {}),
-          [id]: [...(prev.output?.[id] || []), response.data],
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || []), response.data],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || [])],
+        },
       }));
       setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
@@ -359,7 +409,7 @@ const ActionButton = ({
   }, []);
 
   const onAiSearch = useCallback(
-    async (id: string, nodeConnection : any) => {
+    async (id: string, nodeConnection: any) => {
       if (!nodeConnection.aiNode[id]) {
         toast.error("Please select a model first");
         return;
@@ -379,8 +429,12 @@ const ActionButton = ({
           });
           nodeConnection.setOutput((prev: any) => ({
             ...prev,
-              ...(prev.output || {}),
-              [id]: [...(prev.output?.[id] || []), response.data],
+            ...(prev.output || {}),
+            [id]: {
+              image: [...(prev.output?.[id]?.image || [])],
+              text: [...(prev.output?.[id]?.text || []), response.data],
+              video: [...(prev.output?.[id]?.video || [])],
+            },
           }));
         } catch (error) {
           console.error("Error during AI search:", error);
@@ -404,10 +458,12 @@ const ActionButton = ({
           });
           nodeConnection.setOutput((prev: any) => ({
             ...prev,
-
-              ...(prev.output || {}),
-              [id]: [...(prev.output?.[id] || []), response.data[0]],
-
+            ...(prev.output || {}),
+            [id]: {
+              image: [...(prev.output?.[id]?.image || []), response.data[0]],
+              text: [...(prev.output?.[id]?.text || [])],
+              video: [...(prev.output?.[id]?.video || [])],
+            },
           }));
           setCredits((prev) => (Number(prev) - 1).toString());
         } catch (error) {
@@ -427,8 +483,12 @@ const ActionButton = ({
           });
           nodeConnection.setOutput((prev: any) => ({
             ...prev,
-              ...(prev.output || {}),
-              [id]: [...(prev.output?.[id] || []), response.data.output],
+            ...(prev.output || {}),
+            [id]: {
+              image: [...(prev.output?.[id]?.image || [])],
+              text: [...(prev.output?.[id]?.text || []), response.data.output],
+              video: [...(prev.output?.[id]?.video || [])],
+            },
           }));
         } catch (error) {
           console.error("Error during superAgent API call:", error);
@@ -610,19 +670,25 @@ const ActionButton = ({
   );
 
   const { selectedNode } = useEditor().state.editor;
-  const [aiOutput, setAiOutput] = useState<string[]>([]);
+  const [aiOutput, setAiOutput] = useState({
+    image: [],
+    text: [],
+    video: [],
+  });
 
   useEffect(() => {
     if (nodeConnection.output && selectedNode.id) {
       setAiOutput(
-        (nodeConnection.output as unknown as Record<string, string[]>)[
-          selectedNode.id
-        ] || []
+        (nodeConnection.output as Record<string, any>)[selectedNode.id] || {
+          image: [],
+          text: [],
+          video: [],
+        }
       );
     }
-
   }, [nodeConnection.output, selectedNode.id]);
-console.log("aiOutput", aiOutput);
+
+  console.log("aiOutput", aiOutput);
   const renderActionButton = () => {
     switch (currentService) {
       case "Discord":
@@ -650,7 +716,7 @@ console.log("aiOutput", aiOutput);
                 "FLUX-image" ? (
                   <div className="font-extralight">
                     <p className="font-bold">Outputs</p>
-                    {aiOutput.map((output, index) => (
+                    {aiOutput.text.map((output, index) => (
                       <div key={index}>
                         {index + 1}. {output}
                       </div> // Each output is wrapped in a div
@@ -658,7 +724,7 @@ console.log("aiOutput", aiOutput);
                   </div>
                 ) : (
                   <div className="flex flex-col space-y-2">
-                    {aiOutput.map((output, index) => (
+                    {aiOutput.image.map((output, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <span className="font-medium text-sm">
                           {index + 1}.
@@ -725,9 +791,9 @@ console.log("aiOutput", aiOutput);
         return (
           <>
             {nodeConnection.fluxDevNode[selectedNode.id] &&
-              aiOutput.length > 0 && (
+              aiOutput.image.length > 0 && (
                 <div className="flex flex-col space-y-2">
-                  {aiOutput.map((output, index) => (
+                  {aiOutput.image.map((output, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <span className="font-medium text-sm">{index + 1}.</span>
                       <img
@@ -756,9 +822,9 @@ console.log("aiOutput", aiOutput);
         return (
           <>
             {nodeConnection.imageToImageNode[selectedNode.id] &&
-              aiOutput.length > 0 && (
+              aiOutput.image.length > 0 && (
                 <div className="flex flex-col space-y-2">
-                  {aiOutput.map((output, index) => (
+                  {aiOutput.image.map((output, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <span className="font-medium text-sm">{index + 1}.</span>
                       <img
@@ -787,9 +853,9 @@ console.log("aiOutput", aiOutput);
         return (
           <>
             {nodeConnection.fluxLoraNode[selectedNode.id] &&
-              aiOutput.length > 0 && (
+              aiOutput.image.length > 0 && (
                 <div className="flex flex-col space-y-2">
-                  {aiOutput.map((output, index) => (
+                  {aiOutput.image.map((output, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <span className="font-medium text-sm">{index + 1}.</span>
                       <img
@@ -835,9 +901,9 @@ console.log("aiOutput", aiOutput);
         return (
           <>
             {nodeConnection.stableVideoNode[selectedNode.id] &&
-              aiOutput.length > 0 && (
+              aiOutput.video.length > 0 && (
                 <div className="flex flex-col space-y-2">
-                  {aiOutput.map((output, index) => (
+                  {aiOutput.video.map((output, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <span className="font-medium text-sm">{index + 1}.</span>
                       <video
@@ -869,9 +935,9 @@ console.log("aiOutput", aiOutput);
         return (
           <>
             {nodeConnection.consistentCharacterNode[selectedNode.id] &&
-              aiOutput.length > 0 && (
+              aiOutput.image.length > 0 && (
                 <div className="flex flex-col space-y-2">
-                  {aiOutput.map((output, index) => (
+                  {aiOutput.image.map((output, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <span className="font-medium text-sm">{index + 1}.</span>
                       <img
@@ -900,9 +966,9 @@ console.log("aiOutput", aiOutput);
         return (
           <>
             {nodeConnection.fluxDevLoraNode[selectedNode.id] &&
-              aiOutput.length > 0 && (
+              aiOutput.image.length > 0 && (
                 <div className="flex flex-col space-y-2">
-                  {aiOutput.map((output, index) => (
+                  {aiOutput.image.map((output, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <span className="font-medium text-sm">{index + 1}.</span>
                       <img
@@ -931,9 +997,9 @@ console.log("aiOutput", aiOutput);
         return (
           <>
             {nodeConnection.dreamShaperNode[selectedNode.id] &&
-              aiOutput.length > 0 && (
+              aiOutput.image.length > 0 && (
                 <div className="flex flex-col space-y-2">
-                  {aiOutput.map((output, index) => (
+                  {aiOutput.image.map((output, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <span className="font-medium text-sm">{index + 1}.</span>
                       <img
@@ -962,9 +1028,9 @@ console.log("aiOutput", aiOutput);
         return (
           <>
             {nodeConnection.fluxGeneralNode[selectedNode.id] &&
-              aiOutput.length > 0 && (
+              aiOutput.image.length > 0 && (
                 <div className="flex flex-col space-y-2">
-                  {aiOutput.map((output, index) => (
+                  {aiOutput.image.map((output, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <span className="font-medium text-sm">{index + 1}.</span>
                       <img

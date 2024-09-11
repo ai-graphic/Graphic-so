@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { onContentChange } from "@/lib/editor-utils";
-import { Option } from "@/lib/types";
+import { Option, OutputType } from "@/lib/types";
 import { useNodeConnections } from "@/providers/connections-providers";
 import { useEditor } from "@/providers/editor-provider";
 import axios from "axios";
 import React from "react";
 import { toast } from "sonner";
 
-const fluxDevNodeOption : Option[] = [
+const fluxDevNodeOption: Option[] = [
   { image_size: { placeholder: "Enter image size", type: "text" } },
   { num_inference_steps: { placeholder: 50, type: "number" } },
   { guidance_scale: { placeholder: 7.5, type: "number" } },
@@ -18,8 +18,7 @@ const fluxDevNodeOption : Option[] = [
   { sync_mode: { placeholder: true, type: "checkbox" } },
 ];
 
-
-const FluxDev =  (nodeConnectionType: any, title: string) => {
+const FluxDev = (nodeConnectionType: any, title: string) => {
   const { selectedNode } = useEditor().state.editor;
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
@@ -37,7 +36,7 @@ const FluxDev =  (nodeConnectionType: any, title: string) => {
   };
   console.log(loading);
   console.log(nodeConnectionType);
-  console.log(nodeConnection)
+  console.log(nodeConnection);
   return (
     <div className="flex flex-col gap-2">
       <div>
@@ -82,20 +81,17 @@ const FluxDev =  (nodeConnectionType: any, title: string) => {
           </Button>
         </div>
         {showButtons[0] &&
-          nodeConnection.output &&
-          state.editor.edges &&
           Object.entries(nodeConnection.output)
             .filter(([id]) =>
               state.editor.edges.some(
                 (edge) => edge.target === selectedNode.id && edge.source === id
               )
             )
-            .map(
-              ([id, outputs]) =>
-                Array.isArray(outputs) &&
-                outputs.map((output, index) => (
+            .map(([id, outputs]) =>
+              (["text"] as (keyof OutputType)[]).map((type) =>
+                outputs[type]?.map((output, index) => (
                   <button
-                    key={`${id}-${index}`}
+                    key={`${id}-${type}-${index}`}
                     className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     onClick={() => {
                       setSelectedPrompt(String(output));
@@ -105,6 +101,7 @@ const FluxDev =  (nodeConnectionType: any, title: string) => {
                     {String(output)}
                   </button>
                 ))
+              )
             )}
       </div>
 

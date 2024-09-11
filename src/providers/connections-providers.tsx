@@ -179,8 +179,14 @@ export type ConnectionProviderProps = {
   setfluxLoraNode: React.Dispatch<React.SetStateAction<any>>;
   setstableVideoNode: React.Dispatch<React.SetStateAction<any>>;
   settrainFluxNode: React.Dispatch<React.SetStateAction<any>>;
-  output: string[];
-  setOutput: React.Dispatch<React.SetStateAction<string[]>>;
+  output: {
+    [id : string] : {
+      image: string[],
+      text: string[],
+      video: string[],
+    }
+  };
+  setOutput: React.Dispatch<React.SetStateAction<{ [id: string]: { image: string[]; text: string[]; video: string[]; } }>>,
   setAINode: React.Dispatch<React.SetStateAction<any>>;
   addAINode: (id: string, type: string) => void; // Add this line
   googleNode: any[];
@@ -272,7 +278,7 @@ const InitialValues: ConnectionProviderProps = {
   fluxGeneralNode: {},
   fluxDevLoraNode: {},
   trainFluxNode: {},
-  output: [],
+  output: {},
   setOutput: () => undefined,
   workflowTemplate: {
     discord: "",

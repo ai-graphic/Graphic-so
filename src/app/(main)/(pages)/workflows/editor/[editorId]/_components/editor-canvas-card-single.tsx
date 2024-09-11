@@ -36,7 +36,7 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
   }, [data]);
   const { isLoading, setIsLoading } = useLoading();
   const { nodeConnection } = useNodeConnections();
-  const {credits, setCredits} = useBilling();
+  const { credits, setCredits } = useBilling();
   const [triggerValue, setTriggerValue] = useState(
     nodeConnection.triggerNode.triggerValue
   );
@@ -52,13 +52,11 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
   useEffect(() => {
     const outputsObject = nodeConnection.output as OutputType;
     if (nodeId != null && outputsObject && outputsObject[nodeId]) {
-      const outputsArray = outputsObject[nodeId];
-      if (outputsArray.length > 0) {
-        setOutput(outputsArray[outputsArray.length - 1]);
-      }
+      setOutput(outputsObject[nodeId]);
     }
   }, [nodeConnection.output, nodeId]);
   const { runWorkFlow } = useWorkflow();
+
 
   return (
     <>
@@ -155,19 +153,32 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
                 <MousePointerClickIcon className="flex-shrink-0 " size={20} />
               </Button>
             </div>
-              ) : isLoading[nodeId ?? ""] &&
-              nodeConnection.aiNode[nodeId ?? ""]?.model ? (
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-            ) : nodeConnection.aiNode[nodeId ?? ""]?.model === "FLUX-image" &&
-              output ? (
-              <img src={output} alt="Model Output" />
-            ) : /https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(output) ? (
-              <img src={output} alt="Model Output" />
-            ) : /https?:\/\/.*\.(?:mp4|webm)/.test(output) ? (
-              <video src={output} controls width="320" height="240" />
-            ) : (
-              <p>{output}</p>
-            )}
+          ) : isLoading[nodeId ?? ""] &&
+            nodeConnection.aiNode[nodeId ?? ""]?.prompt ? (
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+          ) : (
+            <div>
+               {output && output.image && output.image.length > 0 && (
+                <img
+                  src={output.image[output.image.length - 1]}
+                  alt="output"
+                  className=" object-cover rounded-lg"
+                />
+              )}
+              {output && output.text && output.text.length > 0 && (
+                <p>{output.text[output.text.length - 1]}</p>
+              )}
+              {output && output.video && output.video.length > 0 && (
+                <video
+                  src={output.video[output.video.length - 1]}
+                  controls
+                  width="320"
+                  height="240"
+                  autoPlay
+                />
+              )}
+            </div>
+          )}
         </CardHeader>
         <Badge variant="secondary" className="absolute right-2 top-2">
           {nodeConnection.aiNode[nodeId ?? ""]?.model ? (

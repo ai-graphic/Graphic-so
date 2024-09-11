@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { onContentChange } from "@/lib/editor-utils";
-import { Option } from "@/lib/types";
+import { Option, OutputType } from "@/lib/types";
 import { useNodeConnections } from "@/providers/connections-providers";
 import { useEditor } from "@/providers/editor-provider";
 import axios from "axios";
@@ -138,30 +138,33 @@ const StableVideo = (nodeConnectionType: any, title: string) => {
             @tag
           </Button>
         </div>
-        {showButtons[1] &&
-          nodeConnection.output &&
-          state.editor.edges &&
+        {showButtons[0] &&
           Object.entries(nodeConnection.output)
             .filter(([id]) =>
               state.editor.edges.some(
                 (edge) => edge.target === selectedNode.id && edge.source === id
               )
             )
-            .map(
-              ([id, outputs]) =>
-                Array.isArray(outputs) &&
-                outputs.map((output, index) => (
+            .map(([id, outputs]) =>
+              (["image"] as (keyof OutputType)[]).map((type) =>
+                outputs[type]?.map((output, index) => (
                   <button
-                    key={`${id}-${index}`}
+                    key={`${id}-${type}-${index}`}
                     className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     onClick={() => {
                       setSelectedurl(String(output));
-                      setoptions(1);
+                      setoptions(0);
                     }}
                   >
-                    {String(output)}
+                    <video
+                      src={String(output)}
+                      autoPlay
+                      width={20}
+                      height={20}
+                    />
                   </button>
                 ))
+              )
             )}
       </div>
 

@@ -2,7 +2,7 @@
 
 import { ConnectionProviderProps } from "@/providers/connections-providers";
 import { EditorState, useEditor } from "@/providers/editor-provider";
-import { EditorNodeType, nodeMapper } from "@/lib/types";
+import { EditorNodeType, nodeMapper, OutputType } from "@/lib/types";
 import { AccordionContent } from "@/components/ui/accordion";
 import {
   Card,
@@ -273,8 +273,6 @@ const ContentBasedOnTitle = ({
                     </Button>
                   </div>
                   {showButtons &&
-                    nodeConnection.output &&
-                    state.editor.edges &&
                     Object.entries(nodeConnection.output)
                       .filter(([id]) =>
                         state.editor.edges.some(
@@ -283,12 +281,11 @@ const ContentBasedOnTitle = ({
                             edge.source === id
                         )
                       )
-                      .map(
-                        ([id, outputs]) =>
-                          Array.isArray(outputs) &&
-                          outputs.map((output, index) => (
+                      .map(([id, outputs]) =>
+                        (["text"] as (keyof OutputType)[]).map((type) =>
+                          outputs[type]?.map((output, index) => (
                             <button
-                              key={`${id}-${index}`}
+                              key={`${id}-${type}-${index}`}
                               className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                               onClick={() => {
                                 setSelectedOutput(String(output));
@@ -298,6 +295,7 @@ const ContentBasedOnTitle = ({
                               {String(output)}
                             </button>
                           ))
+                        )
                       )}
                 </div>
               )}
@@ -378,9 +376,8 @@ const ContentBasedOnTitle = ({
                   nodeConnectionType.content = newValue;
                 }}
               />
+
               {showButtons &&
-                nodeConnection.output &&
-                state.editor.edges &&
                 Object.entries(nodeConnection.output)
                   .filter(([id]) =>
                     state.editor.edges.some(
@@ -388,12 +385,11 @@ const ContentBasedOnTitle = ({
                         edge.target === selectedNode.id && edge.source === id
                     )
                   )
-                  .map(
-                    ([id, outputs]) =>
-                      Array.isArray(outputs) &&
-                      outputs.map((output, index) => (
+                  .map(([id, outputs]) =>
+                    (["text"] as (keyof OutputType)[]).map((type) =>
+                      outputs[type]?.map((output, index) => (
                         <button
-                          key={`${id}-${index}`}
+                          key={`${id}-${type}-${index}`}
                           className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                           onClick={() => {
                             setSelectedOutput(String(output));
@@ -403,6 +399,7 @@ const ContentBasedOnTitle = ({
                           {String(output)}
                         </button>
                       ))
+                    )
                   )}
             </div>
           ) : (
@@ -444,7 +441,7 @@ const ContentBasedOnTitle = ({
                   title={title}
                 />
               )}
-               {title === "dreamShaper" && (
+              {title === "dreamShaper" && (
                 <DreamShaper
                   nodeConnectionType={nodeConnectionType}
                   title={title}

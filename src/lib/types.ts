@@ -22,6 +22,11 @@ export type Connection = {
   alwaysTrue?: boolean;
   slackSpecial?: boolean;
 };
+export type OutputType = {
+  image: string[];
+  text: string[];
+  video: string[];
+};
 
 export type EditorCanvasTypes =
   | "Email"

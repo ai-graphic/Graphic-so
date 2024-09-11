@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { onContentChange } from "@/lib/editor-utils";
-import { Option } from "@/lib/types";
+import { Option, OutputType } from "@/lib/types";
 import { useNodeConnections } from "@/providers/connections-providers";
 import { useEditor } from "@/providers/editor-provider";
 import React from "react";
@@ -80,20 +80,17 @@ const FluxDevLora =  (nodeConnectionType: any, title: string) => {
           </Button>
         </div>
         {showButtons[0] &&
-          nodeConnection.output &&
-          state.editor.edges &&
           Object.entries(nodeConnection.output)
             .filter(([id]) =>
               state.editor.edges.some(
                 (edge) => edge.target === selectedNode.id && edge.source === id
               )
             )
-            .map(
-              ([id, outputs]) =>
-                Array.isArray(outputs) &&
-                outputs.map((output, index) => (
+            .map(([id, outputs]) =>
+              (["text"] as (keyof OutputType)[]).map((type) =>
+                outputs[type]?.map((output, index) => (
                   <button
-                    key={`${id}-${index}`}
+                    key={`${id}-${type}-${index}`}
                     className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     onClick={() => {
                       setSelectedPrompt(String(output));
@@ -103,6 +100,7 @@ const FluxDevLora =  (nodeConnectionType: any, title: string) => {
                     {String(output)}
                   </button>
                 ))
+              )
             )}
       </div>
 

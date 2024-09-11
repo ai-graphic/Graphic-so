@@ -10,10 +10,8 @@ import { getworkflow } from "@/app/(main)/(pages)/workflows/editor/[editorId]/_a
 import { postContentToWebHook } from "@/app/(main)/(pages)/connections/_actions/discord-connection";
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
 import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_actions/notion-connection";
-import axios, { AxiosResponse } from "axios";
-import { db } from "@/lib/db";
+import axios from "axios";
 import { onUpdateChatHistory } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
-import FluxDevLora from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/nodes/fluxDevLora";
 import { updateCredits } from "@/app/(main)/(pages)/billing/_actions/payment-connections";
 import { toast } from "sonner";
 
@@ -63,11 +61,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
           try {
             nodeConnection.setOutput((prev: any) => ({
               ...prev,
-                ...(prev.output || {}),
-                [idNode ?? ""]: [
-                  ...(prev.output?.[idNode ?? ""] || []),
-                  aiResponseContent,
-                ],
+              ...(prev.output || {}),
+              [idNode ?? ""]: [
+                ...(prev.output?.[idNode ?? ""] || []),
+                aiResponseContent,
+              ],
             }));
             resolve(true);
           } catch (error) {
@@ -126,10 +124,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               let prompt = nodeConnection.fluxDevNode[idNode]?.prompt;
               console.log("Prompt:", prompt);
               if (node.type === "Trigger") {
-                const output = nodeConnection.output
+                const output = nodeConnection.output;
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
-                content = prmpt
+                content = prmpt;
                 if (prompt) {
                   if (prompt.includes(":input:")) {
                     content = prompt.replace(":input:", prmpt);
@@ -164,14 +162,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                     fluxDevTemplate[idNode].enable_safety_checker,
                   sync_mode: fluxDevTemplate[idNode].sync_mode,
                 });
-                nodeConnection.setAINode((prev: any) => ({
+                nodeConnection.setOutput((prev: any) => ({
                   ...prev,
-                  output: {
-                    ...(prev.output || {}),
-                    [idNode]: [
-                      ...(prev.output?.[idNode] || []),
-                      output.data[0],
-                    ],
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [...(prev.output?.[idNode]?.video || [])],
                   },
                 }));
                 latestOutputs[idNode] = output.data[0];
@@ -218,10 +215,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               let prompt = nodeConnection.fluxLoraNode[idNode]?.prompt;
               console.log("Prompt:", prompt);
               if (node.type === "Trigger") {
-                const output = nodeConnection.output
+                const output = nodeConnection.output;
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
-                content = prmpt
+                content = prmpt;
                 if (prompt) {
                   if (prompt.includes(":input:")) {
                     content = prompt.replace(":input:", prmpt);
@@ -258,14 +255,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   sync_mode: fluxLoraTemplate[idNode].sync_mode,
                   output_format: fluxLoraTemplate[idNode].output_format,
                 });
-                nodeConnection.setAINode((prev: any) => ({
+                 nodeConnection.setOutput((prev: any) => ({
                   ...prev,
-                  output: {
-                    ...(prev.output || {}),
-                    [idNode]: [
-                      ...(prev.output?.[idNode] || []),
-                      output.data[0],
-                    ],
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [...(prev.output?.[idNode]?.video || [])],
                   },
                 }));
                 latestOutputs[idNode] = output.data[0];
@@ -310,10 +306,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.output
+                const output = nodeConnection.output;
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
-                content = prmpt
+                content = prmpt;
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -336,14 +332,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   sync_mode: falImageTemplate[idNode].sync_mode,
                   strength: falImageTemplate[idNode].strength,
                 });
-                nodeConnection.setAINode((prev: any) => ({
+                 nodeConnection.setOutput((prev: any) => ({
                   ...prev,
-                  output: {
-                    ...(prev.output || {}),
-                    [idNode]: [
-                      ...(prev.output?.[idNode] || []),
-                      output.data[0],
-                    ],
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [...(prev.output?.[idNode]?.video || [])],
                   },
                 }));
                 latestOutputs[idNode] = output.data[0];
@@ -388,10 +383,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.output
+                const output = nodeConnection.output;
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
-                content = prmpt
+                content = prmpt;
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -406,14 +401,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   fps: falVideoTemplate[idNode].fps,
                   cond_aug: falVideoTemplate[idNode].cond_aug,
                 });
-                nodeConnection.setAINode((prev: any) => ({
+                 nodeConnection.setOutput((prev: any) => ({
                   ...prev,
-                  output: {
-                    ...(prev.output || {}),
-                    [idNode]: [
-                      ...(prev.output?.[idNode] || []),
-                      output.data[0],
-                    ],
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [...(prev.output?.[idNode]?.video || [])],
                   },
                 }));
                 latestOutputs[idNode] = output.data[0];
@@ -460,10 +454,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.output
+                const output = nodeConnection.output;
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
-                content = prmpt
+                content = prmpt;
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -493,14 +487,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                       falCharacterTemplate[idNode]?.output_quality,
                   }
                 );
-                nodeConnection.setAINode((prev: any) => ({
+                 nodeConnection.setOutput((prev: any) => ({
                   ...prev,
-                  output: {
-                    ...(prev.output || {}),
-                    [idNode]: [
-                      ...(prev.output?.[idNode] || []),
-                      output.data[0],
-                    ],
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [...(prev.output?.[idNode]?.video || [])],
                   },
                 }));
                 latestOutputs[idNode] = output.data[0];
@@ -547,10 +540,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.output
+                const output = nodeConnection.output;
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
-                content = prmpt
+                content = prmpt;
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -573,14 +566,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                     upscale: falDreamShaperTemplate[idNode]?.upscale,
                   }
                 );
-                nodeConnection.setAINode((prev: any) => ({
+                 nodeConnection.setOutput((prev: any) => ({
                   ...prev,
-                  output: {
-                    ...(prev.output || {}),
-                    [idNode]: [
-                      ...(prev.output?.[idNode] || []),
-                      output.data[0],
-                    ],
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [...(prev.output?.[idNode]?.video || [])],
                   },
                 }));
                 latestOutputs[idNode] = output.data[0];
@@ -627,10 +619,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.output
+                const output = nodeConnection.output;
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
-                content = prmpt
+                content = prmpt;
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -650,14 +642,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   enable_safety_checker:
                     falGeneralTemplate[idNode]?.enable_safety_checker,
                 });
-                nodeConnection.setAINode((prev: any) => ({
+                 nodeConnection.setOutput((prev: any) => ({
                   ...prev,
-                  output: {
-                    ...(prev.output || {}),
-                    [idNode]: [
-                      ...(prev.output?.[idNode] || []),
-                      output.data[0],
-                    ],
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [...(prev.output?.[idNode]?.video || [])],
                   },
                 }));
                 latestOutputs[idNode] = output.data[0];
@@ -702,10 +693,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
               if (node.type === "Trigger") {
-                const output = nodeConnection.output
+                const output = nodeConnection.output;
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
-                content = prmpt
+                content = prmpt;
                 chatHistory.user = prmpt;
                 content = prmpt;
               } else {
@@ -728,14 +719,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                       falDevLoraTemplate[idNode].num_inference_steps,
                   }
                 );
-                nodeConnection.setAINode((prev: any) => ({
+                 nodeConnection.setOutput((prev: any) => ({
                   ...prev,
-                  output: {
-                    ...(prev.output || {}),
-                    [idNode]: [
-                      ...(prev.output?.[idNode] || []),
-                      output.data[0],
-                    ],
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [...(prev.output?.[idNode]?.video || [])],
                   },
                 }));
                 latestOutputs[idNode] = output.data[0];
@@ -785,10 +775,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               let prompt = nodeConnection.aiNode[idNode]?.prompt;
               console.log("Prompt:", prompt);
               if (node.type === "Trigger") {
-                const output = nodeConnection.output 
+                const output = nodeConnection.output;
                 const contentarr = output[node.id];
                 const prmpt = contentarr[contentarr.length - 1];
-                content = prmpt
+                content = prmpt;
                 if (prompt) {
                   if (prompt.includes(":input:")) {
                     content = prompt.replace(":input:", prmpt);
@@ -822,26 +812,18 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                     system: aiTemplate[idNode].system,
                     userid: workflow.userId,
                   });
-                  nodeConnection.setAINode((prev: any) => ({
+                  nodeConnection.setOutput((prev: any) => ({
                     ...prev,
-                      ...(prev.output || {}),
-                      [idNode]: [
-                        ...(prev.output?.[idNode] || []),
-                        response.data,
-                      ],
+                    ...(prev.output || {}),
+                    [idNode]: {
+                      image: [...(prev.output?.[idNode]?.image || [])],
+                      text: [...(prev.output?.[idNode] || []), response.data],
+                      video: [...(prev.output?.[idNode]?.video || [])],
+                    },
                   }));
-                  console.log("AI Response:", response.data);
-                  const aiResponseContent = response.data;
-                  const aiTemplateObj = JSON.parse(workflow.AiTemplate!);
-                  if (!aiTemplateObj.output) {
-                    aiTemplateObj.output = {};
-                  }
-                  aiTemplateObj.output[idNode] = [aiResponseContent];
-
-                  const updatedAiTemplate = JSON.stringify(aiTemplateObj);
-                  workflow.AiTemplate = updatedAiTemplate;
-                  latestOutputs[idNode] = aiResponseContent;
-                  await updateAINodeOutput(idNode, aiResponseContent);
+                  
+                  latestOutputs[idNode] = response.data;
+                  
                 } catch (error) {
                   console.error("Error during OpenAI API call:", error);
                 } finally {
@@ -855,14 +837,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                     prompt: content,
                     userid: workflow.userId,
                   });
-                  nodeConnection.setAINode((prev: any) => ({
+                  nodeConnection.setOutput((prev: any) => ({
                     ...prev,
-                    output: {
-                      ...(prev.output || {}),
-                      [idNode]: [
-                        ...(prev.output?.[idNode] || []),
-                        output.data[0],
-                      ],
+                    ...(prev.output || {}),
+                    [idNode]: {
+                      image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                      text: [...(prev.output?.[idNode]?.text || [])],
+                      video: [...(prev.output?.[idNode]?.video || [])],
                     },
                   }));
                   latestOutputs[idNode] = output.data[0];
@@ -883,14 +864,13 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                       userid: workflow.userId,
                     }
                   );
-                  nodeConnection.setAINode((prev: any) => ({
+                  nodeConnection.setOutput((prev: any) => ({
                     ...prev,
-                    output: {
-                      ...(prev.output || {}),
-                      [idNode]: [
-                        ...(prev.output?.[idNode] || []),
-                        response.data.output,
-                      ],
+                    ...(prev.output || {}),
+                    [idNode]: {
+                      image: [...(prev.output?.[idNode]?.image || [])],
+                      text: [...(prev.output?.[idNode] || []), response.data],
+                      video: [...(prev.output?.[idNode]?.video || [])],
                     },
                   }));
                   latestOutputs[idNode] = response.data.output;
