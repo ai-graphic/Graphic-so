@@ -22,7 +22,8 @@ type WorkflowContextType = {
     setIsLoading: any,
     credits: string,
     setCredits: any,
-    setHistory?: any
+    setHistory?: any,
+    selectedurl? : string
   ) => Promise<void>;
 };
 
@@ -51,7 +52,8 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
       setIsLoading: any,
       credits: string,
       setCredits: any,
-      setHistory?: any
+      setHistory?: any,
+      selectedurl? : string
     ) => {
       async function updateAINodeOutput(
         idNode: string,
@@ -126,7 +128,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
                 const contentarr = output[node.id];
-                const prmpt = contentarr[contentarr.length - 1];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
                 content = prmpt;
                 if (prompt) {
                   if (prompt.includes(":input:")) {
@@ -166,7 +168,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   ...prev,
                   ...(prev.output || {}),
                   [idNode]: {
-                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    image: [
+                      ...(prev.output?.[idNode]?.image || []),
+                      output.data[0],
+                    ],
                     text: [...(prev.output?.[idNode]?.text || [])],
                     video: [...(prev.output?.[idNode]?.video || [])],
                   },
@@ -217,7 +222,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
                 const contentarr = output[node.id];
-                const prmpt = contentarr[contentarr.length - 1];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
                 content = prmpt;
                 if (prompt) {
                   if (prompt.includes(":input:")) {
@@ -255,11 +260,14 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   sync_mode: fluxLoraTemplate[idNode].sync_mode,
                   output_format: fluxLoraTemplate[idNode].output_format,
                 });
-                 nodeConnection.setOutput((prev: any) => ({
+                nodeConnection.setOutput((prev: any) => ({
                   ...prev,
                   ...(prev.output || {}),
                   [idNode]: {
-                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    image: [
+                      ...(prev.output?.[idNode]?.image || []),
+                      output.data[0],
+                    ],
                     text: [...(prev.output?.[idNode]?.text || [])],
                     video: [...(prev.output?.[idNode]?.video || [])],
                   },
@@ -305,22 +313,61 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const edge = edgesArray.find((e: any) => e.target === idNode);
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
+              let Image;
+              let prompt = nodeConnection.imageToImageNode[idNode]?.prompt;
+              let ImageFromDb = nodeConnection.imageToImageNode[idNode]?.image_url;
+              console.log("Selected URL:", selectedurl, ImageFromDb);
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
                 const contentarr = output[node.id];
-                const prmpt = contentarr[contentarr.length - 1];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
+                const image = contentarr.image[contentarr.image.length - 1];
                 content = prmpt;
-                chatHistory.user = prmpt;
-                content = prmpt;
+                Image = image;
+
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", prmpt);
+                  } else {
+                    content = prmpt;
+                  }
+                }
+                if (ImageFromDb) {
+                  if (ImageFromDb.includes(":image:")) {
+                    content = ImageFromDb.replace(":image:", image);
+                  } else {
+                    Image = image;
+                  }
+                }
+
+                chatHistory.user = prmpt + " - " + Image;
               } else {
-                content = latestOutputs[node.id];
+                if (prompt && ImageFromDb) {
+                  if (ImageFromDb.includes(":image:") && selectedurl) {
+                    Image = ImageFromDb.replace(":image:", selectedurl);
+                  } else {
+                    Image = latestOutputs[node.id];
+                  }
+                  if (prompt.includes(":input:") && selectedurl) {
+                    content = prompt.replace(":input:", latestOutputs[node.id]);
+                  } else {
+                    content = prompt;
+                  }
+                } else if (!ImageFromDb && !selectedurl) {
+                  Image = latestOutputs[node.id];
+                  content = prompt || "";
+                } else {
+                  Image = selectedurl || latestOutputs[node.id];
+                  content = prompt || "";
+                }
               }
+
               try {
                 setIsLoading(idNode, true);
                 const output = await axios.post("/api/ai/fal/image-to-image", {
-                  prompt: falImageTemplate[idNode].prompt,
+                  prompt: content,
                   image_size: falImageTemplate[idNode].image_size,
-                  image_url: content,
+                  image_url: Image,
                   userid: workflow.userId,
                   num_inference_steps:
                     falImageTemplate[idNode].num_inference_steps,
@@ -332,11 +379,14 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   sync_mode: falImageTemplate[idNode].sync_mode,
                   strength: falImageTemplate[idNode].strength,
                 });
-                 nodeConnection.setOutput((prev: any) => ({
+                nodeConnection.setOutput((prev: any) => ({
                   ...prev,
                   ...(prev.output || {}),
                   [idNode]: {
-                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    image: [
+                      ...(prev.output?.[idNode]?.image || []),
+                      output.data[0],
+                    ],
                     text: [...(prev.output?.[idNode]?.text || [])],
                     video: [...(prev.output?.[idNode]?.video || [])],
                   },
@@ -385,7 +435,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
                 const contentarr = output[node.id];
-                const prmpt = contentarr[contentarr.length - 1];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
                 content = prmpt;
                 chatHistory.user = prmpt;
                 content = prmpt;
@@ -401,11 +451,14 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   fps: falVideoTemplate[idNode].fps,
                   cond_aug: falVideoTemplate[idNode].cond_aug,
                 });
-                 nodeConnection.setOutput((prev: any) => ({
+                nodeConnection.setOutput((prev: any) => ({
                   ...prev,
                   ...(prev.output || {}),
                   [idNode]: {
-                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    image: [
+                      ...(prev.output?.[idNode]?.image || []),
+                      output.data[0],
+                    ],
                     text: [...(prev.output?.[idNode]?.text || [])],
                     video: [...(prev.output?.[idNode]?.video || [])],
                   },
@@ -453,24 +506,62 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const edge = edgesArray.find((e: any) => e.target === idNode);
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
+              let Image;
+              let prompt = nodeConnection.imageToImageNode[idNode]?.prompt;
+              let ImageFromDb = nodeConnection.imageToImageNode[idNode]?.image_url;
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
                 const contentarr = output[node.id];
-                const prmpt = contentarr[contentarr.length - 1];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
+                const image = contentarr.image[contentarr.image.length - 1];
                 content = prmpt;
-                chatHistory.user = prmpt;
-                content = prmpt;
+                Image = image;
+
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", prmpt);
+                  } else {
+                    content = prmpt;
+                  }
+                }
+                if (ImageFromDb) {
+                  if (ImageFromDb.includes(":image:")) {
+                    content = ImageFromDb.replace(":image:", image);
+                  } else {
+                    Image = image;
+                  }
+                }
+
+                chatHistory.user = prmpt + " - " + Image;
               } else {
-                content = latestOutputs[node.id];
+                if (prompt && ImageFromDb) {
+                  if (ImageFromDb.includes(":image:") && selectedurl) {
+                    Image = ImageFromDb.replace(":image:", selectedurl);
+                  } else {
+                    Image = latestOutputs[node.id];
+                  }
+                  if (prompt.includes(":input:") && selectedurl) {
+                    content = prompt.replace(":input:", latestOutputs[node.id]);
+                  } else {
+                    content = prompt;
+                  }
+                } else if (!ImageFromDb && !selectedurl) {
+                  Image = latestOutputs[node.id];
+                  content = prompt || "";
+                } else {
+                  Image = selectedurl || latestOutputs[node.id];
+                  content = prompt || "";
+                }
               }
+
               try {
                 setIsLoading(idNode, true);
                 const output = await axios.post(
                   "/api/ai/replicate/consistent-character",
                   {
-                    prompt: falCharacterTemplate[idNode]?.prompt,
+                    prompt: content,
                     userid: workflow.userId,
-                    subject: content,
+                    subject: Image,
                     num_outputs: falCharacterTemplate[idNode]?.num_outputs,
                     negative_prompt:
                       falCharacterTemplate[idNode]?.negative_prompt,
@@ -487,11 +578,14 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                       falCharacterTemplate[idNode]?.output_quality,
                   }
                 );
-                 nodeConnection.setOutput((prev: any) => ({
+                nodeConnection.setOutput((prev: any) => ({
                   ...prev,
                   ...(prev.output || {}),
                   [idNode]: {
-                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    image: [
+                      ...(prev.output?.[idNode]?.image || []),
+                      output.data[0],
+                    ],
                     text: [...(prev.output?.[idNode]?.text || [])],
                     video: [...(prev.output?.[idNode]?.video || [])],
                   },
@@ -539,26 +633,64 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               const edge = edgesArray.find((e: any) => e.target === idNode);
               const node = nodeArray.find((n: any) => n.id === edge.source);
               let content;
+              let Image;
+              let prompt = nodeConnection.imageToImageNode[idNode]?.prompt;
+              let ImageFromDb = nodeConnection.imageToImageNode[idNode]?.image_url;
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
                 const contentarr = output[node.id];
-                const prmpt = contentarr[contentarr.length - 1];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
+                const image = contentarr.image[contentarr.image.length - 1];
                 content = prmpt;
-                chatHistory.user = prmpt;
-                content = prmpt;
+                Image = image;
+
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", prmpt);
+                  } else {
+                    content = prmpt;
+                  }
+                }
+                if (ImageFromDb) {
+                  if (ImageFromDb.includes(":image:")) {
+                    content = ImageFromDb.replace(":image:", image);
+                  } else {
+                    Image = image;
+                  }
+                }
+
+                chatHistory.user = prmpt + " - " + Image;
               } else {
-                content = latestOutputs[node.id];
+                if (prompt && ImageFromDb) {
+                  if (ImageFromDb.includes(":image:") && selectedurl) {
+                    Image = ImageFromDb.replace(":image:", selectedurl);
+                  } else {
+                    Image = latestOutputs[node.id];
+                  }
+                  if (prompt.includes(":input:") && selectedurl) {
+                    content = prompt.replace(":input:", latestOutputs[node.id]);
+                  } else {
+                    content = prompt;
+                  }
+                } else if (!ImageFromDb && !selectedurl) {
+                  Image = latestOutputs[node.id];
+                  content = prompt || "";
+                } else {
+                  Image = selectedurl || latestOutputs[node.id];
+                  content = prompt || "";
+                }
               }
+
               try {
                 setIsLoading(idNode, true);
                 const output = await axios.post(
                   "/api/ai/replicate/dreamshaper",
                   {
-                    prompt: falDreamShaperTemplate[idNode].prompt,
+                    prompt: content,
                     userid: workflow.userId,
                     num_inference_steps:
                       falDreamShaperTemplate[idNode].num_inference_steps,
-                    image: content,
+                    image: Image,
                     negative_prompt:
                       falDreamShaperTemplate[idNode]?.negative_prompt,
                     strength: falDreamShaperTemplate[idNode]?.strength,
@@ -566,11 +698,14 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                     upscale: falDreamShaperTemplate[idNode]?.upscale,
                   }
                 );
-                 nodeConnection.setOutput((prev: any) => ({
+                nodeConnection.setOutput((prev: any) => ({
                   ...prev,
                   ...(prev.output || {}),
                   [idNode]: {
-                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    image: [
+                      ...(prev.output?.[idNode]?.image || []),
+                      output.data[0],
+                    ],
                     text: [...(prev.output?.[idNode]?.text || [])],
                     video: [...(prev.output?.[idNode]?.video || [])],
                   },
@@ -621,7 +756,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
                 const contentarr = output[node.id];
-                const prmpt = contentarr[contentarr.length - 1];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
                 content = prmpt;
                 chatHistory.user = prmpt;
                 content = prmpt;
@@ -642,11 +777,14 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   enable_safety_checker:
                     falGeneralTemplate[idNode]?.enable_safety_checker,
                 });
-                 nodeConnection.setOutput((prev: any) => ({
+                nodeConnection.setOutput((prev: any) => ({
                   ...prev,
                   ...(prev.output || {}),
                   [idNode]: {
-                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    image: [
+                      ...(prev.output?.[idNode]?.image || []),
+                      output.data[0],
+                    ],
                     text: [...(prev.output?.[idNode]?.text || [])],
                     video: [...(prev.output?.[idNode]?.video || [])],
                   },
@@ -695,7 +833,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
                 const contentarr = output[node.id];
-                const prmpt = contentarr[contentarr.length - 1];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
                 content = prmpt;
                 chatHistory.user = prmpt;
                 content = prmpt;
@@ -719,11 +857,14 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                       falDevLoraTemplate[idNode].num_inference_steps,
                   }
                 );
-                 nodeConnection.setOutput((prev: any) => ({
+                nodeConnection.setOutput((prev: any) => ({
                   ...prev,
                   ...(prev.output || {}),
                   [idNode]: {
-                    image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                    image: [
+                      ...(prev.output?.[idNode]?.image || []),
+                      output.data[0],
+                    ],
                     text: [...(prev.output?.[idNode]?.text || [])],
                     video: [...(prev.output?.[idNode]?.video || [])],
                   },
@@ -777,8 +918,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
                 const contentarr = output[node.id];
-                const prmpt = contentarr[contentarr.length - 1];
+                console.log("contentarr", contentarr);
+                const prmpt = contentarr.text[contentarr.text.length - 1];
                 content = prmpt;
+                console.log("df", prompt, "fd", prmpt);
                 if (prompt) {
                   if (prompt.includes(":input:")) {
                     content = prompt.replace(":input:", prmpt);
@@ -821,9 +964,8 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                       video: [...(prev.output?.[idNode]?.video || [])],
                     },
                   }));
-                  
+
                   latestOutputs[idNode] = response.data;
-                  
                 } catch (error) {
                   console.error("Error during OpenAI API call:", error);
                 } finally {
@@ -841,7 +983,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                     ...prev,
                     ...(prev.output || {}),
                     [idNode]: {
-                      image: [...(prev.output?.[idNode]?.image || []), output.data[0]],
+                      image: [
+                        ...(prev.output?.[idNode]?.image || []),
+                        output.data[0],
+                      ],
                       text: [...(prev.output?.[idNode]?.text || [])],
                       video: [...(prev.output?.[idNode]?.video || [])],
                     },

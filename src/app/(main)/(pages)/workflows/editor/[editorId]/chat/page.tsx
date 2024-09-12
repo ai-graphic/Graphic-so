@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { getworkflow } from "../_actions/workflow-connections";
 import { Button } from "@/components/ui/button";
-import { SendIcon, Settings, User } from "lucide-react";
+import { SendIcon, Settings, Upload, UploadIcon, User } from "lucide-react";
 import { useNodeConnections } from "@/providers/connections-providers";
 import { onContentChange } from "@/lib/editor-utils";
 import { toast } from "sonner";
@@ -41,7 +41,41 @@ const Chat = () => {
   const cardContentRef = useRef<HTMLDivElement>(null);
   const [flowPath, setflowPath] = useState<any>([]);
   const { credits, setCredits } = useBilling();
+  const [loading, setLoading] = useState(false);
+  const [selectedurl, setSelectedurl] = useState<string | null>();
+
+
   const { user } = useUser();
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLoading(true);
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        try {
+          const funcImage = async () => {
+            try {
+              const getImage = await axios.post("/api/upload", {
+                image: reader.result,
+              });
+              setSelectedurl(getImage.data);
+            } catch (error) {
+              toast.error("Error uploading image");
+            } finally {
+              setLoading(false);
+            }
+          };
+          funcImage();
+        } catch (error) {
+          toast.error("Error uploading image");
+          setLoading(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (cardContentRef.current) {
@@ -74,6 +108,7 @@ const Chat = () => {
         workflowId: workflow.id,
         prompt: message,
         userid: user?.id,
+        image : selectedurl
       });
       const data = response.data;
       if (data) {
@@ -200,44 +235,64 @@ const Chat = () => {
               </div>
             )}
           </CardContent>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (message) {
-                setRequestUpdate(true);
-              } else {
-                toast.error("Please enter a message");
-              }
-            }}
-            className="flex-none w-full p-3 flex gap-2 relative"
-          >
-            <Input
-              className="p-4 py-6 rounded-2xl w-full pr-12"
-              type="text"
-              disabled={load}
-              value={nodeConnection.triggerNode.triggerValue ?? message}
-              placeholder="Enter your message here ..."
-              onChange={(event) => {
-                const newValue = event.target.value;
-                setMessage(newValue);
-                onContentChange(
-                  state,
-                  nodeConnection,
-                  "Trigger",
-                  event,
-                  "triggerValue"
-                );
-                nodeConnection.triggerNode.triggerValue = newValue;
+          <div className="flex w-full p-3">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (message) {
+                  setRequestUpdate(true);
+                } else {
+                  toast.error("Please enter a message");
+                }
               }}
-            />
-            <Button
-              type="submit"
-              className="absolute right-5 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 "
-              disabled={!message || load}
+              className="flex-none w-full p-3 flex gap-2 relative"
             >
-              <SendIcon size={15} />
-            </Button>
-          </form>
+              <Input
+                className="p-4 py-6 rounded-2xl w-full pr-12"
+                type="text"
+                disabled={load}
+                value={nodeConnection.triggerNode.triggerValue ?? message}
+                placeholder="Enter your message here ..."
+                onChange={(event) => {
+                  const newValue = event.target.value;
+                  setMessage(newValue);
+                  onContentChange(
+                    state,
+                    nodeConnection,
+                    "Trigger",
+                    event,
+                    "triggerValue"
+                  );
+                  nodeConnection.triggerNode.triggerValue = newValue;
+                }}
+              />
+              <Button
+                type="submit"
+                className="absolute right-5 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 "
+                disabled={!message || load}
+              >
+                <SendIcon size={15} />
+              </Button>
+            </form>
+
+            <label className="cursor-pointer inline-block h-2 mt-4">
+              <Button className="border-2 px-2 py-1 rounded-lg" variant="outline" asChild>
+                {loading ? (
+                  <div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+                  </div>
+                ) : (
+                  <UploadIcon size={40}/>
+                )}
+              </Button>
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleFileChange}
+                accept="image/*"
+              />
+            </label>
+          </div>
         </div>
       ) : (
         <div className="flex items-center justify-center">

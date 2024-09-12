@@ -13,7 +13,7 @@ export type ConnectionProviderProps = {
   setisFlow: React.Dispatch<React.SetStateAction<any[]>>;
   setDiscordNode: React.Dispatch<React.SetStateAction<any>>;
   triggerNode: {
-    triggerType: string;
+    triggerImage: string;
     triggerValue: string;
   };
   setTriggerNode: React.Dispatch<React.SetStateAction<any>>;
@@ -248,7 +248,7 @@ const InitialValues: ConnectionProviderProps = {
     guildName: "",
   },
   triggerNode: {
-    triggerType: "",
+    triggerImage: "",
     triggerValue: "",
   },
   googleNode: [],

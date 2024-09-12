@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { getworkflow } from "../_actions/workflow-connections";
 import { Button } from "@/components/ui/button";
-import { SendIcon } from "lucide-react";
+import { SendIcon, UploadIcon } from "lucide-react";
 import { useWorkflow } from "@/providers/workflow-providers";
 import { useNodeConnections } from "@/providers/connections-providers";
 import { useLoading } from "@/providers/loading-provider";
@@ -108,7 +108,8 @@ const Chat = () => {
       setIsLoading,
       credits,
       setCredits,
-      setHistory
+      setHistory,
+      selectedurl ? selectedurl : ""
     );
     setMessage("");
     nodeConnection.triggerNode.triggerValue = "";
@@ -126,17 +127,18 @@ const Chat = () => {
 
   useEffect(() => {
     if (requestUpdate) {
-      nodeConnection.setOutput((prev: any) => {
-        const newState = {
-          ...prev,
-          ...(prev.output || {}),
-          [nodeId ?? ""]: [
-            ...(prev.output?.[nodeId ?? ""] || []),
+      nodeConnection.setOutput((prev: any) => ({
+        ...prev,
+        ...(prev.output || {}),
+        [nodeId]: {
+          image: [...(prev.output?.[nodeId]?.image || []), selectedurl],
+          text: [
+            ...(prev.output?.[nodeId]?.text || []),
             nodeConnection.triggerNode.triggerValue,
           ],
-        };
-        return newState;
-      });
+          video: [...(prev.output?.[nodeId]?.video || [])],
+        },
+      }));
       setIsUpdated(true);
       setRequestUpdate(false);
     }
@@ -195,45 +197,47 @@ const Chat = () => {
               </div>
             )}
           </CardContent>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (message) {
-                setRequestUpdate(true);
-              } else {
-                toast.error("Please enter a message");
-              }
-            }}
-            className="flex-none w-full p-3 flex gap-2 relative"
-          >
-            <Input
-              className="p-4 py-6 rounded-2xl w-full pr-12"
-              type="text"
-              disabled={load}
-              value={nodeConnection.triggerNode.triggerValue ?? message}
-              placeholder="Enter your message here ..."
-              onChange={(event) => {
-                const newValue = event.target.value;
-                setMessage(newValue);
-                onContentChange(
-                  state,
-                  nodeConnection,
-                  "Trigger",
-                  event,
-                  "triggerValue"
-                );
-                nodeConnection.triggerNode.triggerValue = newValue;
+          <div className="flex w-full p-3">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (message) {
+                  setRequestUpdate(true);
+                } else {
+                  toast.error("Please enter a message");
+                }
               }}
-            />
-            <div>
-              <label className="cursor-pointer inline-block">
-                <Button asChild>
-                  {loading ? (
+              className="flex-none w-full p-3 flex gap-2 relative"
+            >
+              <Input
+                className="p-4 py-6 rounded-2xl w-full pr-12"
+                type="text"
+                disabled={load}
+                value={nodeConnection.triggerNode.triggerValue ?? message}
+                placeholder="Enter your message here ..."
+                onChange={(event) => {
+                  const newValue = event.target.value;
+                  setMessage(newValue);
+                  onContentChange(
+                    state,
+                    nodeConnection,
+                    "Trigger",
+                    event,
+                    "triggerValue"
+                  );
+                  nodeConnection.triggerNode.triggerValue = newValue;
+                }}
+              />
+              <label className="absolute right-14 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 ">
+                <Button className="border-2 px-2 py-1 rounded-lg" variant="outline" asChild>
+                {loading ? (
+                  <div>
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-                  ) : (
-                    <span>Upload</span>
-                  )}
-                </Button>
+                  </div>
+                ) : (
+                  <UploadIcon size={40}/>
+                )}
+              </Button>
                 <input
                   type="file"
                   className="hidden"
@@ -241,15 +245,16 @@ const Chat = () => {
                   accept="image/*"
                 />
               </label>
-            </div>
-            <Button
-              type="submit"
-              className="absolute right-5 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 "
-              disabled={!message || load}
-            >
-              <SendIcon size={15} />
-            </Button>
-          </form>
+
+              <Button
+                type="submit"
+                className="absolute z-1000 right-5 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 "
+                disabled={!message || load}
+              >
+                <SendIcon size={15} />
+              </Button>
+            </form>
+          </div>
         </div>
       ) : (
         <div className="flex items-center justify-center">

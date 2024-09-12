@@ -7,8 +7,7 @@ import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/sl
 import { onUpdateChatHistory } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
 import { getworkflow } from "@/app/(main)/(pages)/workflows/editor/[editorId]/_actions/workflow-connections";
 import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
 export async function POST(req: Request, res: Response) {
   type LatestOutputsType = {
@@ -18,7 +17,7 @@ export async function POST(req: Request, res: Response) {
   let latestOutputs: LatestOutputsType = {};
 
   try {
-    const { workflowId, prompt, userid } = await req.json();
+    const { workflowId, prompt, userid, image } = await req.json();
     let workflow = await getworkflow(workflowId);
     console.log("workflow", workflowId, workflow);
 
@@ -321,20 +320,58 @@ export async function POST(req: Request, res: Response) {
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
             let content;
+            let Image;
+            let prompt = falImageTemplate[idNode]?.prompt;
+            let ImageFromDb = falImageTemplate[idNode]?.image_url;
+            console.log("Selected URL:", image, ImageFromDb);
             if (node.type === "Trigger") {
               const prmpt = prompt;
-              chatHistory.user = prmpt;
               content = prmpt;
+              Image = image;
+              if (prompt) {
+                if (prompt.includes(":input:")) {
+                  content = prompt.replace(":input:", prmpt);
+                } else {
+                  content = prmpt;
+                }
+              }
+              if (ImageFromDb) {
+                if (ImageFromDb.includes(":image:")) {
+                  content = ImageFromDb.replace(":image:", image);
+                } else {
+                  Image = image;
+                }
+              }
+
+              chatHistory.user = prmpt + " - " + Image;
             } else {
-              content = latestOutputs[node.id];
+              if (prompt && ImageFromDb) {
+                if (ImageFromDb.includes(":image:") && image) {
+                  Image = ImageFromDb.replace(":image:", image);
+                } else {
+                  Image = latestOutputs[node.id];
+                }
+                if (prompt.includes(":input:") && image) {
+                  content = prompt.replace(":input:", latestOutputs[node.id]);
+                } else {
+                  content = prompt;
+                }
+              } else if (!ImageFromDb && !image) {
+                Image = latestOutputs[node.id];
+                content = prompt || "";
+              } else {
+                Image = image || latestOutputs[node.id];
+                content = prompt || "";
+              }
             }
+
             try {
               const output = await axios.post(
                 `${process.env.NEXT_PUBLIC_URL}/api/ai/fal/image-to-image`,
                 {
-                  prompt: falImageTemplate[idNode].prompt,
+                  prompt: content,
                   image_size: falImageTemplate[idNode].image_size,
-                  image_url: content,
+                  image_url: Image,
                   userid: userid,
                   num_inference_steps:
                     falImageTemplate[idNode].num_inference_steps,
@@ -422,20 +459,57 @@ export async function POST(req: Request, res: Response) {
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
             let content;
+            let Image;
+            let prompt = falCharacterTemplate[idNode]?.prompt;
+            let ImageFromDb = falCharacterTemplate[idNode]?.image_url;
+            console.log("Selected URL:", image, ImageFromDb);
             if (node.type === "Trigger") {
               const prmpt = prompt;
-              chatHistory.user = prmpt;
               content = prmpt;
+              Image = image;
+              if (prompt) {
+                if (prompt.includes(":input:")) {
+                  content = prompt.replace(":input:", prmpt);
+                } else {
+                  content = prmpt;
+                }
+              }
+              if (ImageFromDb) {
+                if (ImageFromDb.includes(":image:")) {
+                  content = ImageFromDb.replace(":image:", image);
+                } else {
+                  Image = image;
+                }
+              }
+
+              chatHistory.user = prmpt + " - " + Image;
             } else {
-              content = latestOutputs[node.id];
+              if (prompt && ImageFromDb) {
+                if (ImageFromDb.includes(":image:") && image) {
+                  Image = ImageFromDb.replace(":image:", image);
+                } else {
+                  Image = latestOutputs[node.id];
+                }
+                if (prompt.includes(":input:") && image) {
+                  content = prompt.replace(":input:", latestOutputs[node.id]);
+                } else {
+                  content = prompt;
+                }
+              } else if (!ImageFromDb && !image) {
+                Image = latestOutputs[node.id];
+                content = prompt || "";
+              } else {
+                Image = image || latestOutputs[node.id];
+                content = prompt || "";
+              }
             }
             try {
               const output = await axios.post(
                 `${process.env.NEXT_PUBLIC_URL}/api/ai/replicate/consistent-character`,
                 {
-                  prompt: falCharacterTemplate[idNode]?.prompt,
+                  prompt: content,
                   userid: userid,
-                  subject: content,
+                  subject: Image,
                   num_outputs: falCharacterTemplate[idNode]?.num_outputs,
                   negative_prompt:
                     falCharacterTemplate[idNode]?.negative_prompt,
@@ -482,22 +556,59 @@ export async function POST(req: Request, res: Response) {
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
             let content;
+            let Image;
+            let prompt = falDreamShaperTemplate[idNode]?.prompt;
+            let ImageFromDb = falDreamShaperTemplate[idNode]?.image_url;
+            console.log("Selected URL:", image, ImageFromDb);
             if (node.type === "Trigger") {
               const prmpt = prompt;
-              chatHistory.user = prmpt;
               content = prmpt;
+              Image = image;
+              if (prompt) {
+                if (prompt.includes(":input:")) {
+                  content = prompt.replace(":input:", prmpt);
+                } else {
+                  content = prmpt;
+                }
+              }
+              if (ImageFromDb) {
+                if (ImageFromDb.includes(":image:")) {
+                  content = ImageFromDb.replace(":image:", image);
+                } else {
+                  Image = image;
+                }
+              }
+
+              chatHistory.user = prmpt + " - " + Image;
             } else {
-              content = latestOutputs[node.id];
+              if (prompt && ImageFromDb) {
+                if (ImageFromDb.includes(":image:") && image) {
+                  Image = ImageFromDb.replace(":image:", image);
+                } else {
+                  Image = latestOutputs[node.id];
+                }
+                if (prompt.includes(":input:") && image) {
+                  content = prompt.replace(":input:", latestOutputs[node.id]);
+                } else {
+                  content = prompt;
+                }
+              } else if (!ImageFromDb && !image) {
+                Image = latestOutputs[node.id];
+                content = prompt || "";
+              } else {
+                Image = image || latestOutputs[node.id];
+                content = prompt || "";
+              }
             }
             try {
               const output = await axios.post(
                 `${process.env.NEXT_PUBLIC_URL}/api/ai/replicate/dreamshaper`,
                 {
-                  prompt: falDreamShaperTemplate[idNode].prompt,
+                  prompt: content,
                   userid: userid,
                   num_inference_steps:
                     falDreamShaperTemplate[idNode].num_inference_steps,
-                  image: content,
+                  image: Image,
                   negative_prompt:
                     falDreamShaperTemplate[idNode]?.negative_prompt,
                   strength: falDreamShaperTemplate[idNode]?.strength,
