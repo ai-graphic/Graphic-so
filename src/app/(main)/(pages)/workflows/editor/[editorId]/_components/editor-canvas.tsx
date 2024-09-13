@@ -8,7 +8,6 @@ import ReactFlow, {
   Controls,
   Edge,
   EdgeChange,
-  MiniMap,
   NodeChange,
   ReactFlowInstance,
   applyNodeChanges,
@@ -35,7 +34,7 @@ const initialNodes: EditorNodeType[] = [];
 
 const initialEdges: { id: string; source: string; target: string }[] = [];
 
-const EditorCanvas = (workflow : any, setworkflow: any, ) => {
+const EditorCanvas = (workflow: any, setworkflow: any) => {
   const { dispatch, state } = useEditor();
   const [nodes, setNodes] = useState(initialNodes);
   const { nodeConnection } = useNodeConnections();
@@ -47,6 +46,19 @@ const EditorCanvas = (workflow : any, setworkflow: any, ) => {
   const pathname = usePathname();
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const nodes = JSON.parse(workflow.workflow?.nodes);
+    const chatNode = nodes.find((node: any) => node.type === "Chat");
+    if (chatNode) {
+      dispatch({
+        type: "SELECTED_ELEMENT",
+        payload: {
+          element: chatNode,
+        },
+      });
+    }
+  }, []);
 
   useEffect(() => {
     setIsMobile(window.innerWidth);
