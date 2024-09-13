@@ -23,7 +23,7 @@ import { onPaymentDetails } from "@/app/(main)/(pages)/billing/_actions/payment-
 type Props = {};
 const MenuOptions = (props: Props) => {
   const pathName = usePathname();
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(pathName.includes("chat") ? false:  true);
   const isControllable = pathName.includes("editor");
   const { credits, tier, setCredits, setTier } = useBilling();
 
@@ -49,7 +49,7 @@ const MenuOptions = (props: Props) => {
   };
 
   return (
-    <div className="relative">
+    <div className={pathName.includes("chat") ? "absolute top-0 left-0 z-10" : "relative"}>
       {!isVisible && isControllable ? (
         <Button
           variant="outline"

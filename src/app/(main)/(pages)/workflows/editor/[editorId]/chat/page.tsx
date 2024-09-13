@@ -6,7 +6,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { getworkflow } from "../_actions/workflow-connections";
 import { Button } from "@/components/ui/button";
-import { SendIcon, Settings, Upload, UploadIcon, User } from "lucide-react";
+import {
+  BotIcon,
+  SendIcon,
+  UploadIcon,
+} from "lucide-react";
 import { useNodeConnections } from "@/providers/connections-providers";
 import { onContentChange } from "@/lib/editor-utils";
 import { toast } from "sonner";
@@ -15,12 +19,10 @@ import { useUser } from "@clerk/nextjs";
 import { useBilling } from "@/providers/billing-provider";
 import { onPaymentDetails } from "@/app/(main)/(pages)/billing/_actions/payment-connections";
 import {
-  Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import DublicateWorkflow from "@/components/forms/dublicate-forms";
 
@@ -43,7 +45,6 @@ const Chat = () => {
   const { credits, setCredits } = useBilling();
   const [loading, setLoading] = useState(false);
   const [selectedurl, setSelectedurl] = useState<string | null>();
-
 
   const { user } = useUser();
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,7 +109,7 @@ const Chat = () => {
         workflowId: workflow.id,
         prompt: message,
         userid: user?.id,
-        image : selectedurl
+        image: selectedurl,
       });
       const data = response.data;
       if (data) {
@@ -156,28 +157,24 @@ const Chat = () => {
   }, [requestUpdate, nodeConnection, nodeId]);
 
   return (
-    <div className="h-[95vh] relative">
-      <Sheet>
-        <SheetTrigger className="absolute text-gray-400 hover:text-black dark:hover:text-white top-0 right-0">
-          <Settings />
-        </SheetTrigger>
-        <SheetContent className="w-[400px] sm:w-[540px]">
-          <SheetHeader>
-            <SheetTitle>Dublicate this Workflow?</SheetTitle>
-            <SheetDescription className="flex flex-col gap-2 w-full">
-              You can dublicate this workflow by clicking the button below.
-              <DublicateWorkflow id={pathname.split("/").slice(-2, -1)[0]} />
-            </SheetDescription>
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
-      {workflow?.name ? (
-        <div className="flex flex-col w-full h-full items-center justify-between">
-          <CardHeader className="flex flex-col justify-center items-center">
-            <CardTitle className="text-md border-b-2">
-              Chat with {workflow?.name ? workflow.name : "Workflow"}
-            </CardTitle>
-            <div className="flex gap-2 justify-center items-center text-sm">
+    <>
+      <SheetContent className="w-[400px] sm:w-[540px]">
+        <SheetHeader>
+          <SheetTitle>Dublicate this Workflow?</SheetTitle>
+          <SheetDescription className="flex flex-col gap-2 w-full">
+            You can dublicate this workflow by clicking the button below.
+            <DublicateWorkflow id={pathname.split("/").slice(-2, -1)[0]} />
+          </SheetDescription>
+        </SheetHeader>
+      </SheetContent>
+      <div className="h-screen w-[95vh] pt-3 max-md:w-full relative">
+        {workflow?.name ? (
+          <div className="flex flex-col w-full h-full items-center justify-between">
+            <CardHeader className="flex flex-col text-center">
+              <CardTitle className="text-2xl px-8">
+                {workflow?.name ? workflow.name : "Workflow"}
+              </CardTitle>
+              {/* <div className="flex gap-2 justify-center items-center text-sm">
               workflow path:
               <div className="flex flex-wrap gap-2 ">
                 {flowPath?.map(
@@ -189,117 +186,123 @@ const Chat = () => {
                     )
                 )}
               </div>
-            </div>
-            <p className="text-sm">{workflow.description}</p>
-          </CardHeader>
-          <CardContent
-            ref={cardContentRef}
-            className="flex flex-col w-full h-full p-4 gap-2 overflow-scroll"
-          >
-            {history.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full">
-                <img src="/ai.png" alt="Logo" className="w-20 h-20 mb-4" />
-                <p className="text-lg">How can I help you today?</p>
-              </div>
-            ) : (
-              history.map((item, index) => (
-                <div key={index} className="flex flex-col gap-2">
-                  <div className="flex justify-end">
-                    <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 bg-gray-700   max-w-xs">
-                      <p>{item.user}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-start">
-                    <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
-                      {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(item.bot) ? (
-                        <img src={item.bot} width={200} alt="bot" />
-                      ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(item.bot) ? (
-                        <video
-                          src={item.bot}
-                          controls
-                          width="320"
-                          height="240"
-                        />
-                      ) : (
-                        <p>{item.bot}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-            {load && (
-              <div className="flex items-start justify-start">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-              </div>
-            )}
-          </CardContent>
-          <div className="flex w-full p-3">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (message) {
-                  setRequestUpdate(true);
-                } else {
-                  toast.error("Please enter a message");
-                }
-              }}
-              className="flex-none w-full p-3 flex gap-2 relative"
+            </div> */}
+              <p className="text-sm">{workflow.description}</p>
+            </CardHeader>
+            <CardContent
+              ref={cardContentRef}
+              className="flex flex-col w-full h-full p-4 gap-2 overflow-scroll"
             >
-              <Input
-                className="p-4 py-6 rounded-2xl w-full pr-12"
-                type="text"
-                disabled={load}
-                value={nodeConnection.triggerNode.triggerValue ?? message}
-                placeholder="Enter your message here ..."
-                onChange={(event) => {
-                  const newValue = event.target.value;
-                  setMessage(newValue);
-                  onContentChange(
-                    state,
-                    nodeConnection,
-                    "Trigger",
-                    event,
-                    "triggerValue"
-                  );
-                  nodeConnection.triggerNode.triggerValue = newValue;
-                }}
-              />
-              <Button
-                type="submit"
-                className="absolute right-5 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 "
-                disabled={!message || load}
-              >
-                <SendIcon size={15} />
-              </Button>
-            </form>
+              {history.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full">
+                  <BotIcon size={30} />
+                  <p className="text-lg">How can I help you today?</p>
+                </div>
+              ) : (
+                history.map((item, index) => (
+                  <div key={index} className="flex flex-col gap-2">
+                    <div className="flex justify-end">
+                      <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 bg-gray-700   max-w-xs">
+                        <p>{item.user}</p>
+                      </div>
+                    </div>
 
-            <label className="cursor-pointer inline-block h-2 mt-4">
-              <Button className="border-2 px-2 py-1 rounded-lg" variant="outline" asChild>
-                {loading ? (
-                  <div>
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+                    <div className="flex justify-start">
+                      <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
+                        {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(
+                          item.bot
+                        ) ? (
+                          <img src={item.bot} width={500} alt="bot" />
+                        ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(item.bot) ? (
+                          <video
+                            src={item.bot}
+                            controls
+                            width="320"
+                            height="240"
+                          />
+                        ) : (
+                          <p>{item.bot}</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  <UploadIcon size={40}/>
-                )}
-              </Button>
-              <input
-                type="file"
-                className="hidden"
-                onChange={handleFileChange}
-                accept="image/*"
-              />
-            </label>
+                ))
+              )}
+              {load && (
+                <div className="flex items-start justify-start">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+                </div>
+              )}
+            </CardContent>
+            <div className="flex w-full p-3">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (message) {
+                    setRequestUpdate(true);
+                  } else {
+                    toast.error("Please enter a message");
+                  }
+                }}
+                className="flex-none w-full p-3 flex gap-2 relative"
+              >
+                <Input
+                  className="p-4 py-6 rounded-2xl w-full pr-12"
+                  type="text"
+                  disabled={load}
+                  value={nodeConnection.triggerNode.triggerValue ?? message}
+                  placeholder="Enter your message here ..."
+                  onChange={(event) => {
+                    const newValue = event.target.value;
+                    setMessage(newValue);
+                    onContentChange(
+                      state,
+                      nodeConnection,
+                      "Trigger",
+                      event,
+                      "triggerValue"
+                    );
+                    nodeConnection.triggerNode.triggerValue = newValue;
+                  }}
+                />
+                <label className="absolute right-14 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 ">
+                  <Button
+                    className="border-2 px-2 py-1 rounded-lg"
+                    variant="outline"
+                    asChild
+                  >
+                    {loading ? (
+                      <div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+                      </div>
+                    ) : (
+                      <UploadIcon size={40} />
+                    )}
+                  </Button>
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    accept="image/*"
+                  />
+                </label>
+                <Button
+                  type="submit"
+                  className="absolute right-5 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 "
+                  disabled={!message || load}
+                >
+                  <SendIcon size={15} />
+                </Button>
+              </form>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-        </div>
-      )}
-    </div>
+        ) : (
+          <div className="flex h-screen items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
