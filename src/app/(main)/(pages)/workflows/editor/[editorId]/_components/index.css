@@ -1,0 +1,116 @@
+.react-flow {
+  --bg-color: rgb(17, 17, 17);
+  --text-color: rgb(243, 244, 246);
+  --node-border-radius: 20px;
+  --node-box-shadow: 10px 0 15px rgba(42, 138, 246, 0.3),
+    -10px 0 15px rgba(233, 42, 103, 0.3);
+}
+
+.react-flow__node-turbo {
+  --bg-color: rgb(17, 17, 17);
+  --text-color: rgb(243, 244, 246);
+  --node-border-radius: 10px;
+  --node-box-shadow: 10px 0 15px rgba(42, 138, 246, 0.3),
+    -10px 0 15px rgba(233, 42, 103, 0.3);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border-radius: var(--node-border-radius);
+  display: flex;
+  min-width: 150px;
+  font-family: "Fira Mono", Monospace;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  box-shadow: var(--node-box-shadow);
+  position: relative;
+  height: auto;
+}
+
+.react-flow__node-turbo:hover {
+  border: 2px solid #95679e;
+}
+
+.react-flow__node-turbo.selected {
+  position: relative; 
+}
+
+.react-flow__node-turbo.selected::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border: 5px solid transparent;
+  border-radius: inherit; 
+  animation: bg-spin 4s linear infinite;
+  --border-angle: 0turn;
+  background: conic-gradient(
+    from var(--border-angle),
+    #08f 25%,
+    #f03 50%,
+    #08f 75%,
+    #f03 100%
+  );
+  background-clip: border-box;
+  z-index: -1; 
+}
+
+@keyframes bg-spin {
+  to {
+    --border-angle: 1turn;
+  }
+}
+
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0turn;
+}
+
+.react-flow__handle {
+  opacity: 4;
+}
+
+.react-flow__controls button {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid #95679e;
+  border-bottom: none;
+}
+
+.react-flow__controls button:hover {
+  background-color: rgb(37, 37, 37);
+}
+
+.react-flow__controls button:first-child {
+  border-radius: 5px 5px 0 0;
+}
+
+.react-flow__controls button:last-child {
+  border-bottom: 1px solid #95679e;
+  border-radius: 0 0 5px 5px;
+}
+
+.react-flow__controls button path {
+  fill: var(--text-color);
+}
+
+.react-flow__attribution {
+  background: rgba(200, 200, 200, 0.2);
+}
+
+.react-flow__attribution a {
+  color: #95679e;
+}
+
+@keyframes borderAnimation {
+  0% {
+    border-color: #663e6e;
+  }
+  50% {
+    border-color: #95679e;
+  }
+  100% {
+    border-color: #663e6e;
+  }
+}

@@ -390,14 +390,14 @@ const Page = (props: Props) => {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center gap-3">
+      <div className="h-screen flex items-center justify-center gap-3">
         <p className="text-xl font-semibold">Setting Up your Workflow...</p>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
       </div>
     );
   }
   return (
-    <div className="h-full">
+    <div className="h-screen">
       {show ? (
         <WorkflowProvider>
           <LoadingProvider>

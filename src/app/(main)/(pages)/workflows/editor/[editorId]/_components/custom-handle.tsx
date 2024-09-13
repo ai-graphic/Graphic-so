@@ -31,7 +31,7 @@ const CustomHandle = (props: Props) => {
         if (sourceNode?.type === "Condition") return true;
         return true;
       }}
-      className="!-bottom-2 !h-4 !w-4 dark:bg-neutral-800"
+      className="!-bottom-2 !h-3 !w-3 dark:bg-neutral-800"
     />
   );
 };

@@ -1,7 +1,7 @@
 "use client";
 import { EditorCanvasCardType, EditorNodeType } from "@/lib/types";
 import { useEditor } from "@/providers/editor-provider";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
   Background,
   Connection,
@@ -12,8 +12,12 @@ import {
   ReactFlowInstance,
   applyNodeChanges,
   applyEdgeChanges,
-  addEdge,
   ReactFlow,
+  MarkerType,
+  reconnectEdge,
+  addEdge,
+  useNodesState,
+  useEdgesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { MenuIcon } from "lucide-react";
@@ -30,6 +34,7 @@ import { EditorCanvasDefaultCardTypes } from "@/lib/constants";
 import EditorCanvasSidebar from "./editor-canvas-sidebar";
 import { onGetNodesEdges } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
 import { useNodeConnections } from "@/providers/connections-providers";
+import "./index.css"
 
 const initialNodes: EditorNodeType[] = [];
 
@@ -90,8 +95,25 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
     [setEdges]
   );
 
+
   const onConnect = useCallback(
-    (params: Edge | Connection) => setEdges((eds) => addEdge(params, eds)),
+    (params: Edge | Connection) => {
+      const newEdge = {
+        ...params,
+        id: `${params.source}->${params.target}`,
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: 20,
+          height: 20,
+          color: '#95679e',
+        },
+        style: {
+          strokeWidth: 2,
+          stroke: '#95679e',
+        },
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
+    },
     []
   );
 
@@ -256,6 +278,25 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
     onGetWorkFlow();
   }, []);
 
+    const edgeReconnectSuccessful = useRef(true);
+
+    const onReconnectStart = useCallback(() => {
+      edgeReconnectSuccessful.current = false;
+    }, []);
+  
+    const onReconnect = useCallback((oldEdge: Edge, newConnection: Connection) => {
+      edgeReconnectSuccessful.current = true;
+      setEdges((els) => reconnectEdge(oldEdge, newConnection, els));
+    }, []);
+
+    
+    const onReconnectEnd = useCallback((_: any, edge: Edge) => {
+      if (!edgeReconnectSuccessful.current) {
+        setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+      }
+  
+      edgeReconnectSuccessful.current = true;
+    }, []);
 
   return (
     <ResizablePanelGroup direction="horizontal">
@@ -298,6 +339,10 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
                 onClick={handleClickCanvas}
                 fitView={nodes?.length === 1}
                 nodeTypes={nodeTypes}
+                snapToGrid
+      onReconnect={onReconnect}
+      onReconnectStart={onReconnectStart}
+      onReconnectEnd={onReconnectEnd}
               >
                 <Background
                   //@ts-ignore
