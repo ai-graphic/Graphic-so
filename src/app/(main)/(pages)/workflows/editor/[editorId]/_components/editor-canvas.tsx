@@ -2,7 +2,7 @@
 import { EditorCanvasCardType, EditorNodeType } from "@/lib/types";
 import { useEditor } from "@/providers/editor-provider";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import ReactFlow, {
+import {
   Background,
   Connection,
   Controls,
@@ -13,9 +13,10 @@ import ReactFlow, {
   applyNodeChanges,
   applyEdgeChanges,
   addEdge,
-} from "reactflow";
+  ReactFlow,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import { MenuIcon } from "lucide-react";
-import "reactflow/dist/style.css";
 import EditorCanvasCardSingle from "./editor-canvas-card-single";
 import {
   ResizableHandle,
@@ -23,7 +24,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { toast } from "sonner";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { v4 } from "uuid";
 import { EditorCanvasDefaultCardTypes } from "@/lib/constants";
 import EditorCanvasSidebar from "./editor-canvas-sidebar";
@@ -33,6 +34,7 @@ import { useNodeConnections } from "@/providers/connections-providers";
 const initialNodes: EditorNodeType[] = [];
 
 const initialEdges: { id: string; source: string; target: string }[] = [];
+
 
 const EditorCanvas = (workflow: any, setworkflow: any) => {
   const { dispatch, state } = useEditor();
@@ -49,7 +51,7 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
 
   useEffect(() => {
     const nodes = JSON.parse(workflow.workflow?.nodes);
-    const chatNode = nodes.find((node: any) => node.type === "Chat");
+    const chatNode = nodes?.find((node: any) => node.type === "Chat");
     if (chatNode) {
       dispatch({
         type: "SELECTED_ELEMENT",
@@ -254,6 +256,7 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
     onGetWorkFlow();
   }, []);
 
+
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={70}>
@@ -296,18 +299,40 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
                 fitView={nodes?.length === 1}
                 nodeTypes={nodeTypes}
               >
-                {isMobile < 726 ? (
-                  <Controls position="bottom-right" />
-                ) : (
-                  <Controls position="top-right" />
-                )}   
-
                 <Background
                   //@ts-ignore
                   variant="dots"
                   gap={30}
                   size={1}
                 />
+                <Controls showInteractive={false} />
+                <svg>
+                  <defs>
+                    <linearGradient id="edge-gradient">
+                      <stop offset="0%" stopColor="#ae53ba" />
+                      <stop offset="100%" stopColor="#2a8af6" />
+                    </linearGradient>
+
+                    <marker
+                      id="edge-circle"
+                      viewBox="-5 -5 10 10"
+                      refX="0"
+                      refY="0"
+                      markerUnits="strokeWidth"
+                      markerWidth="10"
+                      markerHeight="10"
+                      orient="auto"
+                    >
+                      <circle
+                        stroke="#2a8af6"
+                        strokeOpacity="0.75"
+                        r="2"
+                        cx="0"
+                        cy="0"
+                      />
+                    </marker>
+                  </defs>
+                </svg>
               </ReactFlow>
             )}
           </div>

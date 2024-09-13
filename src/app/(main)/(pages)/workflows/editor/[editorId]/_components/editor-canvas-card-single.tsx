@@ -1,7 +1,7 @@
 import { EditorCanvasCardType } from "@/lib/types";
 import { useEditor } from "@/providers/editor-provider";
 import React, { use, useEffect, useMemo, useState } from "react";
-import { Position, SelectionMode, useNodeId } from "reactflow";
+import { Position, SelectionMode, useNodeId } from "@xyflow/react";
 import EditorCanvasIconHelper from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/editor-canvas-icon-helper";
 import CustomHandle from "./custom-handle";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,7 @@ import { useLoading } from "@/providers/loading-provider";
 import { Input } from "@/components/ui/input";
 import { onContentChange } from "@/lib/editor-utils";
 import { Button } from "@/components/ui/button";
-import { MousePointerClickIcon } from "lucide-react";
+import { Icon, MousePointerClickIcon, TableRowsSplitIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useWorkflow } from "@/providers/workflow-providers";
 import { useBilling } from "@/providers/billing-provider";

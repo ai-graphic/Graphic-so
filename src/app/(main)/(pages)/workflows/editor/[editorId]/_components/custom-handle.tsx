@@ -1,6 +1,6 @@
 import { useEditor } from "@/providers/editor-provider";
 import React, { CSSProperties } from "react";
-import { Handle, HandleProps, useStore } from "reactflow";
+import { Handle, HandleProps, useStore } from "@xyflow/react";
 
 type Props = HandleProps & { style?: CSSProperties };
 

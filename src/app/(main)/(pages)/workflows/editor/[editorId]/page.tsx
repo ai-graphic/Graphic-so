@@ -11,7 +11,7 @@ import { getworkflow } from "./_actions/workflow-connections";
 import { usePathname, useRouter } from "next/navigation"; // Updated import
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import FluxLora from "./_components/nodes/FluxLora";
+
 
 type Props = {};
 const Page = (props: Props) => {
@@ -275,7 +275,10 @@ const Page = (props: Props) => {
             }
           });
         }
-        {workflow?.fluxloraTemplate} {
+        {
+          workflow?.fluxloraTemplate;
+        }
+        {
           const fluxlora = workflow?.fluxloraTemplate
             ? JSON.parse(workflow.fluxloraTemplate)
             : {};
@@ -311,7 +314,6 @@ const Page = (props: Props) => {
               };
             }
           });
-
         }
 
         if (workflow?.AiTemplate) {
