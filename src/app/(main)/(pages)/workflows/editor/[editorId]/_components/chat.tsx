@@ -6,7 +6,15 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { getworkflow } from "../_actions/workflow-connections";
 import { Button } from "@/components/ui/button";
-import { SendIcon, UploadIcon } from "lucide-react";
+import {
+  BotIcon,
+  ExpandIcon,
+  History,
+  HistoryIcon,
+  SendIcon,
+  UploadIcon,
+  UserCircle,
+} from "lucide-react";
 import { useWorkflow } from "@/providers/workflow-providers";
 import { useNodeConnections } from "@/providers/connections-providers";
 import { useLoading } from "@/providers/loading-provider";
@@ -14,10 +22,21 @@ import { onContentChange } from "@/lib/editor-utils";
 import { toast } from "sonner";
 import { useBilling } from "@/providers/billing-provider";
 import axios from "axios";
+import { userAgent } from "next/server";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { UserButton } from "@clerk/nextjs";
 
 interface ChatHistoryItem {
   user: string;
   bot: string;
+  history: string[];
 }
 
 const Chat = () => {
@@ -34,6 +53,7 @@ const Chat = () => {
   const { credits, setCredits } = useBilling();
   const [loading, setLoading] = useState(false);
   const [selectedurl, setSelectedurl] = useState<string | null>();
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const cardContentRef = useRef<HTMLDivElement>(null);
 
@@ -165,34 +185,110 @@ const Chat = () => {
             ) : (
               history.map((item, index) => (
                 <div key={index} className="flex flex-col gap-2">
-                  <div className="flex justify-end">
-                    <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 bg-gray-700   max-w-xs">
-                      <p>{item.user}</p>
+                  {item.user && (
+                    <div className="flex justify-end">
+                      <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 bg-gray-700   max-w-xs">
+                        <p>{item.user}</p>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="flex justify-start">
-                  <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
-                      {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(item.bot) ? (
-                        <img src={item.bot} width={200} alt="bot" />
-                      ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(item.bot) ? (
-                        <video
-                          src={item.bot}
-                          controls
-                          width="320"
-                          height="240"
-                          autoPlay
-                        />
-                      ) : /https?:\/\/.*\.(?:mp3)/.test(item.bot) ? (
-                        <audio
-                          src={item.bot}
-                          controls
-                        />
-                      ) : (
-                        <p>{item.bot}</p>
-                      )}
+                  {item.bot && (
+                    <div className="flex justify-start items-end">
+                      <div className="relative p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
+                        {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(
+                          item.bot
+                        ) ? (
+                          <img src={item.bot} width={200} alt="bot" />
+                        ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(item.bot) ? (
+                          <video
+                            src={item.bot}
+                            controls
+                            width="320"
+                            height="240"
+                            autoPlay
+                          />
+                        ) : /https?:\/\/.*\.(?:mp3)/.test(item.bot) ? (
+                          <audio src={item.bot} controls />
+                        ) : (
+                          <p>{item.bot}</p>
+                        )}
+                        {item.user && (
+                          <Dialog>
+                            <DialogTrigger className="bg-[#0A0A0A] dark:text-gray-600 dark:hover:text-blue-400 p-2 m-1 rounded-l-xl rounded-b-none absolute bottom-0 right-0">
+                              <HistoryIcon size={20} />
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Workflow History</DialogTitle>
+                                <DialogDescription>
+                                  <div className="mt-2 p-2 h-[80vh] overflow-scroll border-t border-gray-300">
+                                    <div className="mb-4 flex gap-2 ">
+                                      <strong>
+                                        <UserButton />
+                                      </strong>{" "}
+                                      <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 ">
+                                        {item.user}
+                                      </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <strong>
+                                        <BotIcon />
+                                      </strong>
+                                      <div>
+                                        {item.history.map(
+                                          (historyItem, historyIndex) => (
+                                            <div
+                                              key={historyIndex}
+                                              className="flex justify-start mb-2"
+                                            >
+                                              <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs  ">
+                                                {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(
+                                                  historyItem
+                                                ) ? (
+                                                  <img
+                                                    src={historyItem}
+                                                    width={200}
+                                                    alt="bot"
+                                                    className="rounded-lg"
+                                                  />
+                                                ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(
+                                                    historyItem
+                                                  ) ? (
+                                                  <video
+                                                    src={historyItem}
+                                                    controls
+                                                    width="320"
+                                                    height="240"
+                                                    autoPlay
+                                                    className="rounded-lg"
+                                                  />
+                                                ) : /https?:\/\/.*\.(?:mp3)/.test(
+                                                    historyItem
+                                                  ) ? (
+                                                  <audio
+                                                    src={historyItem}
+                                                    controls
+                                                    className="w-full"
+                                                  />
+                                                ) : (
+                                                  <p>{historyItem}</p>
+                                                )}
+                                              </div>
+                                            </div>
+                                          )
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </DialogDescription>
+                              </DialogHeader>
+                            </DialogContent>
+                          </Dialog>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               ))
             )}
@@ -234,15 +330,19 @@ const Chat = () => {
                 }}
               />
               <label className="absolute right-14 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 ">
-                <Button className="border-2 px-2 py-1 rounded-lg" variant="outline" asChild>
-                {loading ? (
-                  <div>
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-                  </div>
-                ) : (
-                  <UploadIcon size={40}/>
-                )}
-              </Button>
+                <Button
+                  className="border-2 px-2 py-1 rounded-lg"
+                  variant="outline"
+                  asChild
+                >
+                  {loading ? (
+                    <div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+                    </div>
+                  ) : (
+                    <UploadIcon size={40} />
+                  )}
+                </Button>
                 <input
                   type="file"
                   className="hidden"

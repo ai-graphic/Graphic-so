@@ -1,9 +1,12 @@
 import { db } from "@/lib/db";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
+import { BingClient } from '@agentic/bing'
 import { anthropic } from "@ai-sdk/anthropic";
+import { createAISDKTools } from '@agentic/ai-sdk'
 
-export const maxDuration = 30;
+export const maxDuration = 300;
+
 
 export async function POST(req: Request) {
   const { prompt, system, userid, model, maxTokens, temperature } =
@@ -44,17 +47,17 @@ export async function POST(req: Request) {
     });
   }
 
+  const bing = new BingClient()
   const result = await generateText({
     model: selectedModel,
-    messages: [
-      { role: "system", content: system ? `${system}` : "you are a friendly ai prompt generator" },
-      { role: "user", content: `${prompt}` },
-    ],
+    // tools: createAISDKTools(bing),
+    system: system || "you are a prompt enhancer",
+    prompt: prompt,
     temperature: temperature || 0.7,
     maxTokens: maxTokens || 100,
   });
 
-  console.log(result.text);
+  console.log(result.toolResults[0])
   await db.user.update({
     where: {
       clerkId: userid,

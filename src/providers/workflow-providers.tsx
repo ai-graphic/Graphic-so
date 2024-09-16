@@ -85,7 +85,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
 
         let current = 0;
         let latestOutputs: LatestOutputsType = {};
-        let chatHistory: any = { user: "", bot: "" };
+        let chatHistory: any = { user: "", bot: "", history: [] };
         while (current < flowPath.length) {
           const idNode = flowPath[current];
           const nodeType = flowPath[current + 1];
@@ -183,7 +183,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
-            console.log("flow", flowPath, chatHistory);
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
             const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
             const isNextNotAI =
@@ -279,7 +283,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
-            console.log("flow", flowPath, chatHistory);
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
             const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
             const isNextNotAI =
@@ -399,7 +407,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
-            console.log("flow", flowPath, chatHistory);
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
             const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
             const isNextNotAI =
@@ -471,7 +483,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
-            console.log("flow", flowPath, chatHistory);
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
             const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
             const isNextNotAI =
@@ -599,7 +615,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
-            console.log("flow", flowPath, chatHistory);
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
             const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
             const isNextNotAI =
@@ -692,7 +712,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
-            console.log("flow", flowPath, chatHistory);
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
             const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
             const isNextNotAI =
@@ -793,7 +817,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               } finally {
                 setIsLoading(idNode, false);
               }
-              console.log("flow", flowPath, chatHistory);
+              setHistory((prev: any) => [
+                ...prev,
+                { bot: latestOutputs[idNode] },
+              ]);
+              chatHistory.history.push(latestOutputs[idNode]);
               const nextNodeType = flowPath[current + 3];
               flowPath.splice(current, 2);
               const isNextNotAI =
@@ -916,7 +944,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
-            console.log("flow", flowPath, chatHistory);
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
             const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
             const isNextNotAI =
@@ -995,7 +1027,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
-            console.log("flow", flowPath, chatHistory);
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
             const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
             const isNextNotAI =
@@ -1075,7 +1111,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 setIsLoading(idNode, false);
               }
             }
-            console.log("flow", flowPath, chatHistory);
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
             const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
             const isNextNotAI =
@@ -1228,7 +1268,11 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 }
               }
             }
-            console.log("flow", flowPath, chatHistory);
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
             const nextNodeType = flowPath[current + 3];
             flowPath.splice(current, 2);
             const isNextNotAI =
@@ -1250,6 +1294,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               );
               if (setHistory) {
                 setHistory(history);
+                console.log("history", history);
               }
             }
             continue;
