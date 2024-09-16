@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
-import { mistral } from "@ai-sdk/mistral";
 import { anthropic } from "@ai-sdk/anthropic";
 
 export const maxDuration = 30;
