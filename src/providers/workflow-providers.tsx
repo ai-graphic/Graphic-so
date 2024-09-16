@@ -1141,7 +1141,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   content = latestOutputs[node.id];
                 }
               }
-              if (aiTemplate[idNode].model === "Openai") {
+              if (aiTemplate[idNode].model === "vercel") {
                 try {
                   setIsLoading(idNode, true);
                   const edgesArray = JSON.parse(workflow.edges || "[]");
@@ -1149,7 +1149,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                   const edge = edgesArray.find((e: any) => e.target === idNode);
                   const node = nodeArray.find((n: any) => n.id === edge.source);
                   console.log("content", content);
-                  const response = await axios.post("/api/ai/openai", {
+                  const response = await axios.post("/api/ai/vercel", {
                     prompt: content,
                     system: aiTemplate[idNode].system,
                     userid: workflow.userId,
@@ -1166,7 +1166,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
 
                   latestOutputs[idNode] = response.data;
                 } catch (error) {
-                  console.error("Error during OpenAI API call:", error);
+                  console.error("Error during vercel API call:", error);
                 } finally {
                   setIsLoading(idNode, false);
                 }

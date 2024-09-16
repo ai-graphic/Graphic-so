@@ -104,14 +104,14 @@ export async function POST(req: Request, res: Response) {
                 content = latestOutputs[node.id];
               }
             }
-            if (aiTemplate[idNode].model === "Openai") {
+            if (aiTemplate[idNode].model === "vercel") {
               try {
                 const edgesArray = JSON.parse(workflow.edges || "[]");
                 const nodeArray = JSON.parse(workflow.nodes || "[]");
                 const edge = edgesArray.find((e: any) => e.target === idNode);
                 const node = nodeArray.find((n: any) => n.id === edge.source);
                 const response = await axios.post(
-                  `${process.env.NEXT_PUBLIC_URL}/api/ai/openai`,
+                  `${process.env.NEXT_PUBLIC_URL}/api/ai/vercel`,
                   {
                     prompt: content,
                     system: aiTemplate[idNode].system,
@@ -122,7 +122,7 @@ export async function POST(req: Request, res: Response) {
                 const aiResponseContent = response.data;
                 latestOutputs[idNode] = aiResponseContent;
               } catch (error) {
-                console.error("Error during OpenAI API call:", error);
+                console.error("Error during vercel API call:", error);
               } finally {
               }
             } else if (aiTemplate[idNode].model === "FLUX-image") {

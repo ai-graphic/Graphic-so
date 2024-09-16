@@ -489,13 +489,16 @@ const ActionButton = ({
         return;
       }
       setIsLoading(id, true);
-      if (nodeConnection.aiNode[id].model === "Openai") {
+      if (nodeConnection.aiNode[id].model === "vercel") {
         try {
           setIsLoading(id, true);
-          const response = await axios.post("/api/ai/openai", {
+          const response = await axios.post("/api/ai/vercel", {
             prompt: nodeConnection.aiNode[id]?.prompt,
             system: nodeConnection.aiNode[id]?.system,
             userid: user?.id,
+            model : nodeConnection.aiNode[id]?.localModel,
+            temperature: nodeConnection.aiNode[id]?.temperature,
+            maxTokens: nodeConnection.aiNode[id]?.max_tokens,
           });
           nodeConnection.setOutput((prev: any) => ({
             ...prev,

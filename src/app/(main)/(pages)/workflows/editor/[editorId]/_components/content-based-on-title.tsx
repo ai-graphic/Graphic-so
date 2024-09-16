@@ -75,7 +75,8 @@ const ContentBasedOnTitle = ({
 
   const { selectedNode } = newState.editor;
   const title = selectedNode.data.title;
-  const [model, setModel] = useState<string>("Select Model");
+  const [model, setModel] = useState<string>("vercel");
+  const [localModel, setLocalModel] = useState<string>("Claude");
   const [showSuperAgent, setShowSuperAgent] = useState(false);
 
   const FluxOptions = [
@@ -95,9 +96,18 @@ const ContentBasedOnTitle = ({
     { output_quality: { placeholder: 80, type: "number" } },
     { num_inference_steps: { placeholder: 20, type: "number" } },
   ];
-  const OpenaiOptions = [
+  const vercelOptions = [
+    {
+      localModel: {
+        placeholder: "Enter your model",
+        type: "select",
+        options: ["vercel", "claude", "mistral"],
+      },
+    },
     { system: { placeholder: "Enter your system Message", type: "text" } },
     { prompt: { placeholder: "Enter your prompt", type: "text" } },
+    { max_tokens: { placeholder: 100, type: "number" } },
+    { temperature: { placeholder: 0.7, type: "number" } },
   ];
   interface Model {
     key: string;
@@ -117,7 +127,7 @@ const ContentBasedOnTitle = ({
 
   const modelOptionsMap: { [key: string]: any[] } = {
     "FLUX-image": FluxOptions,
-    Openai: OpenaiOptions,
+    vercel: vercelOptions,
   };
 
   //@ts-ignore
@@ -133,6 +143,7 @@ const ContentBasedOnTitle = ({
     } else {
       setModel("Select Model");
     }
+
 
     const currentPrompt = nodeConnectionType[selectedNode.id]?.prompt;
     if (currentPrompt) {
@@ -203,7 +214,7 @@ const ContentBasedOnTitle = ({
           {title === "AI" ? (
             <div className="gap-2 flex flex-col">
               <p className="block text-sm font-medium text-gray-300">
-                Select Your model
+              Select your Provider here
               </p>
               <select
                 value={model}
@@ -221,10 +232,7 @@ const ContentBasedOnTitle = ({
                 }}
                 className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
               >
-                <option disabled value="Select Model">
-                  Select Model
-                </option>
-                <option value="Openai">Openai</option>
+                <option value="vercel">Vercel</option>
                 <option value="FLUX-image">FLUX-image</option>
                 <option value="SuperAgent">SuperAgent</option>
               </select>
@@ -234,71 +242,98 @@ const ContentBasedOnTitle = ({
                   ishistoryChecked={ishistoryChecked}
                 />
               )}
+
               {nodeConnectionType[selectedNode.id]?.model && (
                 <div>
-                  <p className="block text-sm font-medium text-gray-300">
-                    Enter Your Prompt Here
-                  </p>
-                  <div className="flex gap-2">
-                    <Input
-                      type="text"
-                      placeholder="a beautiful castle frstingln illustration"
-                      value={
-                        selectedOutput ??
-                        nodeConnectionType[selectedNode.id]?.prompt
-                      }
-                      onClick={() => {
-                        setShowButtons((prev) => !prev);
-                      }}
+                  <div>
+                    <p className="block text-sm font-medium text-gray-300">
+                      Select your model here
+                    </p>
+                    <select
+                      value={nodeConnection.aiNode[selectedNode.id].localModel}
                       onChange={(event) => {
-                        const newValue = event.target.value;
-                        setSelectedOutput(newValue);
+                        const newModel = event.target.value;
+                        setLocalModel(newModel);
+
                         onContentChange(
                           state,
                           nodeConnection,
                           title,
-                          event,
-                          "prompt"
+                          event as unknown as React.ChangeEvent<HTMLInputElement>,
+                          "localModel"
                         );
                       }}
-                    />
-                    <Button
-                      onClick={() => {
-                        const updatedOutput =
-                          selectedOutput == null
-                            ? `:input:`
-                            : `${selectedOutput}:input:`;
-                        setSelectedOutput(updatedOutput);
-                      }}
+                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
-                      @tag
-                    </Button>
+                      <option value="Openai">Openai</option>
+                      <option value="Claude">Claude</option>
+                    </select>
                   </div>
-                  {showButtons &&
-                    Object.entries(nodeConnection.output)
-                      .filter(([id]) =>
-                        state.editor.edges.some(
-                          (edge) =>
-                            edge.target === selectedNode.id &&
-                            edge.source === id
+                  <div>
+                    <p className="block text-sm font-medium text-gray-300">
+                      Enter Your Prompt Here
+                    </p>
+                    <div className="flex gap-2">
+                      <Input
+                        type="text"
+                        placeholder="a beautiful castle frstingln illustration"
+                        value={
+                          selectedOutput ??
+                          nodeConnectionType[selectedNode.id]?.prompt
+                        }
+                        onClick={() => {
+                          setShowButtons((prev) => !prev);
+                        }}
+                        onChange={(event) => {
+                          const newValue = event.target.value;
+                          setSelectedOutput(newValue);
+                          onContentChange(
+                            state,
+                            nodeConnection,
+                            title,
+                            event,
+                            "prompt"
+                          );
+                        }}
+                      />
+                      <Button
+                        onClick={() => {
+                          const updatedOutput =
+                            selectedOutput == null
+                              ? `:input:`
+                              : `${selectedOutput}:input:`;
+                          setSelectedOutput(updatedOutput);
+                        }}
+                      >
+                        @tag
+                      </Button>
+                    </div>
+                    {showButtons &&
+                      Object.entries(nodeConnection.output)
+                        .filter(([id]) =>
+                          state.editor.edges.some(
+                            (edge) =>
+                              edge.target === selectedNode.id &&
+                              edge.source === id
+                          )
                         )
-                      )
-                      .map(([id, outputs]) =>
-                        (["text"] as (keyof OutputType)[]).map((type) =>
-                          outputs[type]?.map((output, index) => (
-                            <button
-                              key={`${id}-${type}-${index}`}
-                              className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                              onClick={() => {
-                                setSelectedOutput(String(output));
-                                setShowButtons((prev) => !prev);
-                              }}
-                            >
-                              {String(output)}
-                            </button>
-                          ))
-                        )
-                      )}
+                        .map(([id, outputs]) =>
+                          (["text"] as (keyof OutputType)[]).map((type) =>
+                            outputs[type]?.map((output, index) => (
+                              <button
+                                key={`${id}-${type}-${index}`}
+                                className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                onClick={() => {
+                                  setSelectedOutput(String(output));
+                                  setShowButtons((prev) => !prev);
+                                }}
+                              >
+                                {String(output)}
+                              </button>
+                            ))
+                          )
+                        )}
+                  </div>
                 </div>
               )}
 
@@ -307,13 +342,17 @@ const ContentBasedOnTitle = ({
                   (optionObj) => {
                     const optionKey = Object.keys(optionObj)[0];
                     const optionValue = optionObj[optionKey];
-                    if (optionKey === "prompt" || optionKey === "ApiKey")
+                    if (
+                      optionKey === "prompt" ||
+                      optionKey === "ApiKey" ||
+                      optionKey === "localModel"
+                    )
                       return null;
 
                     return (
                       <div key={optionKey}>
                         <p className="block text-sm font-medium text-gray-300">
-                          {optionValue.placeholder}
+                          Enter your {optionKey} here
                         </p>
                         <Input
                           type={optionValue.type}

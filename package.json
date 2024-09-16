@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^0.0.50",
     "@ai-sdk/openai": "^0.0.54",
     "@assistant-ui/react": "^0.5.41",
     "@assistant-ui/react-ai-sdk": "^0.6.2",
@@ -33,7 +34,7 @@
     "@tsparticles/slim": "^3.4.0",
     "@uploadcare/react-uploader": "^0.5.1",
     "@xyflow/react": "^12.2.1",
-    "ai": "^3.3.25",
+    "ai": "^3.3.38",
     "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "cloudinary": "^2.4.0",
