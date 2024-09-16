@@ -132,14 +132,16 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
               />
               <Button
                 onClick={() => {
-                  nodeConnection.setAINode((prev: any) => ({
+                  nodeConnection.setOutput((prev: any) => ({
                     ...prev,
-                    output: {
-                      ...(prev.output || {}),
-                      [nodeId ?? ""]: [
-                        ...(prev.output?.[nodeId ?? ""] || []),
+                    ...(prev.output || {}),
+                    [nodeId ?? ""]: {
+                      image: [...(prev.output?.[nodeId ?? ""]?.image || [])],
+                      text: [
+                        ...(prev.output?.[nodeId ?? ""]?.text || []),
                         nodeConnection.triggerNode.triggerValue,
                       ],
+                      video: [...(prev.output?.[nodeId ?? ""]?.video || [])],
                     },
                   }));
                 }}
