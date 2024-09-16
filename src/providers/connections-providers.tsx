@@ -119,9 +119,9 @@ export type ConnectionProviderProps = {
     [id: string]: {
       id: string;
       prompt: string;
-      subject : string;
-      negative_prompt : string;
-      randomise_poses : boolean;
+      subject: string;
+      negative_prompt: string;
+      randomise_poses: boolean;
       number_of_outputs: number;
       number_of_images_per_pose: number;
       num_outputs: number;
@@ -134,17 +134,17 @@ export type ConnectionProviderProps = {
     [id: string]: {
       id: string;
       prompt: string;
-      image : string;
-      negative_prompt : string;
+      image: string;
+      negative_prompt: string;
       num_inference_steps: number;
       guidance_scale: number;
       num_outputs: number;
       scheduler: string;
       upscale: number;
-      strength : number;
+      strength: number;
     };
   };
-  fluxGeneralNode : {
+  fluxGeneralNode: {
     [id: string]: {
       id: string;
       prompt: string;
@@ -156,8 +156,8 @@ export type ConnectionProviderProps = {
       sync_mode: boolean;
       enable_safety_checker: boolean;
     };
-  }
-  fluxDevLoraNode :{
+  };
+  fluxDevLoraNode: {
     [id: string]: {
       id: string;
       prompt: string;
@@ -169,7 +169,41 @@ export type ConnectionProviderProps = {
       output_quality: string;
       num_inference_steps: number;
     };
-  }
+  };
+  musicgenNode: {
+    [id: string]: {
+      prompt: string;
+      id: string;
+      seed: number;
+      top_k: number;
+      top_p: number;
+      duration: number;
+      input_audio: string;
+      temperature: number;
+      continuation: boolean;
+      model_version: string;
+      output_format: string;
+      continuation_start: number;
+      multi_band_diffusion: boolean;
+      normalization_strategy: string;
+      classifier_free_guidance: number;
+    };
+  };
+  CogVideoX5BNode: {
+    [id: string]: {
+      id: string;
+      prompt: string;
+      num_inference_steps: number;
+      guidance_scale: number;
+      seed: number;
+      export_fps: number;
+      use_rife: boolean;
+      negative_prompt: string;
+    };
+  };
+  history: any;
+  setCogVideoX5BNode: React.Dispatch<React.SetStateAction<any>>;
+  setmusicgenNode: React.Dispatch<React.SetStateAction<any>>;
   setDreamShaperNode: React.Dispatch<React.SetStateAction<any>>;
   setFluxGeneralNode: React.Dispatch<React.SetStateAction<any>>;
   setFluxDevLoraNode: React.Dispatch<React.SetStateAction<any>>;
@@ -180,13 +214,17 @@ export type ConnectionProviderProps = {
   setstableVideoNode: React.Dispatch<React.SetStateAction<any>>;
   settrainFluxNode: React.Dispatch<React.SetStateAction<any>>;
   output: {
-    [id : string] : {
-      image: string[],
-      text: string[],
-      video: string[],
-    }
+    [id: string]: {
+      image: string[];
+      text: string[];
+      video: string[];
+    };
   };
-  setOutput: React.Dispatch<React.SetStateAction<{ [id: string]: { image: string[]; text: string[]; video: string[]; } }>>,
+  setOutput: React.Dispatch<
+    React.SetStateAction<{
+      [id: string]: { image: string[]; text: string[]; video: string[] };
+    }>
+  >;
   setAINode: React.Dispatch<React.SetStateAction<any>>;
   addAINode: (id: string, type: string) => void; // Add this line
   googleNode: any[];
@@ -286,6 +324,11 @@ const InitialValues: ConnectionProviderProps = {
     slack: "",
     ai: "",
   },
+  history: {},
+  CogVideoX5BNode: {},
+  musicgenNode: {},
+  setmusicgenNode: () => undefined,
+  setCogVideoX5BNode: () => undefined,
   isLoading: false,
   setDreamShaperNode: () => undefined,
   setFluxGeneralNode: () => undefined,
@@ -350,6 +393,10 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [chatNode, setChatNode] = useState(InitialValues.chatNode);
   const [triggerNode, setTriggerNode] = useState(InitialValues.triggerNode);
   const [fluxDevNode, setfluxDevNode] = useState(InitialValues.fluxDevNode);
+  const [CogVideoX5BNode, setCogVideoX5BNode] = useState(
+    InitialValues.CogVideoX5BNode
+  );
+  const [musicgenNode, setmusicgenNode] = useState(InitialValues.musicgenNode);
   const [isFlow, setisFlow] = useState(InitialValues.isFlow);
   const [imageToImageNode, setimageToImageNode] = useState(
     InitialValues.imageToImageNode
@@ -399,8 +446,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           sync_mode: false,
         },
       }));
-    }
-    else if (type === "image-to-image") {
+    } else if (type === "image-to-image") {
       setimageToImageNode((prev) => ({
         ...prev,
         [id]: {
@@ -417,8 +463,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           strength: 0,
         },
       }));
-    }
-    else if (type === "flux-lora") {
+    } else if (type === "flux-lora") {
       setfluxLoraNode((prev) => ({
         ...prev,
         [id]: {
@@ -435,8 +480,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           output_format: "",
         },
       }));
-    }
-    else if (type === "stable-video") {
+    } else if (type === "stable-video") {
       setstableVideoNode((prev) => ({
         ...prev,
         [id]: {
@@ -447,8 +491,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           cond_aug: false,
         },
       }));
-    }
-    else if (type === "train-flux") {
+    } else if (type === "train-flux") {
       settrainFluxNode((prev) => ({
         ...prev,
         [id]: {
@@ -458,8 +501,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           iter_multiplier: 0,
         },
       }));
-    }
-    else if (type === "consistent-character") {
+    } else if (type === "consistent-character") {
       setconsistentCharacterNode((prev) => ({
         ...prev,
         [id]: {
@@ -492,8 +534,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           strength: 0,
         },
       }));
-    }
-    else if (type === "fluxGeneral") {
+    } else if (type === "fluxGeneral") {
       setFluxGeneralNode((prev) => ({
         ...prev,
         [id]: {
@@ -508,8 +549,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           enable_safety_checker: false,
         },
       }));
-    }
-    else if (type === "fluxDevLora") {
+    } else if (type === "fluxDevLora") {
       setFluxDevLoraNode((prev) => ({
         ...prev,
         [id]: {
@@ -524,10 +564,42 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           num_inference_steps: 0,
         },
       }));
+    } else if (type === "musicGen") {
+      setmusicgenNode((prev) => ({
+        ...prev,
+        [id]: {
+          prompt: "",
+          id,
+          seed: 0,
+          top_k: 0,
+          top_p: 0,
+          duration: 0,
+          input_audio: "",
+          temperature: 0,
+          continuation: false,
+          model_version: "",
+          output_format: "",
+          continuation_start: 0,
+          multi_band_diffusion: false,
+          normalization_strategy: "",
+          classifier_free_guidance: 0,
+        },
+      }));
+    } else if (type === "CogVideoX-5B") {
+      setCogVideoX5BNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          prompt: "",
+          num_inference_steps: 0,
+          guidance_scale: 0,
+          seed: 0,
+          export_fps: 0,
+          use_rife: false,
+          negative_prompt: "",
+        },
+      }));
     }
-
-   
-   
   };
 
   const values = {
@@ -573,6 +645,10 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     setFluxDevLoraNode,
     isFlow,
     setisFlow,
+    musicgenNode,
+    setmusicgenNode,
+    CogVideoX5BNode,
+    setCogVideoX5BNode,
   };
 
   return <Provider value={values}>{children}</Provider>;

@@ -104,7 +104,7 @@ export async function POST(req: Request, res: Response) {
         throw new Error("Upload failed, no URL returned.");
       }
   } catch (error: any) {
-    console.error("Error during Replicate API call:", error);
+    console.error("Error during fal API call:", error);
     return new Response("error", {
       status: 500,
       headers: { "Content-Type": "application/json" },

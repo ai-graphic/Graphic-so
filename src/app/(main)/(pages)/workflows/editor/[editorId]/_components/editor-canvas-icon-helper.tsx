@@ -16,6 +16,7 @@ import {
   Webhook,
   Zap,
   MessageCircle,
+  Music,
 } from "lucide-react";
 import { EditorCanvasTypes } from "@/lib/types";
 
@@ -62,6 +63,10 @@ const EditorCanvasIconHelper = ({ type }: Props) => {
       return <MessageCircle className="flex-shrink-0" size={30} />;
     case "Wait":
       return <Timer className="flex-shrink-0" size={30} />;
+    case "musicGen":
+      return <Music className="flex-shrink-0" size={30} />;
+    case "CogVideoX-5B":
+      return <Video className="flex-shrink-0" size={30} />;
     default:
       return <Zap className="flex-shrink-0" size={30} />;
   }

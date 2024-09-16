@@ -23,7 +23,7 @@ type WorkflowContextType = {
     credits: string,
     setCredits: any,
     setHistory?: any,
-    selectedurl? : string
+    selectedurl?: string
   ) => Promise<void>;
 };
 
@@ -53,7 +53,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
       credits: string,
       setCredits: any,
       setHistory?: any,
-      selectedurl? : string
+      selectedurl?: string
     ) => {
       async function updateAINodeOutput(
         idNode: string,
@@ -315,7 +315,8 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               let content;
               let Image;
               let prompt = nodeConnection.imageToImageNode[idNode]?.prompt;
-              let ImageFromDb = nodeConnection.imageToImageNode[idNode]?.image_url;
+              let ImageFromDb =
+                nodeConnection.imageToImageNode[idNode]?.image_url;
               console.log("Selected URL:", selectedurl, ImageFromDb);
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
@@ -508,7 +509,8 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               let content;
               let Image;
               let prompt = nodeConnection.imageToImageNode[idNode]?.prompt;
-              let ImageFromDb = nodeConnection.imageToImageNode[idNode]?.image_url;
+              let ImageFromDb =
+                nodeConnection.imageToImageNode[idNode]?.image_url;
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
                 const contentarr = output[node.id];
@@ -622,6 +624,202 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               }
             }
           }
+          if (nodeType == "CogVideoX-5B") {
+            const cogVideoX5BTemplate = JSON.parse(
+              workflow.cogVideo5BTemplate!
+            );
+            if (cogVideoX5BTemplate[idNode]) {
+              console.log("CogVideoX-5B Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              let prompt = nodeConnection.CogVideoX5BNode[idNode]?.prompt;
+              console.log("Prompt:", prompt);
+              if (node.type === "Trigger") {
+                const output = nodeConnection.output;
+                const contentarr = output[node.id];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
+                content = prmpt;
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", prmpt);
+                  } else {
+                    content = prmpt;
+                  }
+                }
+                chatHistory.user = prmpt;
+              } else {
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", latestOutputs[node.id]);
+                  } else {
+                    content = prompt;
+                  }
+                } else {
+                  content = latestOutputs[node.id];
+                }
+              }
+              try {
+                setIsLoading(idNode, true);
+                const output = await axios.post("/api/ai/fal/cogVideox-5b", {
+                  prompt: content,
+                  userid: workflow.userId,
+                  num_inference_steps:
+                    cogVideoX5BTemplate[idNode]?.num_inference_steps,
+                  guidance_scale: cogVideoX5BTemplate[idNode]?.guidance_scale,
+                  negative_prompt: cogVideoX5BTemplate[idNode]?.negative_prompt,
+                  use_rife: cogVideoX5BTemplate[idNode]?.use_rife,
+                  export_fps: cogVideoX5BTemplate[idNode]?.export_fps,
+                });
+                nodeConnection.setOutput((prev: any) => ({
+                  ...prev,
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || [])],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [
+                      ...(prev.output?.[idNode]?.video || []),
+                      output.data[0],
+                    ],
+                  },
+                }));
+                latestOutputs[idNode] = output.data[0];
+              } catch (error) {
+                console.error("Error during Replicate API call:", error);
+              } finally {
+                setIsLoading(idNode, false);
+              }
+            }
+            console.log("flow", flowPath, chatHistory);
+            const nextNodeType = flowPath[current + 3];
+            flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
+                setHistory(history);
+              }
+            }
+          }
+          if (nodeType == "musicGen") {
+            const falMusicGenTemplate = JSON.parse(workflow.musicGenTemplate!);
+            if (falMusicGenTemplate[idNode]) {
+              console.log("musicGen Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              let prompt = nodeConnection.musicgenNode[idNode]?.prompt;
+              console.log("Prompt:", prompt);
+              if (node.type === "Trigger") {
+                const output = nodeConnection.output;
+                const contentarr = output[node.id];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
+                content = prmpt;
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", prmpt);
+                  } else {
+                    content = prmpt;
+                  }
+                }
+                chatHistory.user = prmpt;
+              } else {
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", latestOutputs[node.id]);
+                  } else {
+                    content = prompt;
+                  }
+                } else {
+                  content = latestOutputs[node.id];
+                }
+              }
+              try {
+                setIsLoading(idNode, true);
+                const output = await axios.post("/api/ai/replicate/musicgen", {
+                  prompt: content,
+                  userid: workflow.userId,
+                  seed: falMusicGenTemplate[idNode]?.seed,
+                  top_k: falMusicGenTemplate[idNode]?.top_k,
+                  top_p: falMusicGenTemplate[idNode]?.top_p,
+                  duration: falMusicGenTemplate[idNode]?.duration,
+                  input_audio: falMusicGenTemplate[idNode]?.input_audio,
+                  temperature: falMusicGenTemplate[idNode]?.temperature,
+                  continuation: falMusicGenTemplate[idNode]?.continuation,
+                  model_version: falMusicGenTemplate[idNode]?.model_version,
+                  output_format: falMusicGenTemplate[idNode]?.output_format,
+                  continuation_start:
+                    falMusicGenTemplate[idNode]?.continuation_start,
+                  multi_band_diffusion:
+                    falMusicGenTemplate[idNode]?.multi_band_diffusion,
+                  normalization_strategy:
+                    falMusicGenTemplate[idNode]?.normalization_strategy,
+                  classifier_free_guidance:
+                    falMusicGenTemplate[idNode]?.classifier_free_guidance,
+                });
+                nodeConnection.setOutput((prev: any) => ({
+                  ...prev,
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || [])],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [
+                      ...(prev.output?.[idNode]?.video || []),
+                      output.data,
+                    ],
+                  },
+                }));
+                latestOutputs[idNode] = output.data;
+              } catch (error) {
+                console.error("Error during Replicate API call:", error);
+              } finally {
+                setIsLoading(idNode, false);
+              }
+              console.log("flow", flowPath, chatHistory);
+              const nextNodeType = flowPath[current + 3];
+              flowPath.splice(current, 2);
+              const isNextNotAI =
+                nextNodeType == "Slack" ||
+                nextNodeType == "Notion" ||
+                nextNodeType == "Chat" ||
+                nextNodeType == "Discord";
+              if (isNextNotAI) {
+                chatHistory.bot = latestOutputs[idNode];
+                console.log("chatHistory", chatHistory);
+              }
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
+              }
+            }
+          }
+
           if (nodeType == "dreamShaper") {
             const falDreamShaperTemplate = JSON.parse(
               workflow.DreamShaperTemplate!
@@ -635,7 +833,8 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               let content;
               let Image;
               let prompt = nodeConnection.imageToImageNode[idNode]?.prompt;
-              let ImageFromDb = nodeConnection.imageToImageNode[idNode]?.image_url;
+              let ImageFromDb =
+                nodeConnection.imageToImageNode[idNode]?.image_url;
               if (node.type === "Trigger") {
                 const output = nodeConnection.output;
                 const contentarr = output[node.id];

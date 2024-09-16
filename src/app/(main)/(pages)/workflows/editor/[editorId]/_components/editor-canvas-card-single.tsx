@@ -62,7 +62,7 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
 
   return (
     <>
-      {data.type !== "Trigger" && data.type !== "Google Drive"  && (
+      {data.type !== "Trigger" && data.type !== "Google Drive" && (
         <CustomHandle
           type="target"
           position={Position.Top}
@@ -82,15 +82,17 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
             });
         }}
         style={{
-          position: 'relative',
-          maxWidth: '400px',
-          borderRadius: '1rem',
-          boxShadow: isLoading[nodeId ?? ""] ? '0 10px 15px rgba(234, 179, 8, 0.5)' : '',
+          position: "relative",
+          maxWidth: "400px",
+          borderRadius: "1rem",
+          boxShadow: isLoading[nodeId ?? ""]
+            ? "0 10px 15px rgba(234, 179, 8, 0.5)"
+            : "",
         }}
         className={clsx(
           "react-flow__node-turbo border-2  dark:border-gray-700",
           {
-            "selected": isSelected && !isLoading[nodeId ?? ""], // Add this line
+            selected: isSelected && !isLoading[nodeId ?? ""], // Add this line
           }
         )}
       >
@@ -112,7 +114,7 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
           {data.title === "Trigger" ? (
             <div className="flex gap-2 bg-transparent">
               <Input
-                type="text" 
+                type="text"
                 className="bg-transparent border border-gray-600"
                 value={nodeConnection.triggerNode.triggerValue ?? triggerValue}
                 onChange={(event) => {
@@ -161,13 +163,16 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
               </Button>
             </div>
           ) : isLoading[nodeId ?? ""] &&
-            (nodeConnection.aiNode[nodeId ?? ""] || nodeConnection.fluxDevLoraNode[nodeId ?? ""] 
-            || nodeConnection.fluxGeneralNode[nodeId ?? ""] || nodeConnection.fluxDevNode[nodeId ?? ""]
-            || nodeConnection.consistentCharacterNode[nodeId ?? ""] || nodeConnection.fluxLoraNode[nodeId ?? ""]
-            || nodeConnection.dreamShaperNode[nodeId ?? ""] || nodeConnection.imageToImageNode[nodeId ?? ""]
-            || nodeConnection.stableVideoNode[nodeId ?? ""] || nodeConnection.trainFluxNode[nodeId ?? ""]
-
-            ) ? (
+            (nodeConnection.aiNode[nodeId ?? ""] ||
+              nodeConnection.fluxDevLoraNode[nodeId ?? ""] ||
+              nodeConnection.fluxGeneralNode[nodeId ?? ""] ||
+              nodeConnection.fluxDevNode[nodeId ?? ""] ||
+              nodeConnection.consistentCharacterNode[nodeId ?? ""] ||
+              nodeConnection.fluxLoraNode[nodeId ?? ""] ||
+              nodeConnection.dreamShaperNode[nodeId ?? ""] ||
+              nodeConnection.imageToImageNode[nodeId ?? ""] ||
+              nodeConnection.stableVideoNode[nodeId ?? ""] ||
+              nodeConnection.trainFluxNode[nodeId ?? ""]) ? (
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
           ) : (
             <div>
@@ -181,15 +186,24 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
               {output && output.text && output.text.length > 0 && (
                 <p>{output.text[output.text.length - 1]}</p>
               )}
-              {output && output.video && output.video.length > 0 && (
-                <video
-                  src={output.video[output.video.length - 1]}
-                  controls
-                  width="320"
-                  height="240"
-                  autoPlay
-                />
-              )}
+              {output &&
+                output.video &&
+                output.video.length > 0 &&
+                (/https?:\/\/.*\.(?:mp4|webm|ogg)/.test(
+                  output.video[output.video.length - 1]
+                ) ? (
+                  <video
+                    src={output.video[output.video.length - 1]}
+                    controls
+                    width="320"
+                    height="240"
+                    autoPlay
+                  />
+                ) : /https?:\/\/.*\.(?:mp3)/.test(
+                    output.video[output.video.length - 1]
+                  ) ? (
+                  <audio src={output.video[output.video.length - 1]} controls />
+                ) : null)}
             </div>
           )}
         </CardHeader>
@@ -210,10 +224,9 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
           })}
         ></div>
       </Card>
-      {
-       data.type !== "Chat"   && <CustomHandle type="source" position={Position.Bottom} id="a" />
-      }
-      
+      {data.type !== "Chat" && (
+        <CustomHandle type="source" position={Position.Bottom} id="a" />
+      )}
     </>
   );
 };

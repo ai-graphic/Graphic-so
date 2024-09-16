@@ -17,7 +17,9 @@ export default authMiddleware({
         '/api/ai/replicate/consistent-character',
         '/api/ai/replicate/dreamshaper',
         '/api/ai/replicate/fluxDevlora',
-        '/api/ai/openai'
+        '/api/ai/openai',
+        '/api/ai/fal/cogVideox-5b',
+        '/api/ai/replicate/musicgen',
     ],
     ignoredRoutes: [
         '/api/auth/callback/discord',

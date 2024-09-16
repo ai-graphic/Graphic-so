@@ -170,6 +170,7 @@ export const onCreateNodeTemplate = async (
       return "stable-video template saved";
     }
   }
+
   if (type === "train-flux") {
     const response = await db.workflows.update({
       where: {
@@ -238,6 +239,34 @@ export const onCreateNodeTemplate = async (
 
     if (response) {
       return "fluxDevLora template saved";
+    }
+  }
+  if (type === "CogVideoX-5B") {
+    const response = await db.workflows.update({
+      where: {
+        id: workflowId,
+      },
+      data: {
+        cogVideo5BTemplate: content,
+      },
+    });
+
+    if (response) {
+      return "CogVideo-5B template saved";
+    }
+  }
+  if (type === "musicGen") {
+    const response = await db.workflows.update({
+      where: {
+        id: workflowId,
+      },
+      data: {
+        musicGenTemplate: content,
+      },
+    });
+
+    if (response) {
+      return "musicGen template saved";
     }
   }
 };

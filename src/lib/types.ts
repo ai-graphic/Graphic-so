@@ -48,7 +48,9 @@ export type EditorCanvasTypes =
   | "consistent-character"
   | "dreamShaper"
   | "fluxGeneral"
-  | "fluxDevLora";
+  | "fluxDevLora"
+  | "CogVideoX-5B"
+  | "musicGen";
 
 export type EditorCanvasCardType = {
   title: string;
@@ -115,6 +117,8 @@ export const nodeMapper: Record<string, string> = {
   dreamShaper: "dreamShaperNode",
   fluxGeneral: "fluxGeneralNode",
   fluxDevLora: "fluxDevLoraNode",
+  "CogVideoX-5B": "CogVideoX5BNode",
+  musicGen: "musicgenNode",
 };
 
 export type Option = {

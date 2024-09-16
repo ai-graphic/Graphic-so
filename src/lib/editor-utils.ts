@@ -221,6 +221,44 @@ export const onFluxDevLoraContent = (
   }));
 }
 
+export const onCogVideoXContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setCogVideoX5BNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+}
+
+export const onMusicGenContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setmusicgenNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+}
+
 
 
 export const onDiscordContent = (
@@ -276,7 +314,11 @@ export const onContentChange = (
     onFluxGeneralContent(state, nodeConnection, event, content);
   } else if (nodeType === "fluxDevLora") {
     onFluxDevLoraContent(state, nodeConnection, event, content);
-  } 
+  } else if (nodeType === "CogVideoX-5B") {
+    onCogVideoXContent(state, nodeConnection, event, content);
+  } else if (nodeType === "musicGen") {
+    onMusicGenContent(state, nodeConnection, event, content);
+  }
 };
 
 export const onAddTemplateSlack = (

@@ -124,4 +124,6 @@ model Workflows {
   DreamShaperTemplate   String?
   fluxDevLora           String?
   featured              Boolean?
+  cogVideo5BTemplate    String?
+  musicGenTemplate      String?
 }

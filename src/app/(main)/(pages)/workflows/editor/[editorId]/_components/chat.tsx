@@ -172,7 +172,7 @@ const Chat = () => {
                   </div>
 
                   <div className="flex justify-start">
-                    <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
+                  <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
                       {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(item.bot) ? (
                         <img src={item.bot} width={200} alt="bot" />
                       ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(item.bot) ? (
@@ -182,6 +182,11 @@ const Chat = () => {
                           width="320"
                           height="240"
                           autoPlay
+                        />
+                      ) : /https?:\/\/.*\.(?:mp3)/.test(item.bot) ? (
+                        <audio
+                          src={item.bot}
+                          controls
                         />
                       ) : (
                         <p>{item.bot}</p>

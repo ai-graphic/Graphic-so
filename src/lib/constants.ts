@@ -324,6 +324,14 @@ export const EditorCanvasDefaultCardTypes = {
     description: "Generate stable videos using AI techniques.",
     type: "Action",
   },
+  "musicGen": {
+    description: "Generate music using Meta Music-Gen models.",
+    type: "Action",
+  },
+  "CogVideoX-5B": {
+    description: "Generate videos using open source CogVideoX-5B models.",
+    type: "Action",
+  },
   "consistent-character": {
     description: "Create images of a given character in different poses.",
     type: "Action",

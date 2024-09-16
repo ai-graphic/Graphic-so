@@ -20,7 +20,7 @@ import {
   useEdgesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { MenuIcon } from "lucide-react";
+import { Cog, MenuIcon } from "lucide-react";
 import EditorCanvasCardSingle from "./editor-canvas-card-single";
 import {
   ResizableHandle,
@@ -246,6 +246,8 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
       "image-to-image": EditorCanvasCardSingle,
       "flux-lora": EditorCanvasCardSingle,
       "stable-video": EditorCanvasCardSingle,
+      "CogVideoX-5B": EditorCanvasCardSingle,
+      musicGen : EditorCanvasCardSingle,
       "train-flux": EditorCanvasCardSingle,
       "consistent-character": EditorCanvasCardSingle,
       dreamShaper: EditorCanvasCardSingle,

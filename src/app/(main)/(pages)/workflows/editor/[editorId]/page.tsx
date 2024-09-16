@@ -12,7 +12,6 @@ import { usePathname, useRouter } from "next/navigation"; // Updated import
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
-
 type Props = {};
 const Page = (props: Props) => {
   const router = useRouter();
@@ -209,6 +208,82 @@ const Page = (props: Props) => {
                 guidance_scale: nodeData.guidance_scale,
                 output_quality: nodeData.output_quality,
                 num_inference_steps: nodeData.num_inference_steps,
+              };
+            }
+          });
+        }
+        if (workflow?.cogVideo5BTemplate) {
+          const cogVideo5B = workflow.cogVideo5BTemplate
+            ? JSON.parse(workflow.cogVideo5BTemplate)
+            : {};
+          Object.keys(cogVideo5B).forEach((nodeId) => {
+            const nodeData = cogVideo5B[nodeId];
+            if (!cogVideo5B[nodeId]) {
+              nodeConnection.CogVideoX5BNode[nodeId] = {
+                id: nodeId,
+                prompt: "",
+                num_inference_steps: 50,
+                guidance_scale: 7,
+                negative_prompt: "",
+                use_rife: true,
+                export_fps: 30,
+                seed: 0,
+              };
+            } else {
+              nodeConnection.CogVideoX5BNode[nodeId] = {
+                ...nodeConnection.CogVideoX5BNode[nodeId],
+                prompt: nodeData.prompt,
+                num_inference_steps: nodeData.num_inference_steps,
+                guidance_scale: nodeData.guidance_scale,
+                negative_prompt: nodeData.negative_prompt,
+                use_rife: nodeData.use_rife,
+                export_fps: nodeData.export_fps,
+                seed: nodeData.seed,
+              };
+            }
+          });
+        }
+        if (workflow?.musicGenTemplate) {
+          const musicGen = workflow.musicGenTemplate
+            ? JSON.parse(workflow.musicGenTemplate)
+            : {};
+          Object.keys(musicGen).forEach((nodeId) => {
+            const nodeData = musicGen[nodeId];
+            if (!musicGen[nodeId]) {
+              nodeConnection.musicgenNode[nodeId] = {
+                id: nodeId,
+                prompt: "",
+                seed: 0,
+                top_k: 250,
+                top_p: 0,
+                duration: 8,
+                input_audio: "",
+                temperature: 1,
+                continuation: false,
+                model_version: "stereo-large",
+                output_format: "mp3",
+                continuation_start: 0,
+                multi_band_diffusion: false,
+                normalization_strategy: "peak",
+                classifier_free_guidance: 3,
+              };
+            } else {
+              nodeConnection.musicgenNode[nodeId] = {
+                ...nodeConnection.musicgenNode[nodeId],
+                prompt: nodeData.prompt,
+                seed: nodeData.seed,
+                top_k: nodeData.top_k,
+                top_p: nodeData.top_p,
+                duration: nodeData.duration,
+                input_audio: nodeData.input_audio,
+                temperature: nodeData.temperature,
+                continuation: nodeData.continuation,
+                model_version: nodeData.model_version,
+                output_format: nodeData.output_format,
+                continuation_start: nodeData.continuation_start,
+                multi_band_diffusion: nodeData.multi_band_diffusion,
+                normalization_strategy: nodeData.normalization_strategy,
+                classifier_free_guidance: nodeData.classifier_free_guidance,
               };
             }
           });

@@ -110,11 +110,14 @@ export async function POST(req: Request, res: Response) {
                 const nodeArray = JSON.parse(workflow.nodes || "[]");
                 const edge = edgesArray.find((e: any) => e.target === idNode);
                 const node = nodeArray.find((n: any) => n.id === edge.source);
-                const response = await axios.post( `${process.env.NEXT_PUBLIC_URL}/api/ai/openai`, {
-                  prompt: content,
-                  system : aiTemplate[idNode].system,
-                  userid: userid,
-                });
+                const response = await axios.post(
+                  `${process.env.NEXT_PUBLIC_URL}/api/ai/openai`,
+                  {
+                    prompt: content,
+                    system: aiTemplate[idNode].system,
+                    userid: userid,
+                  }
+                );
                 console.log("AI Response:", response.data);
                 const aiResponseContent = response.data;
                 latestOutputs[idNode] = aiResponseContent;
@@ -429,6 +432,126 @@ export async function POST(req: Request, res: Response) {
                   motion_bucket_id: falVideoTemplate[idNode].motion_bucket_id,
                   fps: falVideoTemplate[idNode].fps,
                   cond_aug: falVideoTemplate[idNode].cond_aug,
+                }
+              );
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          console.log("flow", flowPath, chatHistory);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "musicGen") {
+          const falMusicTemplate = JSON.parse(workflow.musicGenTemplate!);
+          if (falMusicTemplate[idNode]) {
+            console.log("musicGen Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              const prmpt = prompt;
+              chatHistory.user = prmpt;
+              content = prmpt;
+            } else {
+              content = latestOutputs[node.id];
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/replicate/musicgen`,
+                {
+                  prompt: content,
+                  userid: userid,
+                  seed: falMusicTemplate[idNode]?.seed,
+                  top_k: falMusicTemplate[idNode]?.top_k,
+                  top_p: falMusicTemplate[idNode]?.top_p,
+                  duration: falMusicTemplate[idNode]?.duration,
+                  input_audio: falMusicTemplate[idNode]?.input_audio,
+                  temperature: falMusicTemplate[idNode]?.temperature,
+                  continuation: falMusicTemplate[idNode]?.continuation,
+                  model_version: falMusicTemplate[idNode]?.model_version,
+                  output_format: falMusicTemplate[idNode]?.output_format,
+                  continuation_start:
+                    falMusicTemplate[idNode]?.continuation_start,
+                  multi_band_diffusion:
+                    falMusicTemplate[idNode]?.multi_band_diffusion,
+                  normalization_strategy:
+                    falMusicTemplate[idNode]?.normalization_strategy,
+                  classifier_free_guidance:
+                    falMusicTemplate[idNode]?.classifier_free_guidance,
+                }
+              );
+              latestOutputs[idNode] = output.data ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          console.log("flow", flowPath, chatHistory);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "CogVideoX-5B") {
+          const falCogVideoTemplate = JSON.parse(workflow.cogVideo5BTemplate!);
+          if (falCogVideoTemplate[idNode]) {
+            console.log("CogVideoX-5B Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              const prmpt = prompt;
+              chatHistory.user = prmpt;
+              content = prmpt;
+            } else {
+              content = latestOutputs[node.id];
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/fal/cogVideox-5b`,
+                {
+                  prompt: content,
+                  userid: userid,
+                  seed: falCogVideoTemplate[idNode]?.seed,
+                  top_k: falCogVideoTemplate[idNode]?.top_k,
+                  top_p: falCogVideoTemplate[idNode]?.top_p,
+                  duration: falCogVideoTemplate[idNode]?.duration,
+                  input_audio: falCogVideoTemplate[idNode]?.input_audio,
+                  temperature: falCogVideoTemplate[idNode]?.temperature,
+                  continuation: falCogVideoTemplate[idNode]?.continuation,
+                  model_version: falCogVideoTemplate[idNode]?.model_version,
+                  output_format: falCogVideoTemplate[idNode]?.output_format,
+                  continuation_start:
+                    falCogVideoTemplate[idNode]?.continuation_start,
+                  multi_band_diffusion:
+                    falCogVideoTemplate[idNode]?.multi_band_diffusion,
+                  normalization_strategy:
+                    falCogVideoTemplate[idNode]?.normalization_strategy,
+                  classifier_free_guidance:
+                    falCogVideoTemplate[idNode]?.classifier_free_guidance,
                 }
               );
               latestOutputs[idNode] = output.data[0] ?? content;

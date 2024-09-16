@@ -408,6 +408,76 @@ const ActionButton = ({
     }
   }, []);
 
+  const onMusicGen = useCallback(async (id: string, nodeConnection: any) => {
+    try {
+      setIsLoading(id, true);
+      const response = await axios.post("/api/ai/replicate/musicgen", {
+        prompt: nodeConnection.musicgenNode[id]?.prompt,
+        userid: user?.id,
+        seed: nodeConnection.musicgenNode[id]?.seed,
+        top_k: nodeConnection.musicgenNode[id]?.top_k,
+        top_p: nodeConnection.musicgenNode[id]?.top_p,
+        duration: nodeConnection.musicgenNode[id]?.duration,
+        input_audio: nodeConnection.musicgenNode[id]?.input_audio,
+        temperature: nodeConnection.musicgenNode[id]?.temperature,
+        continuation: nodeConnection.musicgenNode[id]?.continuation,
+        model_version: nodeConnection.musicgenNode[id]?.model_version,
+        output_format: nodeConnection.musicgenNode[id]?.output_format,
+        continuation_start: nodeConnection.musicgenNode[id]?.continuation_start,
+        multi_band_diffusion:
+          nodeConnection.musicgenNode[id]?.multi_band_diffusion,
+        normalization_strategy:
+          nodeConnection.musicgenNode[id]?.normalization_strategy,
+        classifier_free_guidance:
+          nodeConnection.musicgenNode[id]?.classifier_free_guidance,
+      });
+      nodeConnection.setOutput((prev: any) => ({
+        ...prev,
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || [])],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || []), response.data],
+        },
+      }));
+      setCredits((prev) => (Number(prev) - 1).toString());
+    } catch (error) {
+      console.error("Error during Music Gen API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
+
+  const onCogVideoX = useCallback(async (id: string, nodeConnection: any) => {
+    try {
+      setIsLoading(id, true);
+      const response = await axios.post("/api/ai/fal/cogVideox-5b", {
+        prompt: nodeConnection.CogVideoX5BNode[id]?.prompt,
+        userid: user?.id,
+        num_inference_steps:
+          nodeConnection.CogVideoX5BNode[id]?.num_inference_steps,
+        guidance_scale: nodeConnection.CogVideoX5BNode[id]?.guidance_scale,
+        negative_prompt: nodeConnection.CogVideoX5BNode[id]?.negative_prompt,
+        use_rife: nodeConnection.CogVideoX5BNode[id]?.use_rife,
+        export_fps: nodeConnection.CogVideoX5BNode[id]?.export_fps,
+      });
+      nodeConnection.setOutput((prev: any) => ({
+        ...prev,
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || [])],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || []), response.data],
+        },
+      }));
+      setCredits((prev) => (Number(prev) - 1).toString());
+    } catch (error) {
+      console.error("Error during Cog Video X API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
+
   const onAiSearch = useCallback(
     async (id: string, nodeConnection: any) => {
       if (!nodeConnection.aiNode[id]) {
@@ -615,6 +685,30 @@ const ActionButton = ({
       }
       if (currentService === "fluxDevLora") {
         const aiNodeAsString = JSON.stringify(nodeConnection.fluxDevLoraNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
+
+        if (response) {
+          toast.message(response);
+        }
+      }
+      if (currentService === "musicGen") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.musicgenNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
+
+        if (response) {
+          toast.message(response);
+        }
+      }
+      if (currentService === "CogVideoX-5B") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.CogVideoX5BNode);
         const response = await onCreateNodeTemplate(
           aiNodeAsString,
           currentService,
@@ -1044,6 +1138,73 @@ const ActionButton = ({
             <Button
               variant="outline"
               onClick={() => onFluxGeneral(selectedNode.id, nodeConnection)}
+            >
+              Test
+            </Button>
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
+              Save {currentService} Template
+            </Button>
+          </>
+        );
+
+      case "CogVideoX-5B":
+        return (
+          <>
+          {nodeConnection.CogVideoX5BNode[selectedNode.id] &&
+              aiOutput.video.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.video.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <video
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                        controls
+                        width="320"
+                        height="240"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onCogVideoX(selectedNode.id, nodeConnection)}
+            >
+              Test
+            </Button>
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
+              Save {currentService} Template
+            </Button>
+          </>
+        );
+      case "musicGen":
+        return (
+          <>
+          {nodeConnection.musicgenNode[selectedNode.id] &&
+              aiOutput.video.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.video.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <audio
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                        controls
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onMusicGen(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>

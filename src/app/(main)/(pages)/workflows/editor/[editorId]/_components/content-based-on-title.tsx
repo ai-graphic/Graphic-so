@@ -28,6 +28,8 @@ import DreamShaper from "./nodes/dreamshaper";
 import FluxGeneral from "./nodes/fluxGeneral";
 import FluxDevLora from "./nodes/fluxDevLora";
 import ConsistentChar from "./nodes/ConsistantChar";
+import CogVideoX from "./nodes/CogVideoX-5B";
+import MusicGen from "./nodes/MusicGen";
 
 export interface Option {
   value: string;
@@ -431,6 +433,18 @@ const ContentBasedOnTitle = ({
               )}
               {title === "stable-video" && (
                 <StableVideo
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "CogVideoX-5B" && (
+                <CogVideoX
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "musicGen" && (
+                <MusicGen
                   nodeConnectionType={nodeConnectionType}
                   title={title}
                 />

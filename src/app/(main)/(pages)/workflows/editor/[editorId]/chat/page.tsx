@@ -220,6 +220,11 @@ const Chat = () => {
                             width="320"
                             height="240"
                           />
+                        ) : /https?:\/\/.*\.(?:mp3)/.test(item.bot) ? (
+                          <audio
+                            src={item.bot}
+                            controls
+                          />
                         ) : (
                           <p>{item.bot}</p>
                         )}
