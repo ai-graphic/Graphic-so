@@ -1153,6 +1153,9 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                     prompt: content,
                     system: aiTemplate[idNode].system,
                     userid: workflow.userId,
+                    model: aiTemplate[idNode].localModel,
+                    temperature: aiTemplate[idNode].temperature,
+                    maxTokens: aiTemplate[idNode].max_tokens,
                   });
                   nodeConnection.setOutput((prev: any) => ({
                     ...prev,
