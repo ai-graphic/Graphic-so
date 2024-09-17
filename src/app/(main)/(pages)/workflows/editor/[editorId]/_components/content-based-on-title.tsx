@@ -30,6 +30,9 @@ import FluxDevLora from "./nodes/fluxDevLora";
 import ConsistentChar from "./nodes/ConsistantChar";
 import CogVideoX from "./nodes/CogVideoX-5B";
 import MusicGen from "./nodes/MusicGen";
+import VideoToVideo from "./nodes/videoToVideo";
+import TextToVideo from "./nodes/lumalabs-text-video";
+import ImageToVideo from "./nodes/lumalabs-img-video";
 
 export interface Option {
   value: string;
@@ -144,7 +147,6 @@ const ContentBasedOnTitle = ({
       setModel("Select Model");
     }
 
-
     const currentPrompt = nodeConnectionType[selectedNode.id]?.prompt;
     if (currentPrompt) {
       setSelectedOutput(currentPrompt);
@@ -214,7 +216,7 @@ const ContentBasedOnTitle = ({
           {title === "AI" ? (
             <div className="gap-2 flex flex-col">
               <p className="block text-sm font-medium text-gray-300">
-              Select your Provider here
+                Select your Provider here
               </p>
               <select
                 value={model}
@@ -511,6 +513,24 @@ const ContentBasedOnTitle = ({
                   nodeConnectionType={nodeConnectionType}
                   title={title}
                 />
+              )}
+              {title === "video-to-video" && (
+                <VideoToVideo
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "lunalabs-ImageToVideo" && (
+                <ImageToVideo
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                  />
+              )}
+              {title === "lunalabs-TextToVideo" && (
+                <TextToVideo
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                  />
               )}
             </div>
           )}

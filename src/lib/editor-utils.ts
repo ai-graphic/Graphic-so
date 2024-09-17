@@ -86,7 +86,7 @@ export const onImageToImageContent = (
       [key]: event.target.value,
     },
   }));
-}
+};
 
 export const onFluxLoraContent = (
   state: EditorState,
@@ -162,7 +162,7 @@ export const onConsistentCharacterContent = (
       [key]: event.target.value,
     },
   }));
-}
+};
 
 export const onDreamShaperContent = (
   state: EditorState,
@@ -181,7 +181,7 @@ export const onDreamShaperContent = (
       [key]: event.target.value,
     },
   }));
-}
+};
 
 export const onFluxGeneralContent = (
   state: EditorState,
@@ -200,7 +200,7 @@ export const onFluxGeneralContent = (
       [key]: event.target.value,
     },
   }));
-}
+};
 
 export const onFluxDevLoraContent = (
   state: EditorState,
@@ -219,7 +219,7 @@ export const onFluxDevLoraContent = (
       [key]: event.target.value,
     },
   }));
-}
+};
 
 export const onCogVideoXContent = (
   state: EditorState,
@@ -238,7 +238,7 @@ export const onCogVideoXContent = (
       [key]: event.target.value,
     },
   }));
-}
+};
 
 export const onMusicGenContent = (
   state: EditorState,
@@ -257,9 +257,63 @@ export const onMusicGenContent = (
       [key]: event.target.value,
     },
   }));
-}
+};
 
+export const onVideoToVideoContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
 
+  nodeConnection.setvideoToVideoNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+};
+
+export const onTextToVideoContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setlunalabsTextToVideoNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+};
+
+export const onImageToVideoContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+  nodeConnection.setlunalabsImageToVideoNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+};
 
 export const onDiscordContent = (
   nodeConnection: ConnectionProviderProps,
@@ -318,6 +372,12 @@ export const onContentChange = (
     onCogVideoXContent(state, nodeConnection, event, content);
   } else if (nodeType === "musicGen") {
     onMusicGenContent(state, nodeConnection, event, content);
+  } else if (nodeType === "video-to-video") {
+    onVideoToVideoContent(state, nodeConnection, event, content);
+  } else if (nodeType === "lunalabs-TextToVideo") {
+    onTextToVideoContent(state, nodeConnection, event, content);
+  } else if (nodeType === "lunalabs-ImageToVideo") {
+    onImageToVideoContent(state, nodeConnection, event, content);
   }
 };
 

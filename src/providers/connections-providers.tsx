@@ -201,6 +201,39 @@ export type ConnectionProviderProps = {
       negative_prompt: string;
     };
   };
+  videoToVideoNode: {
+    [id: string]: {
+      id: string;
+      prompt: string;
+      num_inference_steps: number;
+      guidance_scale: number;
+      seed: number;
+      export_fps: number;
+      video_url: string;
+      strength: number;
+    };
+  };
+  lunalabsImageToVideoNode: {
+    [id: string]: {
+      id: string;
+      prompt: string;
+      start_frame_url : string,
+      end_frame_url : string,
+      aspect_ratio : "",
+      loop : boolean,
+    };
+  };
+  lunalabsTextToVideoNode: {
+    [id: string]: {
+      id: string;
+      prompt: string;
+      aspect_ratio : "",
+      loop : boolean,
+    };
+  };
+  setvideoToVideoNode: React.Dispatch<React.SetStateAction<any>>;
+  setlunalabsImageToVideoNode: React.Dispatch<React.SetStateAction<any>>;
+  setlunalabsTextToVideoNode: React.Dispatch<React.SetStateAction<any>>;
   history: any;
   setCogVideoX5BNode: React.Dispatch<React.SetStateAction<any>>;
   setmusicgenNode: React.Dispatch<React.SetStateAction<any>>;
@@ -324,6 +357,12 @@ const InitialValues: ConnectionProviderProps = {
     slack: "",
     ai: "",
   },
+  videoToVideoNode: {},
+  lunalabsImageToVideoNode: {},
+  lunalabsTextToVideoNode: {},
+  setvideoToVideoNode: () => undefined,
+  setlunalabsImageToVideoNode: () => undefined,
+  setlunalabsTextToVideoNode: () => undefined,
   history: {},
   CogVideoX5BNode: {},
   musicgenNode: {},
@@ -423,6 +462,16 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [workflowTemplate, setWorkFlowTemplate] = useState(
     InitialValues.workflowTemplate
   );
+  const [videoToVideoNode, setvideoToVideoNode] = useState(
+    InitialValues.videoToVideoNode
+  );
+  const [lunalabsImageToVideoNode, setlunalabsImageToVideoNode] = useState(
+    InitialValues.lunalabsImageToVideoNode
+  );
+  const [lunalabsTextToVideoNode, setlunalabsTextToVideoNode] = useState(
+    InitialValues.lunalabsTextToVideoNode
+  );
+
   const addAINode = (id: string, type: string) => {
     if (type === "AI") {
       setAINode((prev) => ({
@@ -599,6 +648,42 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           negative_prompt: "",
         },
       }));
+    } else if (type === "video-to-video") {
+      setvideoToVideoNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          prompt: "",
+          num_inference_steps: 0,
+          guidance_scale: 0,
+          seed: 0,
+          export_fps: 0,
+          video_url: "",
+          strength: 0,
+        },
+      }));
+    } else if (type === "lunalabs-ImageToVideo") {
+      setlunalabsImageToVideoNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          prompt: "",
+          start_frame_url: "",
+          end_frame_url: "",
+          aspect_ratio: "",
+          loop: false,
+        },
+      }));
+    } else if (type === "lunalabs-TextToVideo") {
+      setlunalabsTextToVideoNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          prompt: "",
+          aspect_ratio: "",
+          loop: false,
+        },
+      }));
     }
   };
 
@@ -649,6 +734,12 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     setmusicgenNode,
     CogVideoX5BNode,
     setCogVideoX5BNode,
+    videoToVideoNode,
+    setvideoToVideoNode,
+    lunalabsImageToVideoNode,
+    setlunalabsImageToVideoNode,
+    lunalabsTextToVideoNode,
+    setlunalabsTextToVideoNode,
   };
 
   return <Provider value={values}>{children}</Provider>;

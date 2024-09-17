@@ -847,7 +847,226 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               }
             }
           }
+          if (nodeType == "lunalabs-TextToVideo") {
+            const lumalabsTextToVideoTemplate = JSON.parse(
+              workflow.lunalabsTextToVideoTemplate!
+            );
+            if (lumalabsTextToVideoTemplate[idNode]) {
+              console.log("lumalabs-TextToVideo Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              let prompt =
+                nodeConnection.lunalabsTextToVideoNode[idNode]?.prompt;
+              console.log("Prompt:", prompt);
+              if (node.type === "Trigger") {
+                const output = nodeConnection.output;
+                const contentarr = output[node.id];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
+                content = prmpt;
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", prmpt);
+                  } else {
+                    content = prmpt;
+                  }
+                }
+                chatHistory.user = prmpt;
+              } else {
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", latestOutputs[node.id]);
+                  } else {
+                    content = prompt;
+                  }
+                } else {
+                  content = latestOutputs[node.id];
+                }
+              }
+              try {
+                setIsLoading(idNode, true);
+                const output = await axios.post("/api/ai/lunalabs/text-video", {
+                  prompt: content,
+                  userid: workflow.userId,
+                  aspect_ratio:
+                    lumalabsTextToVideoTemplate[idNode].aspect_ratio,
+                  loop: lumalabsTextToVideoTemplate[idNode].loop,
+                });
+                nodeConnection.setOutput((prev: any) => ({
+                  ...prev,
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || [])],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [
+                      ...(prev.output?.[idNode]?.video || []),
+                      output.data,
+                    ],
+                  },
+                }));
+                latestOutputs[idNode] = output.data;
+              } catch (error) {
+                console.error("Error during Replicate API call:", error);
+              } finally {
+                setIsLoading(idNode, false);
+              }
+            }
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
+            const nextNodeType = flowPath[current + 3];
+            flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
+                setHistory(history);
+              }
+            }
+          }
+          if (nodeType == "lunalabs-ImageToVideo") {
+            const lumalabsimageToVideoTemplate = JSON.parse(
+              workflow.lunalabsImageToVideoTemplate!
+            );
+            if (lumalabsimageToVideoTemplate[idNode]) {
+              console.log("lumalabs-TextToImage Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              let Image;
+              let prompt =
+                nodeConnection.lunalabsImageToVideoNode[idNode]?.prompt;
+              let ImageFromDb =
+                nodeConnection.lunalabsImageToVideoNode[idNode]
+                  ?.start_frame_url;
+              if (node.type === "Trigger") {
+                const output = nodeConnection.output;
+                const contentarr = output[node.id];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
+                const image = contentarr.image[contentarr.image.length - 1];
+                content = prmpt;
+                Image = image;
 
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", prmpt);
+                  } else {
+                    content = prmpt;
+                  }
+                }
+                if (ImageFromDb) {
+                  if (ImageFromDb.includes(":image:")) {
+                    content = ImageFromDb.replace(":image:", image);
+                  } else {
+                    Image = image;
+                  }
+                }
+
+                chatHistory.user = prmpt + " - " + Image;
+              } else {
+                if (prompt && ImageFromDb) {
+                  if (ImageFromDb.includes(":image:") && selectedurl) {
+                    Image = ImageFromDb.replace(":image:", selectedurl);
+                  } else {
+                    Image = latestOutputs[node.id];
+                  }
+                  if (prompt.includes(":input:") && selectedurl) {
+                    content = prompt.replace(":input:", latestOutputs[node.id]);
+                  } else {
+                    content = prompt;
+                  }
+                } else if (!ImageFromDb && !selectedurl) {
+                  Image = latestOutputs[node.id];
+                  content = prompt || "";
+                } else {
+                  Image = selectedurl || latestOutputs[node.id];
+                  content = prompt || "";
+                }
+              }
+
+              try {
+                setIsLoading(idNode, true);
+                const output = await axios.post(
+                  "/api/ai/lunalabs/image-video",
+                  {
+                    prompt: content,
+                    userid: workflow.userId,
+                    aspect_ratio:
+                      lumalabsimageToVideoTemplate[idNode].aspect_ratio,
+                    loop: lumalabsimageToVideoTemplate[idNode].loop,
+                    start_frame_url: Image,
+                    end_frame_url:
+                      lumalabsimageToVideoTemplate[idNode].end_frame_url,
+                  }
+                );
+                nodeConnection.setOutput((prev: any) => ({
+                  ...prev,
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || [])],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [
+                      ...(prev.output?.[idNode]?.video || []),
+                      output.data,
+                    ],
+                  },
+                }));
+                latestOutputs[idNode] = output.data;
+              } catch (error) {
+                console.error("Error during Replicate API call:", error);
+              } finally {
+                setIsLoading(idNode, false);
+              }
+            }
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
+            const nextNodeType = flowPath[current + 3];
+            flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+            }
+            if (chatHistory.user && chatHistory.bot) {
+              const published = await onUpdateChatHistory(
+                workflowId,
+                chatHistory
+              );
+              const history = published?.map((item: string) =>
+                JSON.parse(item)
+              );
+              if (setHistory) {
+                setHistory(history);
+              }
+            }
+          }
           if (nodeType == "dreamShaper") {
             const falDreamShaperTemplate = JSON.parse(
               workflow.DreamShaperTemplate!

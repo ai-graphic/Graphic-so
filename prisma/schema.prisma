@@ -114,16 +114,20 @@ model Workflows {
   User                  User     @relation(fields: [userId], references: [clerkId])
   thumbnail             String?
   chatHistory           String[]
-  fluxDevTemplate       String?
-  fluxloraTemplate      String?
-  fluxTrainTemplate     String?
-  ImageToImageTemplate  String?
-  videoTemplate         String?
-  fluxGeneralTemplate   String?
-  CharacterTemplate     String?
-  DreamShaperTemplate   String?
-  fluxDevLora           String?
-  featured              Boolean?
-  cogVideo5BTemplate    String?
-  musicGenTemplate      String?
+  fluxDevTemplate                String?
+  fluxloraTemplate               String?
+  fluxTrainTemplate              String?
+  ImageToImageTemplate           String?
+  videoTemplate                  String?
+  fluxGeneralTemplate            String?
+  CharacterTemplate              String?
+  DreamShaperTemplate            String?
+  fluxDevLora                    String?
+  featured                       Boolean?
+  cogVideo5BTemplate             String?
+  musicGenTemplate               String?
+  videoToVideoTemplate           String?
+  lunalabsImageToVideoTemplate   String?
+  lunalabsTextToVideoTemplate    String?
+  PublicChatHistory              String[]
 }

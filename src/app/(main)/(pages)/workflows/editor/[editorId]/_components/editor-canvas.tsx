@@ -261,6 +261,9 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
       "Custom Webhook": EditorCanvasCardSingle,
       "Google Calendar": EditorCanvasCardSingle,
       Wait: EditorCanvasCardSingle,
+      "video-to-video": EditorCanvasCardSingle,
+      "lunalabs-ImageToVideo": EditorCanvasCardSingle,
+      "lunalabs-TextToVideo": EditorCanvasCardSingle,
     }),
     []
   );

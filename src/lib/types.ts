@@ -50,7 +50,10 @@ export type EditorCanvasTypes =
   | "fluxGeneral"
   | "fluxDevLora"
   | "CogVideoX-5B"
-  | "musicGen";
+  | "musicGen"
+  | "video-to-video"
+  | "lunalabs-ImageToVideo"
+  | "lunalabs-TextToVideo";
 
 export type EditorCanvasCardType = {
   title: string;
@@ -119,6 +122,9 @@ export const nodeMapper: Record<string, string> = {
   fluxDevLora: "fluxDevLoraNode",
   "CogVideoX-5B": "CogVideoX5BNode",
   musicGen: "musicgenNode",
+  "video-to-video": "videoToVideoNode",
+  "lunalabs-ImageToVideo": "lunalabsImageToVideoNode",
+  "lunalabs-TextToVideo": "lunalabsTextToVideoNode",
 };
 
 export type Option = {

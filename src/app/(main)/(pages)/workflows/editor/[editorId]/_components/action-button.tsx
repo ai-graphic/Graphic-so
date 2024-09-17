@@ -496,7 +496,7 @@ const ActionButton = ({
             prompt: nodeConnection.aiNode[id]?.prompt,
             system: nodeConnection.aiNode[id]?.system,
             userid: user?.id,
-            model : nodeConnection.aiNode[id]?.localModel,
+            model: nodeConnection.aiNode[id]?.localModel,
             temperature: nodeConnection.aiNode[id]?.temperature,
             maxTokens: nodeConnection.aiNode[id]?.max_tokens,
           });
@@ -573,6 +573,103 @@ const ActionButton = ({
     [nodeConnection.aiNode, pathname]
   );
 
+  const onVideoToVideo = useCallback(
+    async (id: string, nodeConnection: any) => {
+      try {
+        setIsLoading(id, true);
+        const response = await axios.post("/api/ai/fal/video-to-video", {
+          prompt: nodeConnection.videoToVideoNode[id].prompt,
+          userid: user?.id,
+          negative_prompt: nodeConnection.videoToVideoNode[id].negative_prompt,
+          num_inference_steps:
+            nodeConnection.videoToVideoNode[id]?.num_inference_steps,
+          guidance_scale: nodeConnection.videoToVideoNode[id]?.guidance_scale,
+          use_rife: nodeConnection.videoToVideoNode[id]?.use_rife,
+          export_fps: nodeConnection.videoToVideoNode[id]?.export_fps,
+          video_url: nodeConnection.videoToVideoNode[id]?.video_url,
+          strength: nodeConnection.videoToVideoNode[id]?.strength,
+        });
+        nodeConnection.setOutput((prev: any) => ({
+          ...prev,
+          ...(prev.output || {}),
+          [id]: {
+            image: [...(prev.output?.[id]?.image || [])],
+            text: [...(prev.output?.[id]?.text || [])],
+            video: [...(prev.output?.[id]?.video || []), response.data],
+          },
+        }));
+        setCredits((prev) => (Number(prev) - 1).toString());
+      } catch (error) {
+        console.error("Error during Video to Video API call:", error);
+      } finally {
+        setIsLoading(id, false);
+      }
+    },
+    []
+  );
+
+  const onLunaLabsTextToVideo = useCallback(
+    async (id: string, nodeConnection: any) => {
+      try {
+        setIsLoading(id, true);
+        const response = await axios.post("/api/ai/lunalabs/text-video", {
+          prompt: nodeConnection.lunalabsTextToVideoNode[id]?.prompt,
+          userid: user?.id,
+          aspect_ratio: nodeConnection.lunalabsTextToVideoNode[id]?.aspect_ratio,
+          loop: nodeConnection.lunalabsTextToVideoNode[id]?.loop,
+        });
+        nodeConnection.setOutput((prev: any) => ({
+          ...prev,
+          ...(prev.output || {}),
+          [id]: {
+            image: [...(prev.output?.[id]?.image || [])],
+            text: [...(prev.output?.[id]?.text || [])],
+            video: [...(prev.output?.[id]?.video || []), response.data],
+          },
+        }));
+        setCredits((prev) => (Number(prev) - 1).toString());
+      } catch (error) {
+        console.error("Error during Luna Labs Text to Video API call:", error);
+      } finally {
+        setIsLoading(id, false);
+      }
+    },
+    []
+  );
+
+  const onLunaLabsImageToVideo = useCallback(
+    async (id: string, nodeConnection: any) => {
+      try {
+        setIsLoading(id, true);
+        const response = await axios.post("/api/ai/lunalabs/image-video", {
+          prompt: nodeConnection.lunalabsImageToVideoNode[id]?.prompt,
+          userid: user?.id,
+          start_frame_url:
+            nodeConnection.lunalabsImageToVideoNode[id]?.start_frame_url,
+          end_frame_url:
+            nodeConnection.lunalabsImageToVideoNode[id]?.end_frame_url,
+          aspect_ratio:
+            nodeConnection.lunalabsImageToVideoNode[id]?.aspect_ratio,
+          loop: nodeConnection.lunalabsImageToVideoNode[id]?.loop,
+        });
+        nodeConnection.setOutput((prev: any) => ({
+          ...prev,
+          ...(prev.output || {}),
+          [id]: {
+            image: [...(prev.output?.[id]?.image || [])],
+            text: [...(prev.output?.[id]?.text || [])],
+            video: [...(prev.output?.[id]?.video || []), response.data],
+          },
+        }));
+        setCredits((prev) => (Number(prev) - 1).toString());
+      } catch (error) {
+        console.error("Error during Luna Labs Image to Video API call:", error);
+      } finally {
+        setIsLoading(id, false);
+      }
+    },
+    []
+  );
   // ...
   const onCreateLocalNodeTempate = useCallback(
     async (currentService: any) => {
@@ -712,6 +809,49 @@ const ActionButton = ({
       }
       if (currentService === "CogVideoX-5B") {
         const aiNodeAsString = JSON.stringify(nodeConnection.CogVideoX5BNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
+
+        if (response) {
+          toast.message(response);
+        }
+      }
+
+      if (currentService === "video-to-video") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.videoToVideoNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
+
+        if (response) {
+          toast.message(response);
+        }
+      }
+
+      if (currentService === "lunalabs-TextToVideo") {
+        const aiNodeAsString = JSON.stringify(
+          nodeConnection.lunalabsTextToVideoNode
+        );
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
+
+        if (response) {
+          toast.message(response);
+        }
+      }
+
+      if (currentService === "lunalabs-ImageToVideo") {
+        const aiNodeAsString = JSON.stringify(
+          nodeConnection.lunalabsImageToVideoNode
+        );
         const response = await onCreateNodeTemplate(
           aiNodeAsString,
           currentService,
@@ -1156,7 +1296,7 @@ const ActionButton = ({
       case "CogVideoX-5B":
         return (
           <>
-          {nodeConnection.CogVideoX5BNode[selectedNode.id] &&
+            {nodeConnection.CogVideoX5BNode[selectedNode.id] &&
               aiOutput.video.length > 0 && (
                 <div className="flex flex-col space-y-2">
                   {aiOutput.video.map((output, index) => (
@@ -1190,7 +1330,7 @@ const ActionButton = ({
       case "musicGen":
         return (
           <>
-          {nodeConnection.musicgenNode[selectedNode.id] &&
+            {nodeConnection.musicgenNode[selectedNode.id] &&
               aiOutput.video.length > 0 && (
                 <div className="flex flex-col space-y-2">
                   {aiOutput.video.map((output, index) => (
@@ -1208,6 +1348,112 @@ const ActionButton = ({
             <Button
               variant="outline"
               onClick={() => onMusicGen(selectedNode.id, nodeConnection)}
+            >
+              Test
+            </Button>
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
+              Save {currentService} Template
+            </Button>
+          </>
+        );
+      case "video-to-video":
+        return (
+          <>
+            {nodeConnection.videoToVideoNode[selectedNode.id] &&
+              aiOutput.video.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.video.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <video
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                        controls
+                        width="320"
+                        height="240"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onVideoToVideo(selectedNode.id, nodeConnection)}
+            >
+              Test
+            </Button>
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
+              Save {currentService} Template
+            </Button>
+          </>
+        );
+      case "lunalabs-TextToVideo":
+        return (
+          <>
+            {nodeConnection.lunalabsTextToVideoNode[selectedNode.id] &&
+              aiOutput.video.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.video.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <video
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                        controls
+                        width="320"
+                        height="240"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() =>
+                onLunaLabsTextToVideo(selectedNode.id, nodeConnection)
+              }
+            >
+              Test
+            </Button>
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
+              Save {currentService} Template
+            </Button>
+          </>
+        );
+      case "lunalabs-ImageToVideo":
+        return (
+          <>
+            {nodeConnection.lunalabsImageToVideoNode[selectedNode.id] &&
+              aiOutput.video.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.video.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <video
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                        controls
+                        width="320"
+                        height="240"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() =>
+                onLunaLabsImageToVideo(selectedNode.id, nodeConnection)
+              }
             >
               Test
             </Button>

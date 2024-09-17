@@ -269,6 +269,49 @@ export const onCreateNodeTemplate = async (
       return "musicGen template saved";
     }
   }
+
+  if (type === "video-to-video") {
+    const response = await db.workflows.update({
+      where: {
+        id: workflowId,
+      },
+      data: {
+        videoToVideoTemplate: content,
+      },
+    });
+
+    if (response) {
+      return "video-to-video template saved";
+    }
+  }
+  if (type === "lunalabs-ImageToVideo") {
+    const response = await db.workflows.update({
+      where: {
+        id: workflowId,
+      },
+      data: {
+        lunalabsImageToVideoTemplate: content,
+      },
+    });
+
+    if (response) {
+      return "lunalabs-ImageToVideo template saved";
+    }
+  }
+  if (type === "lunalabs-TextToVideo") {
+    const response = await db.workflows.update({
+      where: {
+        id: workflowId,
+      },
+      data: {
+        lunalabsTextToVideoTemplate: content,
+      },
+    });
+
+    if (response) {
+      return "lunalabs-TextToVideo template saved";
+    }
+  }
 };
 
 export const onGetWorkflows = async () => {
@@ -382,11 +425,17 @@ export const ondublicateWorkflow = async (
         ImageToImageTemplate: existingWorkflow.ImageToImageTemplate,
         fluxTrainTemplate: existingWorkflow.fluxTrainTemplate,
         flowPath: existingWorkflow.flowPath,
+        cogVideo5BTemplate: existingWorkflow.cogVideo5BTemplate,
+        musicGenTemplate: existingWorkflow.musicGenTemplate,
+        videoToVideoTemplate: existingWorkflow.videoToVideoTemplate,
+        lunalabsImageToVideoTemplate: existingWorkflow.lunalabsImageToVideoTemplate,
+        lunalabsTextToVideoTemplate: existingWorkflow.lunalabsTextToVideoTemplate,
         publish: false,
       },
     });
 
-    if (workflow) return { message: "Workflow duplicated", workflowid : workflow.id };
+    if (workflow)
+      return { message: "Workflow duplicated", workflowid: workflow.id };
     return { message: "Oops! try again" };
   }
 };

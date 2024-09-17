@@ -236,7 +236,7 @@ const Chat = () => {
                                         <BotIcon />
                                       </strong>
                                       <div>
-                                        {item.history.map(
+                                        {item.history?.map(
                                           (historyItem, historyIndex) => (
                                             <div
                                               key={historyIndex}

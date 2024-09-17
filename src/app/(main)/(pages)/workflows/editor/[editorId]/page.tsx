@@ -390,7 +390,89 @@ const Page = (props: Props) => {
             }
           });
         }
+        if (workflow?.videoToVideoTemplate) {
+          const videoToVideo = workflow.videoToVideoTemplate
+            ? JSON.parse(workflow.videoToVideoTemplate)
+            : {};
+          Object.keys(videoToVideo).forEach((nodeId) => {
+            const nodeData = videoToVideo[nodeId];
+            if (!videoToVideo[nodeId]) {
+              nodeConnection.videoToVideoNode[nodeId] = {
+                id: nodeId,
+                prompt: "",
+                seed: 0,
+                num_inference_steps: 0,
+                guidance_scale: 0,
 
+                export_fps: 0,
+                video_url: "",
+                strength: 0,
+              };
+            } else {
+              nodeConnection.videoToVideoNode[nodeId] = {
+                ...nodeConnection.videoToVideoNode[nodeId],
+                prompt: nodeData.prompt,
+                seed: nodeData.seed,
+                num_inference_steps: nodeData.num_inference_steps,
+                guidance_scale: nodeData.guidance_scale,
+
+                export_fps: nodeData.export_fps,
+                video_url: nodeData.video_url,
+                strength: nodeData.strength,
+              };
+            }
+          });
+        }
+        if (workflow?.lunalabsImageToVideoTemplate) {
+          const lunalabsImageToVideo = workflow.lunalabsImageToVideoTemplate
+            ? JSON.parse(workflow.lunalabsImageToVideoTemplate)
+            : {};
+          Object.keys(lunalabsImageToVideo).forEach((nodeId) => {
+            const nodeData = lunalabsImageToVideo[nodeId];
+            if (!lunalabsImageToVideo[nodeId]) {
+              nodeConnection.lunalabsImageToVideoNode[nodeId] = {
+                id: nodeId,
+                prompt: "",
+                loop: false,
+                aspect_ratio: "",
+                start_frame_url: "",
+                end_frame_url: "",
+              };
+            } else {
+              nodeConnection.lunalabsImageToVideoNode[nodeId] = {
+                ...nodeConnection.lunalabsImageToVideoNode[nodeId],
+                prompt: nodeData.prompt,
+                loop: nodeData.loop,
+                aspect_ratio: nodeData.aspect_ratio,
+                start_frame_url: nodeData.start_frame_url,
+                end_frame_url: nodeData.end_frame_url,
+              };
+            }
+          });
+        }
+        if (workflow?.lunalabsTextToVideoTemplate) {
+          const lunalabsTextToVideo = workflow.lunalabsTextToVideoTemplate
+            ? JSON.parse(workflow.lunalabsTextToVideoTemplate)
+            : {};
+          Object.keys(lunalabsTextToVideo).forEach((nodeId) => {
+            const nodeData = lunalabsTextToVideo[nodeId];
+            if (!lunalabsTextToVideo[nodeId]) {
+              nodeConnection.lunalabsTextToVideoNode[nodeId] = {
+                id: nodeId,
+                prompt: "",
+                aspect_ratio: "",
+                loop: false,
+              };
+            } else {
+              nodeConnection.lunalabsTextToVideoNode[nodeId] = {
+                ...nodeConnection.lunalabsTextToVideoNode[nodeId],
+                prompt: nodeData.prompt,
+                aspect_ratio: nodeData.aspect_ratio,
+                loop: nodeData.loop,
+              };
+            }
+          });
+        }
         if (workflow?.AiTemplate) {
           const aiTemplate = workflow.AiTemplate
             ? JSON.parse(workflow.AiTemplate)

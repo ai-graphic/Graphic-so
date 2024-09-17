@@ -20,6 +20,9 @@ export default authMiddleware({
         '/api/ai/vercel',
         '/api/ai/fal/cogVideox-5b',
         '/api/ai/replicate/musicgen',
+        '/api/ai/fal/video-to-video',
+        '/api/ai/lunalabs/text-video',
+        '/api/ai/lunalabs/image-video',
     ],
     ignoredRoutes: [
         '/api/auth/callback/discord',

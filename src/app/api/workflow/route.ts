@@ -13,7 +13,7 @@ export async function POST(req: Request, res: Response) {
   type LatestOutputsType = {
     [key: string]: string;
   };
-  let chatHistory: any = { user: "", bot: "" };
+  let chatHistory: any = { user: "", bot: "", history: [] };
   let latestOutputs: LatestOutputsType = {};
 
   try {
@@ -159,20 +159,13 @@ export async function POST(req: Request, res: Response) {
               }
             }
           }
-          console.log("flow", flowPath, chatHistory);
+          chatHistory.history.push(latestOutputs[idNode]);
           const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
           const isNextNotAI = nextNodeType !== "AI";
           if (isNextNotAI) {
             chatHistory.bot = latestOutputs[idNode];
             console.log("chatHistory", chatHistory);
-          }
-          if (chatHistory.user && chatHistory.bot) {
-            const published = await onUpdateChatHistory(
-              workflowId,
-              chatHistory
-            );
-            const history = published?.map((item: string) => JSON.parse(item));
           }
           continue;
         }
@@ -233,7 +226,7 @@ export async function POST(req: Request, res: Response) {
             } finally {
             }
           }
-          console.log("flow", flowPath, chatHistory);
+          chatHistory.history.push(latestOutputs[idNode]);
           const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
           const isNextNotAI =
@@ -304,7 +297,7 @@ export async function POST(req: Request, res: Response) {
             } finally {
             }
           }
-          console.log("flow", flowPath, chatHistory);
+          chatHistory.history.push(latestOutputs[idNode]);
           const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
           const isNextNotAI =
@@ -397,7 +390,7 @@ export async function POST(req: Request, res: Response) {
             } finally {
             }
           }
-          console.log("flow", flowPath, chatHistory);
+          chatHistory.history.push(latestOutputs[idNode]);
           const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
           const isNextNotAI =
@@ -443,7 +436,7 @@ export async function POST(req: Request, res: Response) {
             } finally {
             }
           }
-          console.log("flow", flowPath, chatHistory);
+          chatHistory.history.push(latestOutputs[idNode]);
           const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
           const isNextNotAI =
@@ -503,7 +496,207 @@ export async function POST(req: Request, res: Response) {
             } finally {
             }
           }
-          console.log("flow", flowPath, chatHistory);
+          chatHistory.history.push(latestOutputs[idNode]);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "video-to-video") {
+          const falVideoTemplate = JSON.parse(workflow.videoToVideoTemplate!);
+          if (falVideoTemplate[idNode]) {
+            console.log("video-to-video Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              const prmpt = prompt;
+              chatHistory.user = prmpt;
+              content = prmpt;
+            } else {
+              content = latestOutputs[node.id];
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/fal/video-to-video`,
+                {
+                  prompt: content,
+                  userid: userid,
+                  guidance_scale: falVideoTemplate[idNode]?.guidance_scale,
+                  negative_prompt: falVideoTemplate[idNode]?.negative_prompt,
+                  use_rife: falVideoTemplate[idNode]?.use_rife,
+                  export_fps: falVideoTemplate[idNode]?.export_fps,
+                  video_url: falVideoTemplate[idNode]?.video_url,
+                  strength: falVideoTemplate[idNode]?.strength,
+                }
+              );
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          chatHistory.history.push(latestOutputs[idNode]);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "lunalabs-ImageToVideo") {
+          const falImageToVideoTemplate = JSON.parse(
+            workflow.lunalabsImageToVideoTemplate!
+          );
+          if (falImageToVideoTemplate[idNode]) {
+            console.log("lunalabs-ImageToVideo Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            let Image;
+            const Prompt = falImageToVideoTemplate[idNode]?.prompt;
+            const ImageFromDb =
+              falImageToVideoTemplate[idNode]?.start_frame_url;
+            if (node.type === "Trigger") {
+              const prmpt = prompt;
+              content = prmpt;
+              Image = image;
+
+              if (Prompt) {
+                if (Prompt.includes(":input:")) {
+                  content = Prompt.replace(":input:", prmpt);
+                } else {
+                  content = prmpt;
+                }
+              }
+              if (ImageFromDb) {
+                if (ImageFromDb.includes(":image:")) {
+                  content = ImageFromDb.replace(":image:", image);
+                } else {
+                  Image = image;
+                }
+              }
+
+              chatHistory.user = prmpt + " - " + Image;
+            } else {
+              if (Prompt && ImageFromDb) {
+                if (ImageFromDb.includes(":image:") && image) {
+                  Image = ImageFromDb.replace(":image:", image);
+                } else {
+                  Image = latestOutputs[node.id];
+                }
+                if (Prompt.includes(":input:") && image) {
+                  content = Prompt.replace(":input:", latestOutputs[node.id]);
+                } else {
+                  content = Prompt;
+                }
+              } else if (!ImageFromDb && !image) {
+                Image = latestOutputs[node.id];
+                content = Prompt || "";
+              } else {
+                Image = image || latestOutputs[node.id];
+                content = Prompt || "";
+              }
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/lunalabs/image-video`,
+                {
+                  prompt: content,
+                  userid: userid,
+                  start_frame_url: image,
+                  end_frame_url: falImageToVideoTemplate[idNode].end_frame_url,
+                  aspect_ratio: falImageToVideoTemplate[idNode].aspect_ratio,
+                  loop: falImageToVideoTemplate[idNode].loop,
+                }
+              );
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          chatHistory.history.push(latestOutputs[idNode]);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "lunalabs-TextToVideo") {
+          const falTextToVideoTemplate = JSON.parse(
+            workflow.lunalabsTextToVideoTemplate!
+          );
+          if (falTextToVideoTemplate[idNode]) {
+            console.log("lunalabs-TextToVideo Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              console.log("Trigger Node", node.id);
+              let prmpt = falTextToVideoTemplate[idNode]?.prompt;
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", prompt);
+                } else {
+                  content = prmpt;
+                }
+                chatHistory.user = content;
+              }
+            } else {
+              let prmpt = falTextToVideoTemplate[idNode]?.prompt;
+              console.log("Prompt:", prmpt);
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", latestOutputs[node.id]);
+                } else {
+                  content = prmpt;
+                }
+              } else {
+                content = latestOutputs[node.id];
+              }
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/lunalabs/text-video`,
+                {
+                  prompt: content,
+                  userid: userid,
+                  aspect_ratio: falTextToVideoTemplate[idNode].aspect_ratio,
+                  loop: falTextToVideoTemplate[idNode].loop,
+                }
+              );
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          chatHistory.history.push(latestOutputs[idNode]);
           const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
           const isNextNotAI =
@@ -563,7 +756,7 @@ export async function POST(req: Request, res: Response) {
             } finally {
             }
           }
-          console.log("flow", flowPath, chatHistory);
+          chatHistory.history.push(latestOutputs[idNode]);
           const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
           const isNextNotAI =
@@ -658,7 +851,7 @@ export async function POST(req: Request, res: Response) {
             } finally {
             }
           }
-          console.log("flow", flowPath, chatHistory);
+          chatHistory.history.push(latestOutputs[idNode]);
           const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
           const isNextNotAI =
@@ -748,7 +941,7 @@ export async function POST(req: Request, res: Response) {
             } finally {
             }
           }
-          console.log("flow", flowPath, chatHistory);
+          chatHistory.history.push(latestOutputs[idNode]);
           const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
           const isNextNotAI =
@@ -816,7 +1009,7 @@ export async function POST(req: Request, res: Response) {
             } finally {
             }
           }
-          console.log("flow", flowPath, chatHistory);
+          chatHistory.history.push(latestOutputs[idNode]);
           const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
           const isNextNotAI =
@@ -884,7 +1077,7 @@ export async function POST(req: Request, res: Response) {
             } finally {
             }
           }
-          console.log("flow", flowPath, chatHistory);
+          chatHistory.history.push(latestOutputs[idNode]);
           const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
           const isNextNotAI =
@@ -942,7 +1135,7 @@ export async function POST(req: Request, res: Response) {
       }
     }
 
-    const final = JSON.stringify(chatHistory.bot);
+    const final = JSON.stringify(chatHistory);
     console.log("final", final);
     return new Response(final, {
       status: 200,

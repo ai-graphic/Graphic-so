@@ -332,6 +332,18 @@ export const EditorCanvasDefaultCardTypes = {
     description: "Generate videos using open source CogVideoX-5B models.",
     type: "Action",
   },
+  "video-to-video": {
+    description: "Convert one video to another using AI models.",
+    type: "Action",
+  },
+  "lunalabs-ImageToVideo": {
+    description: "Convert images to videos using Luna Labs models.",
+    type: "Action",
+  },
+  "lunalabs-TextToVideo": {
+    description: "Convert text to videos using Luna Labs models.",
+    type: "Action",
+  },
   "consistent-character": {
     description: "Create images of a given character in different poses.",
     type: "Action",
