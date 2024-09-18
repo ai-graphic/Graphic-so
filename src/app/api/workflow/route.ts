@@ -29,13 +29,41 @@ export async function POST(req: Request, res: Response) {
           clerkId: userid,
         },
       });
-      if (Number(dbUser?.credits) <= Math.ceil(flowPath.length / 2) - 1) {
+      let requiredCredits = 0;
+      flowPath.forEach((nodeType: string) => {
+        if (
+          [
+            "flux-dev",
+            "flux-lora",
+            "fluxGeneral",
+            "fluxDevLora",
+            "AI",
+            "image-to-image",
+            "consistent-character",
+            "dreamShaper",
+            "musicGen",
+          ].includes(nodeType)
+        ) {
+          requiredCredits += 1;
+        } else if (
+          [
+            "stable-video",
+            "CogVideoX-5B",
+            "lumalabs-TextToVideo",
+            "lumalabs-ImageToVideo",
+            "video-to-video",
+          ].includes(nodeType)
+        ) {
+          requiredCredits += 10;
+        }
+      });
+
+      if (Number(dbUser?.credits) < requiredCredits) {
         return new Response("Insufficient Credits", {
           status: 402,
           headers: { "Content-Type": "application/json" },
         });
       }
-      console.log((Number(dbUser?.credits) - 1).toString());
       await db.user.update({
         where: {
           clerkId: userid,

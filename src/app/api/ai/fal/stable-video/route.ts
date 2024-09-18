@@ -65,7 +65,7 @@ export async function POST(req: Request, res: Response) {
         clerkId: userid,
       },
       data: {
-        credits: (Number(dbUser?.credits) - 1).toString(),
+        credits: (Number(dbUser?.credits) - 10).toString(),
       },
     });
 

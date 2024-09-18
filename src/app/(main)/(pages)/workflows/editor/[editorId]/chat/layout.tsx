@@ -4,7 +4,7 @@ import {
   Sheet,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Settings } from "lucide-react";
+import { Settings, Sparkles } from "lucide-react";
 
 interface ChatLayoutProps {
   children: React.ReactNode;
@@ -17,8 +17,8 @@ export default async function ChatLayout({ children }: ChatLayoutProps) {
     <>
       <div className="flex flex-col h-screen justify-center items-center">
         <Sheet>
-        <SheetTrigger className="absolute z-50 w-10 text-gray-400 hover:text-black dark:hover:text-white top-2 right-3 border border-gray-400 rounded-lg py-1 px-2 sm:z-100000">
-            <Settings />
+        <SheetTrigger className="absolute flex gap-2 z-50 w-fit text-black  hover:text-black dark:hover:bg-black dark:hover:text-white bg-white top-3 right-3 border border-gray-400 rounded-lg py-1 px-2 sm:z-100000">
+        <span className="max-sm:hidden">Remix this workflow</span> <Sparkles size={24}/>
           </SheetTrigger>
          {children}
         </Sheet>

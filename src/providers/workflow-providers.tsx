@@ -78,7 +78,36 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
       let workflow = await getworkflow(workflowId);
       if (workflow) {
         const flowPath = JSON.parse(workflow.flowPath!);
-        if (parseInt(credits) <= Math.ceil(flowPath.length / 2) - 1) {
+        let requiredCredits = 0;
+        flowPath.forEach((nodeType: string) => {
+          if (
+            [
+              "flux-dev",
+              "flux-lora",
+              "fluxGeneral",
+              "fluxDevLora",
+              "AI",
+              "image-to-image",
+              "consistent-character",
+              "dreamShaper",
+              "musicGen",
+            ].includes(nodeType)
+          ) {
+            requiredCredits += 1;
+          } else if (
+            [
+              "stable-video",
+              "CogVideoX-5B",
+              "lumalabs-TextToVideo",
+              "lumalabs-ImageToVideo",
+              "video-to-video",
+            ].includes(nodeType)
+          ) {
+            requiredCredits += 10;
+          }
+        });
+
+        if (parseInt(credits) < requiredCredits) {
           toast.error("Insufficient Credits");
           return;
         }

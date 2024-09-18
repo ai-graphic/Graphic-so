@@ -144,6 +144,7 @@ const Chat = () => {
       }
     } catch (error) {
       toast.error("Error sending message");
+      toast.error("you have insufficient credits");
       console.log("error", error);
     } finally {
       setLoad(false);

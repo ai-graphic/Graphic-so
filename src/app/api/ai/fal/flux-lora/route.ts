@@ -31,11 +31,11 @@ export async function POST(req: Request, res: Response) {
       });
     }
 
-   const dbUser = await db.user.findFirst({
+    const dbUser = await db.user.findFirst({
       where: {
         clerkId: userid,
-      }
-    })
+      },
+    });
 
     if (Number(dbUser?.credits) < 1) {
       return new Response("Insufficient credits", {
@@ -52,8 +52,16 @@ export async function POST(req: Request, res: Response) {
     const numInferenceStepsInt = parseInt(num_inference_steps, 10);
     const num_imagesInt = parseInt(num_images, 10);
     const seedInt = parseInt(seed, 10);
+    const lora = loras
+      ? [
+          {
+            path: loras,
+            scale: 1,
+          },
+        ]
+      : [];
 
-    const result = await fal.subscribe("fal-ai/flux-lora", {
+    const result = (await fal.subscribe("fal-ai/flux-lora", {
       input: {
         prompt: prompt,
         image_size: image_size || `landscape_4_3`,
@@ -62,8 +70,8 @@ export async function POST(req: Request, res: Response) {
         num_images: num_imagesInt || 1,
         enable_safety_checker: enable_safety_checker || false,
         seed: seedInt || 5,
-        loras : loras || [],
-        output_format : output_format || "jpeg",
+        loras: lora,
+        output_format: output_format || "jpeg",
       },
       logs: true,
       onQueueUpdate: (update: any) => {
@@ -71,7 +79,7 @@ export async function POST(req: Request, res: Response) {
           update.logs.map((log: any) => log.message).forEach(console.log);
         }
       },
-    })  as FalResult;
+    })) as FalResult;
 
     await db.user.update({
       where: {
@@ -81,7 +89,7 @@ export async function POST(req: Request, res: Response) {
         credits: (Number(dbUser?.credits) - 1).toString(),
       },
     });
-    
+
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,
@@ -95,20 +103,19 @@ export async function POST(req: Request, res: Response) {
       })
       .catch((error) => {
         console.log(error);
-      })
+      });
 
+    if (uploadResult && uploadResult.url) {
+      const finalurl = [uploadResult.url];
+      const finaloutput = JSON.stringify(finalurl);
 
-      if (uploadResult && uploadResult.url) {
-        const finalurl = [uploadResult.url];
-        const finaloutput = JSON.stringify(finalurl);
-  
-        return new Response(finaloutput, {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        });
-      } else {
-        throw new Error("Upload failed, no URL returned.");
-      }
+      return new Response(finaloutput, {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } else {
+      throw new Error("Upload failed, no URL returned.");
+    }
   } catch (error: any) {
     console.error("Error during fal API call:", error);
     return new Response("error", {

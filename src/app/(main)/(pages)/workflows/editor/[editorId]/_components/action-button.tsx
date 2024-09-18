@@ -207,22 +207,22 @@ const ActionButton = ({
   const onTrainFlux = useCallback(async (id: string, nodeConnection: any) => {
     try {
       setIsLoading(id, true);
-      const response = await axios.post("/api/ai/fal/train-flux", {
-        images_data_url: nodeConnection.trainFluxNode[id].images_data_url,
-        trigger_word: nodeConnection.trainFluxNode[id].trigger_word,
-        userid: user?.id,
-        iter_multiplier: nodeConnection.trainFluxNode[id].iter_multiplier,
-      });
-      nodeConnection.setOutput((prev: any) => ({
-        ...prev,
-        ...(prev.output || {}),
-        [id]: {
-          image: [...(prev.output?.[id]?.image || []), response.data],
-          text: [...(prev.output?.[id]?.text || [])],
-          video: [...(prev.output?.[id]?.video || [])],
-        },
-      }));
-      setCredits((prev) => (Number(prev) - 1).toString());
+      // const response = await axios.post("/api/ai/fal/train-flux", {
+      //   images_data_url: nodeConnection.trainFluxNode[id].images_data_url,
+      //   trigger_word: nodeConnection.trainFluxNode[id].trigger_word,
+      //   userid: user?.id,
+      //   iter_multiplier: nodeConnection.trainFluxNode[id].iter_multiplier,
+      // });
+      // nodeConnection.setOutput((prev: any) => ({
+      //   ...prev,
+      //   ...(prev.output || {}),
+      //   [id]: {
+      //     image: [...(prev.output?.[id]?.image || []), response.data],
+      //     text: [...(prev.output?.[id]?.text || [])],
+      //     video: [...(prev.output?.[id]?.video || [])],
+      //   },
+      // }));
+      // setCredits((prev) => (Number(prev) - 1).toString());
     } catch (error) {
       console.error("Error during Train Flux API call:", error);
     } finally {
@@ -253,7 +253,7 @@ const ActionButton = ({
           video: [...(prev.output?.[id]?.video || []), response.data],
         },
       }));
-      setCredits((prev) => (Number(prev) - 1).toString());
+      setCredits((prev) => (Number(prev) - 10).toString());
     } catch (error) {
       console.error("Error during Stable Video API call:", error);
     } finally {
@@ -470,7 +470,7 @@ const ActionButton = ({
           video: [...(prev.output?.[id]?.video || []), response.data],
         },
       }));
-      setCredits((prev) => (Number(prev) - 1).toString());
+      setCredits((prev) => (Number(prev) - 10).toString());
     } catch (error) {
       console.error("Error during Cog Video X API call:", error);
     } finally {
@@ -599,7 +599,7 @@ const ActionButton = ({
             video: [...(prev.output?.[id]?.video || []), response.data],
           },
         }));
-        setCredits((prev) => (Number(prev) - 1).toString());
+        setCredits((prev) => (Number(prev) - 10).toString());
       } catch (error) {
         console.error("Error during Video to Video API call:", error);
       } finally {
@@ -628,7 +628,7 @@ const ActionButton = ({
             video: [...(prev.output?.[id]?.video || []), response.data],
           },
         }));
-        setCredits((prev) => (Number(prev) - 1).toString());
+        setCredits((prev) => (Number(prev) - 10).toString());
       } catch (error) {
         console.error("Error during Luna Labs Text to Video API call:", error);
       } finally {
@@ -662,7 +662,7 @@ const ActionButton = ({
             video: [...(prev.output?.[id]?.video || []), response.data],
           },
         }));
-        setCredits((prev) => (Number(prev) - 1).toString());
+        setCredits((prev) => (Number(prev) - 10).toString());
       } catch (error) {
         console.error("Error during Luna Labs Image to Video API call:", error);
       } finally {

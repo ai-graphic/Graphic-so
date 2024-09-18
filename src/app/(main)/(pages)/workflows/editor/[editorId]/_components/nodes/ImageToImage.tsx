@@ -30,6 +30,7 @@ const ImageToImage = (nodeConnectionType: any, title: string) => {
   const [selectedPrompt, setSelectedPrompt] = React.useState<string | null>();
   const [selectedurl, setSelectedurl] = React.useState<string | null>();
   const [loading, setLoading] = React.useState<boolean>(false);
+  console.log(nodeConnectionType);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
