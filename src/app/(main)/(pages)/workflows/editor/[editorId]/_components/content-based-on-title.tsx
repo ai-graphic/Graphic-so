@@ -17,7 +17,7 @@ import GoogleFileDetails from "@/app/(main)/(pages)/workflows/editor/[editorId]/
 import GoogleDriveFiles from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/google-drive-files";
 import ActionButton from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/action-button";
 import { useEffect, useState } from "react";
-import SuperAgent from "./nodes/superagent";
+// import SuperAgent from "./nodes/superagent";
 import { Button } from "@/components/ui/button";
 import FluxDev from "./nodes/FluxDev";
 import ImageToImage from "./nodes/ImageToImage";
@@ -78,27 +78,10 @@ const ContentBasedOnTitle = ({
 
   const { selectedNode } = newState.editor;
   const title = selectedNode.data.title;
-  const [model, setModel] = useState<string>("vercel");
+  // const [model, setModel] = useState<string>("vercel");
   const [localModel, setLocalModel] = useState<string>("Claude");
-  const [showSuperAgent, setShowSuperAgent] = useState(false);
+  // const [showSuperAgent, setShowSuperAgent] = useState(false);
 
-  const FluxOptions = [
-    {
-      locaModel: { placeholder: "alvdansen/frosting_lane_flux", type: "text" },
-    },
-    {
-      prompt: {
-        placeholder: "a beautiful castle frstingln illustration",
-        type: "text",
-      },
-    },
-    { num_outputs: { placeholder: 1, type: "number" } },
-    { aspect_ratio: { placeholder: "1:1", type: "text" } },
-    { output_format: { placeholder: "webp", type: "text" } },
-    { guidance_scale: { placeholder: 3.5, type: "number" } },
-    { output_quality: { placeholder: 80, type: "number" } },
-    { num_inference_steps: { placeholder: 20, type: "number" } },
-  ];
   const vercelOptions = [
     {
       localModel: {
@@ -112,12 +95,12 @@ const ContentBasedOnTitle = ({
     { max_tokens: { placeholder: 100, type: "number" } },
     { temperature: { placeholder: 0.7, type: "number" } },
   ];
-  interface Model {
-    key: string;
-    name: string;
-  }
+  // interface Model {
+  //   key: string;
+  //   name: string;
+  // }
 
-  const [modelArray, setModelArray] = useState<Model[]>([]);
+  // const [modelArray, setModelArray] = useState<Model[]>([]);
 
   useEffect(() => {
     if (selectedOutput) {
@@ -129,7 +112,6 @@ const ContentBasedOnTitle = ({
   }, [selectedOutput]);
 
   const modelOptionsMap: { [key: string]: any[] } = {
-    "FLUX-image": FluxOptions,
     vercel: vercelOptions,
   };
 
@@ -140,12 +122,12 @@ const ContentBasedOnTitle = ({
   );
 
   useEffect(() => {
-    const nodeModel = nodeConnectionType[selectedNode.id]?.model;
-    if (nodeModel) {
-      setModel(nodeModel);
-    } else {
-      setModel("Select Model");
-    }
+    // const nodeModel = nodeConnectionType[selectedNode.id]?.model;
+    // if (nodeModel) {
+    //   setModel(nodeModel);
+    // } else {
+    //   setModel("Select Model");
+    // }
 
     const currentPrompt = nodeConnectionType[selectedNode.id]?.prompt;
     if (currentPrompt) {
@@ -155,29 +137,30 @@ const ContentBasedOnTitle = ({
     }
   }, [selectedNode.id, nodeConnectionType]);
 
-  useEffect(() => {
-    const isSuperAgent =
-      nodeConnectionType[selectedNode.id]?.model === "SuperAgent";
-    setShowSuperAgent(isSuperAgent);
-  }, [selectedNode.id, nodeConnectionType]);
+  // useEffect(() => {
+  //   const isSuperAgent =
+  //     nodeConnectionType[selectedNode.id]?.model === "SuperAgent";
+  //   setShowSuperAgent(isSuperAgent);
+  // }, [selectedNode.id, nodeConnectionType]);
 
   const [ishistoryChecked, setHistory] = useState(
     nodeConnectionType[selectedNode.id]?.model &&
       nodeConnectionType[selectedNode.id]?.history
   );
-  useEffect(() => {
-    const modelKey = nodeConnectionType[selectedNode.id]?.model;
-    if (modelKey) {
-      const modelValue = localStorage.getItem(modelKey) || "";
-      const newModel = { key: modelKey, name: modelValue };
-      setModelArray((prevArray) => {
-        if (prevArray.some((model) => model.key === modelKey)) {
-          return prevArray;
-        }
-        return [...prevArray, newModel];
-      });
-    }
-  }, [nodeConnectionType, selectedNode.id]);
+
+  // useEffect(() => {
+  //   const modelKey = nodeConnectionType[selectedNode.id]?.model;
+  //   if (modelKey) {
+  //     const modelValue = localStorage.getItem(modelKey) || "";
+  //     const newModel = { key: modelKey, name: modelValue };
+  //     setModelArray((prevArray) => {
+  //       if (prevArray.some((model) => model.key === modelKey)) {
+  //         return prevArray;
+  //       }
+  //       return [...prevArray, newModel];
+  //     });
+  //   }
+  // }, [nodeConnectionType, selectedNode.id]);
 
   if (!nodeConnectionType) return <p>Not connected</p>;
 
@@ -215,7 +198,7 @@ const ContentBasedOnTitle = ({
           </p>
           {title === "AI" ? (
             <div className="gap-2 flex flex-col">
-              <p className="block text-sm font-medium text-gray-300">
+              {/* <p className="block text-sm font-medium text-gray-300">
                 Select your Provider here
               </p>
               <select
@@ -237,13 +220,13 @@ const ContentBasedOnTitle = ({
                 <option value="vercel">Vercel</option>
                 <option value="FLUX-image">FLUX-image</option>
                 <option value="SuperAgent">SuperAgent</option>
-              </select>
-              {showSuperAgent && (
+              </select> */}
+              {/* {showSuperAgent && (
                 <SuperAgent
                   node={nodeConnectionType}
                   ishistoryChecked={ishistoryChecked}
                 />
-              )}
+              )} */}
 
               {nodeConnectionType[selectedNode.id]?.model && (
                 <div>
@@ -524,13 +507,13 @@ const ContentBasedOnTitle = ({
                 <ImageToVideo
                   nodeConnectionType={nodeConnectionType}
                   title={title}
-                  />
+                />
               )}
               {title === "lunalabs-TextToVideo" && (
                 <TextToVideo
                   nodeConnectionType={nodeConnectionType}
                   title={title}
-                  />
+                />
               )}
             </div>
           )}
