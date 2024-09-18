@@ -60,7 +60,7 @@ export default async function Home() {
             sortedData={data}
             filteredFeaturedData={filteredFeaturedData}
           >
-            <div className="grid grid-cols-1 xl:grid-cols-6 lg:gap-16 pb-8 pt-8">
+             <div className="grid grid-cols-1 xl:grid-cols-6 lg:gap-16 pb-8 pt-8 custom-grid">
               <div className="col-span-1 md:col-span-2 z-10">
                 <Hero>
                   <DirectorySearch />

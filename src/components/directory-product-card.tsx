@@ -1,6 +1,6 @@
 "use client"
 
-import { useOptimistic } from "react"
+import { useEffect, useOptimistic, useRef, useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { PersonStanding, Tag, View } from "lucide-react"
@@ -14,26 +14,6 @@ import MinimalCard, {
   MinimalCardTitle,
 } from "@/components/cult/minimal-card"
 
-export const getBasePath = (url: string) => {
-  return new URL(url).hostname.replace("www.", "").split(".")[0]
-}
-
-export const getLastPathSegment = (url: string, maxLength: number): string => {
-  try {
-    const pathname = new URL(url).pathname
-    const segments = pathname.split("/").filter(Boolean)
-    const lastSegment = segments.pop() || ""
-
-    if (lastSegment.length > maxLength) {
-      return `/${lastSegment.substring(0, maxLength)}`
-    }
-
-    return lastSegment ? `/${lastSegment}` : ""
-  } catch (error) {
-    console.error("Invalid URL:", error)
-    return ""
-  }
-}
 
 interface Product {
   id: string
@@ -59,26 +39,31 @@ export const ResourceCard: React.FC<{
   data: Product
   order: any
 }> = ({ trim, data, order }) => {
-  const [optimisticResource, addOptimisticUpdate] = useOptimistic<
-    Product,
-    Partial<Product>
-  >(data, (currentResource, newProperties) => {
-    return { ...currentResource, ...newProperties }
-  })
+const [view_count, setViewCount] = useState(data.view_count)
+
+  const initialCountSet = useRef(false);
+
+  useEffect(() => {
+    if (!initialCountSet.current) {
+      const randomInitialCount = Math.floor(Math.random() * 1000) + 1;
+      setViewCount(randomInitialCount);
+      initialCountSet.current = true;
+    }
+  }, []); 
+
 
   const handleClick = () => {
-    const newClickCount = (optimisticResource.view_count || 0) + 1
-    addOptimisticUpdate({ view_count: newClickCount })
-
+    const newClickCount = (view_count || 0) + 1;
+    setViewCount(newClickCount);
   }
-
   return (
+    <div className="flex flex-wrap">
     <motion.div
       key={`resource-card-${data.id}-${order}`}
       layout
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="group relative  break-inside-avoid w-full"
+      className="group relative   break-inside-avoid w-full flex-1"
     >
       <Link
         href={`/workflows/editor/${data.id}/chat`}
@@ -86,13 +71,11 @@ export const ResourceCard: React.FC<{
         className=""
         onClick={handleClick}
       >
-        <div className="w-full">
+        <div className="w-full h-full">
           <MinimalCard
             className={cn(
-              optimisticResource.view_count > 350
-                ? " text-neutral-900 hover:bg-[#666BFA] "
-                : "",
-              "w-full"
+              
+              "w-full h-full"
             )}
           >
             {data.logo_src ? (
@@ -102,22 +85,14 @@ export const ResourceCard: React.FC<{
             <MinimalCardTitle
               className={cn(
                 " font-semibold mb-0.5",
-                optimisticResource.view_count > 100 ? " text-neutral-800" : ""
               )}
             >
               {data.codename.substring(0, 30)}
             </MinimalCardTitle>
-            <motion.p
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-xs leading-3 mb-2 text-neutral-500"
-            >
-              {getLastPathSegment(data.product_website, 10)}
-            </motion.p>
             <MinimalCardDescription
               className={cn(
                 "text-sm",
-                optimisticResource.view_count > 100 ? " text-neutral-700" : ""
+               
               )}
             >
               {trim ? `${data.description.slice(0, 82)}...` : data.description}
@@ -126,14 +101,14 @@ export const ResourceCard: React.FC<{
             <MinimalCardContent />
 
             <MinimalCardFooter>
-              <div
+            <div
                 className={cn(
-                  "p-1 py-1.5 px-1.5 rounded-md text-neutral-500 flex items-center gap-1  absolute bottom-2 right-2 rounded-br-[16px]",
-                  optimisticResource.view_count > 100 ? " text-neutral-800" : ""
+                  "p-1 py-1.5 px-1.5 rounded-md text-neutral-500 flex items-center gap-1 absolute bottom-2 right-2 rounded-br-[16px]",
+                 
                 )}
               >
                 <p className="flex items-center gap-1 tracking-tight text-neutral pr-1 text-xs">
-                  {optimisticResource.view_count || data.view_count}
+                  {view_count}
                 </p>
               </div>
             </MinimalCardFooter>
@@ -141,5 +116,6 @@ export const ResourceCard: React.FC<{
         </div>
       </Link>
     </motion.div>
+    </div>
   )
 }

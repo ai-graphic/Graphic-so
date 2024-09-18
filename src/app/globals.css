@@ -85,3 +85,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media (max-width: 1359px) {
+  .custom-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
