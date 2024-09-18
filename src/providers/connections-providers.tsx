@@ -39,6 +39,7 @@ export type ConnectionProviderProps = {
       output_format: string;
       guidance_scale: number;
       output_quality: number;
+      tool: string;
       num_inference_steps: number;
       model_name: string;
       hf_token: string;
@@ -357,6 +358,7 @@ const InitialValues: ConnectionProviderProps = {
     slack: "",
     ai: "",
   },
+
   videoToVideoNode: {},
   lunalabsImageToVideoNode: {},
   lunalabsTextToVideoNode: {},
@@ -395,6 +397,7 @@ const generateDefaultAINode = (id: string) => ({
   prompt: "",
   model: "vercel",
   localModel: "Claude",
+  tool : "",
   output: "",
   temperature: 0,
   maxTokens: 0,

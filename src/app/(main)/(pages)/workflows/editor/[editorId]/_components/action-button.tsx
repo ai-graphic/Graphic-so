@@ -499,6 +499,7 @@ const ActionButton = ({
             model: nodeConnection.aiNode[id]?.localModel,
             temperature: nodeConnection.aiNode[id]?.temperature,
             maxTokens: nodeConnection.aiNode[id]?.max_tokens,
+            tools: nodeConnection.aiNode[id]?.tool,
           });
           nodeConnection.setOutput((prev: any) => ({
             ...prev,

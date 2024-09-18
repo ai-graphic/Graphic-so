@@ -119,6 +119,7 @@ export async function POST(req: Request, res: Response) {
                     model: aiTemplate[idNode].localModel,
                     temperature: aiTemplate[idNode].temperature,
                     maxTokens: aiTemplate[idNode].max_tokens,
+                    tools: aiTemplate[idNode].tool,
                   }
                 );
                 console.log("AI Response:", response.data);

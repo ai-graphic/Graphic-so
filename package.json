@@ -11,6 +11,7 @@
   "dependencies": {
     "@agentic/ai-sdk": "^7.0.0",
     "@agentic/bing": "^7.0.0",
+    "@agentic/firecrawl": "^7.0.0",
     "@ai-sdk/anthropic": "^0.0.50",
     "@ai-sdk/openai": "^0.0.54",
     "@assistant-ui/react": "^0.5.41",

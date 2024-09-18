@@ -1415,6 +1415,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                     model: aiTemplate[idNode].localModel,
                     temperature: aiTemplate[idNode].temperature,
                     maxTokens: aiTemplate[idNode].max_tokens,
+                    tools: aiTemplate[idNode].tool,
                   });
                   nodeConnection.setOutput((prev: any) => ({
                     ...prev,

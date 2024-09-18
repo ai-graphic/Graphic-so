@@ -79,6 +79,7 @@ const ContentBasedOnTitle = ({
   const { selectedNode } = newState.editor;
   const title = selectedNode.data.title;
   // const [model, setModel] = useState<string>("vercel");
+  const [tool, setTool] = useState<string>("bing Search");
   const [localModel, setLocalModel] = useState<string>("Claude");
   // const [showSuperAgent, setShowSuperAgent] = useState(false);
 
@@ -91,10 +92,10 @@ const ContentBasedOnTitle = ({
       },
     },
     { system: { placeholder: "Enter your system Message", type: "text" } },
-    { prompt: { placeholder: "Enter your prompt", type: "text" } },
     { max_tokens: { placeholder: 100, type: "number" } },
     { temperature: { placeholder: 0.7, type: "number" } },
   ];
+
   // interface Model {
   //   key: string;
   //   name: string;
@@ -229,7 +230,7 @@ const ContentBasedOnTitle = ({
               )} */}
 
               {nodeConnectionType[selectedNode.id]?.model && (
-                <div>
+                <div className="gap-3 flex flex-col">
                   <div>
                     <p className="block text-sm font-medium text-gray-300">
                       Select your model here
@@ -318,6 +319,30 @@ const ContentBasedOnTitle = ({
                             ))
                           )
                         )}
+                  </div>
+                  <div>
+                    <p className="block text-sm font-medium text-gray-300">
+                      Select your Tool here
+                    </p>
+                    <select
+                      value={nodeConnectionType[selectedNode.id]?.tool}
+                      onChange={(event) => {
+                        const newtool = event.target.value;
+                        setTool(newtool);
+                        onContentChange(
+                          state,
+                          nodeConnection,
+                          title,
+                          event as unknown as React.ChangeEvent<HTMLInputElement>,
+                          "tool"
+                        );
+                      }}
+                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                    >
+                      <option value="">No Tool</option>
+                      <option value="bing Search">bing Search</option>
+                      <option value="firecrawl">firecrawl</option>
+                    </select>
                   </div>
                 </div>
               )}

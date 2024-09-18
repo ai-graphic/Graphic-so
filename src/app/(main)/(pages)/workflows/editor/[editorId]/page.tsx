@@ -494,6 +494,7 @@ const Page = (props: Props) => {
                 aspect_ratio: "",
                 output_format: "",
                 guidance_scale: 0,
+                tool: "",
                 output_quality: 0,
                 num_inference_steps: 0,
                 model_name: "",
