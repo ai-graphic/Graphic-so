@@ -43,6 +43,8 @@ export async function POST(req: Request, res: Response) {
 
     const guidanceScaleNumber = parseFloat(guidance_scale);
     const numInferenceStepsInt = parseInt(num_inference_steps, 10);
+    const num_imagesInt = parseInt(num_images, 10);
+    const seedInt = parseInt(seed, 10);
     interface FalResult {
       images: { url: string }[];
     }
@@ -53,9 +55,9 @@ export async function POST(req: Request, res: Response) {
         image_size: image_size || "landscape_4_3",
         num_inference_steps: numInferenceStepsInt || 28,
         guidance_scale: guidanceScaleNumber || 3.5,
-        num_images: num_images || 1,
+        num_images: num_imagesInt || 1,
         enable_safety_checker: enable_safety_checker || false,
-        seed: seed || 0,
+        seed: seedInt || 0,
         sync_mode: sync_mode || true,
       },
       logs: true,

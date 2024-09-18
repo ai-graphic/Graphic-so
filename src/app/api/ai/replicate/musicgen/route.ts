@@ -48,6 +48,9 @@ export async function POST(req: Request, res: Response) {
     const Parsedtop_k = parseInt(top_k, 10);
     const Parsedtop_p = parseInt(top_p, 10);
     const parsedDuration = parseInt(duration, 10);
+    const guidanceScaleNumber = parseFloat(classifier_free_guidance);
+    const temp = parseInt(temperature, 10);
+    const continuation_startInt = parseInt(continuation_start, 10);
 
     const output = await replicate.run(
       "meta/musicgen:671ac645ce5e552cc63a54a2bbff63fcf798043055d2dac5fc9e36a837eedcfb",
@@ -59,14 +62,14 @@ export async function POST(req: Request, res: Response) {
           top_p: Parsedtop_p || 0,
           duration: parsedDuration || 8,
           ...(input_audio && { input_audio }),
-          temperature: temperature || 1,
+          temperature: temp || 1,
           continuation: continuation || false,
           model_version: model_version || "stereo-large",
           output_format: "mp3",
-          continuation_start: continuation_start || 0,
+          continuation_start: continuation_startInt || 0,
           multi_band_diffusion: multi_band_diffusion || false,
           normalization_strategy: normalization_strategy || "peak",
-          classifier_free_guidance: classifier_free_guidance || 3,
+          classifier_free_guidance: guidanceScaleNumber || 3,
         },
       }
     );

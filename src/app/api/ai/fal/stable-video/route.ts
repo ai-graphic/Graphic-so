@@ -41,12 +41,16 @@ export async function POST(req: Request, res: Response) {
       credentials: process.env.FAL_API_KEY,
     });
 
+    const fpsInt = parseInt(fps, 10);
+    const motion_bucket_idInt = parseInt(motion_bucket_id, 10);
+    const cond_augInt = parseFloat(cond_aug);
+
     const result = await fal.subscribe("fal-ai/stable-video", {
       input: {
         image_url: image_url,
-        fps: fps || 25,
-        motion_bucket_id: motion_bucket_id || 127,
-        cond_aug :  0.02,
+        fps: fpsInt || 25,
+        motion_bucket_id: motion_bucket_idInt || 127,
+        cond_aug : cond_augInt ||  0.02,
       },
       logs: true,
       onQueueUpdate: (update: any) => {

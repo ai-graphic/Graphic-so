@@ -43,6 +43,9 @@ export async function POST(req: Request, res: Response) {
 
     const numOutputsInt = parseInt(num_outputs, 10);
     const upscaleInt = parseInt(upscale, 10);
+    const strengthInt = parseFloat(strength);
+    const guidance_scaleInt = parseFloat(guidance_scale);
+    const num_inference_stepsInt = parseInt(num_inference_steps, 10);
 
     const output = await replicate.run(
       "mcai/dreamshaper-v6-img2img:c7959eb3a86c09b449dacc11ce8bba295fda466fc6935ab8709e35f4f48c980c",
@@ -53,10 +56,10 @@ export async function POST(req: Request, res: Response) {
           upscale: upscaleInt || 2,
           image: image,
           negative_prompt: negative_prompt || "",
-          strength: strength || 0.5,
-          guidance_scale: guidance_scale || 7.5,
+          strength: strengthInt || 0.5,
+          guidance_scale: guidance_scaleInt || 7.5,
           scheduler: scheduler || "EulerAncestralDiscrete",
-          num_inference_steps: num_inference_steps || 30,
+          num_inference_steps: num_inference_stepsInt || 30,
         },
       }
     );

@@ -44,6 +44,9 @@ export async function POST(req: Request, res: Response) {
 
     const numOutputsInt = parseInt(num_outputs, 10);
     const outputQualityInt = parseInt(output_quality, 10);
+    const number_of_outputsInt = parseInt(number_of_outputs, 10);
+    const number_of_images_per_poseInt = parseInt(number_of_images_per_pose, 10);
+
 
     const output = await replicate.run(
       "fofr/consistent-character:9c77a3c2f884193fcee4d89645f02a0b9def9434f9e03cb98460456b831c8772",
@@ -57,9 +60,9 @@ export async function POST(req: Request, res: Response) {
           subject: subject,
           negative_prompt: negative_prompt || "",
           randomise_poses: randomise_poses || false,
-          number_of_outputs: number_of_outputs || 1,
+          number_of_outputs: number_of_outputsInt || 1,
           disable_safety_checker: disable_safety_checker || false,
-          number_of_images_per_pose: number_of_images_per_pose || 1,
+          number_of_images_per_pose: number_of_images_per_poseInt || 1,
         },
       }
     );

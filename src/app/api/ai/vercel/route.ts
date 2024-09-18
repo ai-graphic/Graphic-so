@@ -18,6 +18,7 @@ export async function POST(req: Request) {
       headers: { "Content-Type": "application/json" },
     });
   }
+  console.log("prompt", prompt, "system", system, "userid", userid);
 
   const dbUser = await db.user.findFirst({
     where: {
@@ -48,16 +49,24 @@ export async function POST(req: Request) {
   }
 
   const bing = new BingClient()
+
+
+
+  const temp = parseFloat(temperature);
+  const max_tokens = parseInt(maxTokens);
   const result = await generateText({
     model: selectedModel,
     // tools: createAISDKTools(bing),
     system: system || "you are a prompt enhancer",
     prompt: prompt,
-    temperature: temperature || 0.7,
-    maxTokens: maxTokens || 100,
+    temperature: temp || 0.7,
+    maxTokens: max_tokens || 100,
   });
 
-  console.log(result.toolResults[0])
+/* The line `// console.log(result.toolResults[0])` is a commented-out console log statement in the
+code. It is currently not active because it is preceded by `//`, which makes it a comment in the
+TypeScript code. */
+  // console.log(result.toolResults[0])
   await db.user.update({
     where: {
       clerkId: userid,

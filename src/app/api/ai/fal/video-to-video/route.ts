@@ -45,6 +45,11 @@ export async function POST(req: Request, res: Response) {
       video: { url: string };
     }
 
+    const numInferenceStepsInt = parseInt(num_inference_steps, 10);
+    const guidanceScaleNumber = parseFloat(guidance_scale);
+    const exportFpsInt = parseInt(export_fps, 10);
+    const strengthInt = parseFloat(strength);
+
     const result = (await fal.subscribe("fal-ai/cogvideox-5b/video-to-video", {
       input: {
         prompt: prompt,
@@ -52,13 +57,13 @@ export async function POST(req: Request, res: Response) {
           height: 480,
           width: 720,
         },
-        num_inference_steps: num_inference_steps || 50,
-        guidance_scale: guidance_scale || 7,
+        num_inference_steps: numInferenceStepsInt || 50,
+        guidance_scale: guidanceScaleNumber || 7,
         negative_prompt: negative_prompt || "",
         use_rife: use_rife || true,
-        export_fps: export_fps || 30,
+        export_fps: exportFpsInt || 30,
         video_url: video_url,
-        strength: strength || 0.5,
+        strength: strengthInt || 0.5,
       },
       logs: true,
       onQueueUpdate: (update: any) => {
