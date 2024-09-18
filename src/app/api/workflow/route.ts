@@ -558,12 +558,12 @@ export async function POST(req: Request, res: Response) {
             console.log("chatHistory", chatHistory);
           }
         }
-        if (nodeType == "lunalabs-ImageToVideo") {
+        if (nodeType == "lumalabs-ImageToVideo") {
           const falImageToVideoTemplate = JSON.parse(
             workflow.lunalabsImageToVideoTemplate!
           );
           if (falImageToVideoTemplate[idNode]) {
-            console.log("lunalabs-ImageToVideo Node:", idNode);
+            console.log("lumalabs-ImageToVideo Node:", idNode);
             const edgesArray = JSON.parse(workflow.edges || "[]");
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
@@ -645,12 +645,12 @@ export async function POST(req: Request, res: Response) {
             console.log("chatHistory", chatHistory);
           }
         }
-        if (nodeType == "lunalabs-TextToVideo") {
+        if (nodeType == "lumalabs-TextToVideo") {
           const falTextToVideoTemplate = JSON.parse(
             workflow.lunalabsTextToVideoTemplate!
           );
           if (falTextToVideoTemplate[idNode]) {
-            console.log("lunalabs-TextToVideo Node:", idNode);
+            console.log("lumalabs-TextToVideo Node:", idNode);
             const edgesArray = JSON.parse(workflow.edges || "[]");
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);

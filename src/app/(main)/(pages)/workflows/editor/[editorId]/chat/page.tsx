@@ -180,9 +180,9 @@ const Chat = () => {
     <>
       <SheetContent className="w-[400px] sm:w-[540px]">
         <SheetHeader>
-          <SheetTitle>Dublicate this Workflow?</SheetTitle>
+          <SheetTitle>REMIX this Workflow?</SheetTitle>
           <SheetDescription className="flex flex-col gap-2 w-full">
-            You can dublicate this workflow by clicking the button below.
+            You can export this workflow and use it by clicking the button below.
             <DublicateWorkflow id={pathname.split("/").slice(-2, -1)[0]} />
           </SheetDescription>
         </SheetHeader>

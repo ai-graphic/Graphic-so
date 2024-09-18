@@ -232,9 +232,6 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
     dispatch({ type: "LOAD_DATA", payload: { edges, elements: nodes } });
   }, [nodes, edges]);
 
-  useEffect(() => {
-    toast.warning("Save the template before leaving");
-  }, [state.editor.selectedNode.id]);
 
   const nodeTypes = useMemo(
     () => ({

@@ -336,12 +336,12 @@ export const EditorCanvasDefaultCardTypes = {
     description: "Convert one video to another using AI models.",
     type: "Action",
   },
-  "lunalabs-ImageToVideo": {
-    description: "Convert images to videos using Luna Labs models.",
+  "lumalabs-ImageToVideo": {
+    description: "Convert images to videos using Luma Labs models.",
     type: "Action",
   },
-  "lunalabs-TextToVideo": {
-    description: "Convert text to videos using Luna Labs models.",
+  "lumalabs-TextToVideo": {
+    description: "Convert text to videos using Luma Labs models.",
     type: "Action",
   },
   "consistent-character": {

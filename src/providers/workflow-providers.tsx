@@ -847,7 +847,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               }
             }
           }
-          if (nodeType == "lunalabs-TextToVideo") {
+          if (nodeType == "lumalabs-TextToVideo") {
             const lumalabsTextToVideoTemplate = JSON.parse(
               workflow.lunalabsTextToVideoTemplate!
             );
@@ -942,7 +942,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               }
             }
           }
-          if (nodeType == "lunalabs-ImageToVideo") {
+          if (nodeType == "lumalabs-ImageToVideo") {
             const lumalabsimageToVideoTemplate = JSON.parse(
               workflow.lunalabsImageToVideoTemplate!
             );

@@ -82,7 +82,7 @@ const DublicateWorkflow = ({ id, title, subTitle }: Props) => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name of the Workflow</FormLabel>
+                  <FormLabel>Name of the new Workflow</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Name" />
                   </FormControl>
@@ -111,7 +111,7 @@ const DublicateWorkflow = ({ id, title, subTitle }: Props) => {
                   Magic
                 </>
               ) : (
-                "Dublicate Workflow"
+                "REMIX Workflow"
               )}
             </Button>
           </form>

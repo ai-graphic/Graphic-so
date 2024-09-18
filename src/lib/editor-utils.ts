@@ -374,9 +374,9 @@ export const onContentChange = (
     onMusicGenContent(state, nodeConnection, event, content);
   } else if (nodeType === "video-to-video") {
     onVideoToVideoContent(state, nodeConnection, event, content);
-  } else if (nodeType === "lunalabs-TextToVideo") {
+  } else if (nodeType === "lumalabs-TextToVideo") {
     onTextToVideoContent(state, nodeConnection, event, content);
-  } else if (nodeType === "lunalabs-ImageToVideo") {
+  } else if (nodeType === "lumalabs-ImageToVideo") {
     onImageToVideoContent(state, nodeConnection, event, content);
   }
 };

@@ -662,7 +662,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           strength: 0,
         },
       }));
-    } else if (type === "lunalabs-ImageToVideo") {
+    } else if (type === "lumalabs-ImageToVideo") {
       setlunalabsImageToVideoNode((prev) => ({
         ...prev,
         [id]: {
@@ -674,7 +674,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           loop: false,
         },
       }));
-    } else if (type === "lunalabs-TextToVideo") {
+    } else if (type === "lumalabs-TextToVideo") {
       setlunalabsTextToVideoNode((prev) => ({
         ...prev,
         [id]: {

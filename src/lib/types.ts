@@ -52,8 +52,8 @@ export type EditorCanvasTypes =
   | "CogVideoX-5B"
   | "musicGen"
   | "video-to-video"
-  | "lunalabs-ImageToVideo"
-  | "lunalabs-TextToVideo";
+  | "lumalabs-ImageToVideo"
+  | "lumalabs-TextToVideo";
 
 export type EditorCanvasCardType = {
   title: string;
@@ -123,8 +123,8 @@ export const nodeMapper: Record<string, string> = {
   "CogVideoX-5B": "CogVideoX5BNode",
   musicGen: "musicgenNode",
   "video-to-video": "videoToVideoNode",
-  "lunalabs-ImageToVideo": "lunalabsImageToVideoNode",
-  "lunalabs-TextToVideo": "lunalabsTextToVideoNode",
+  "lumalabs-ImageToVideo": "lunalabsImageToVideoNode",
+  "lumalabs-TextToVideo": "lunalabsTextToVideoNode",
 };
 
 export type Option = {
