@@ -225,16 +225,16 @@ const ActionButton = ({
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/fal/train-flux", {
         images_data_url: nodeConnection.trainFluxNode[id].images_data_url,
-        trigger_word: nodeConnection.trainFluxNode[id].trigger_word,
         userid: user?.id,
+        trigger_word: nodeConnection.trainFluxNode[id].trigger_word,
         iter_multiplier: nodeConnection.trainFluxNode[id].iter_multiplier,
       });
       nodeConnection.setOutput((prev: any) => ({
         ...prev,
         ...(prev.output || {}),
         [id]: {
-          image: [...(prev.output?.[id]?.image || []), response.data],
-          text: [...(prev.output?.[id]?.text || [])],
+          image: [...(prev.output?.[id]?.image || [])],
+          text: [...(prev.output?.[id]?.text || []), response.data],
           video: [...(prev.output?.[id]?.video || [])],
         },
       }));

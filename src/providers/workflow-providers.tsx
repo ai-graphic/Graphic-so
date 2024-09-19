@@ -1391,6 +1391,48 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             }
           }
           if (nodeType == "train-flux") {
+            const falTrainTemplate = JSON.parse(workflow.fluxTrainTemplate!);
+            if (falTrainTemplate[idNode]) {
+              console.log("train-flux Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              if (node.type === "Trigger") {
+                const output = nodeConnection.output;
+                const contentarr = output[node.id];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
+                content = prmpt;
+                chatHistory.user = prmpt;
+                content = prmpt;
+              } else {
+                content = latestOutputs[node.id];
+              }
+              try {
+                setIsLoading(idNode, true);
+                const output = await axios.post("/api/ai/fal/train-flux", {
+                  images_data_url: falTrainTemplate[idNode].images_data_url,
+                  userid: workflow?.userId,
+                  trigger_word: falTrainTemplate[idNode].trigger_word,
+                  iter_multiplier: falTrainTemplate[idNode].iter_multiplier,
+                });
+                nodeConnection.setOutput((prev: any) => ({
+                  ...prev,
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || [])],
+                    text: [...(prev.output?.[idNode]?.text || []), output.data],
+                    video: [...(prev.output?.[idNode]?.video || [])],
+                  },
+                }));
+                latestOutputs[idNode] = output.data;
+              } catch (error) {
+                console.error("Error during Replicate API call:", error);
+              } finally {
+                setIsLoading(idNode, false);
+              }
+            }
             flowPath.splice(current, 2);
           }
           if (nodeType == "AI") {

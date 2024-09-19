@@ -1122,6 +1122,54 @@ export async function POST(req: Request, res: Response) {
           }
         }
         if (nodeType == "train-flux") {
+          const falTrainTemplate = JSON.parse(workflow.fluxTrainTemplate!);
+          if (falTrainTemplate[idNode]) {
+            console.log("train-flux Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              console.log("Trigger Node", node.id);
+              let prmpt = falTrainTemplate[idNode].prompt;
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", prompt);
+                } else {
+                  content = prmpt;
+                }
+                chatHistory.user = content;
+              }
+            } else {
+              let prmpt = falTrainTemplate[idNode].prompt;
+              console.log("Prompt:", prmpt);
+              if (prmpt) {
+                if (prmpt.includes(":input:")) {
+                  content = prmpt.replace(":input:", latestOutputs[node.id]);
+                } else {
+                  content = prmpt;
+                }
+              } else {
+                content = latestOutputs[node.id];
+              }
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/fal/train-flux`,
+                {
+                  images_data_url: falTrainTemplate[idNode].images_data_url,
+                  userid: userid,
+                  trigger_word: falTrainTemplate[idNode].trigger_word,
+                  iter_multiplier: falTrainTemplate[idNode].iter_multiplier,
+                }
+              );
+              latestOutputs[idNode] = output.data ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
           flowPath.splice(current, 2);
         }
         if (nodeType == "Slack") {

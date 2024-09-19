@@ -23,6 +23,7 @@ export default authMiddleware({
         '/api/ai/fal/video-to-video',
         '/api/ai/lunalabs/text-video',
         '/api/ai/lunalabs/image-video',
+        '/api/ai/fal/train-flux',
     ],
     ignoredRoutes: [
         '/api/auth/callback/discord',
