@@ -95,6 +95,10 @@ const ActionButton = ({
   const onFluxDev = useCallback(
     async (id: string, nodeConnection: any) => {
       try {
+        if (Number(credits) < 1) {
+          toast.error("Insufficient credits");
+          return;
+        }
         setIsLoading(id, true);
         const response = await axios.post("/api/ai/fal/flux-dev", {
           prompt: nodeConnection.fluxDevNode[id].prompt,
@@ -134,6 +138,10 @@ const ActionButton = ({
   const onImageToImage = useCallback(
     async (id: string, nodeConnection: any) => {
       try {
+        if (Number(credits) < 1) {
+          toast.error("Insufficient credits");
+          return;
+        }
         setIsLoading(id, true);
 
         const response = await axios.post("/api/ai/fal/image-to-image", {
@@ -171,6 +179,10 @@ const ActionButton = ({
   );
   const onFluxLora = useCallback(async (id: string, nodeConnection: any) => {
     try {
+      if (Number(credits) < 1) {
+        toast.error("Insufficient credits");
+        return;
+      }
       setIsLoading(id, true);
 
       const response = await axios.post("/api/ai/fal/flux-lora", {
@@ -206,23 +218,27 @@ const ActionButton = ({
   }, []);
   const onTrainFlux = useCallback(async (id: string, nodeConnection: any) => {
     try {
+      if (Number(credits) < 60) {
+        toast.error("Insufficient credits");
+        return;
+      }
       setIsLoading(id, true);
-      // const response = await axios.post("/api/ai/fal/train-flux", {
-      //   images_data_url: nodeConnection.trainFluxNode[id].images_data_url,
-      //   trigger_word: nodeConnection.trainFluxNode[id].trigger_word,
-      //   userid: user?.id,
-      //   iter_multiplier: nodeConnection.trainFluxNode[id].iter_multiplier,
-      // });
-      // nodeConnection.setOutput((prev: any) => ({
-      //   ...prev,
-      //   ...(prev.output || {}),
-      //   [id]: {
-      //     image: [...(prev.output?.[id]?.image || []), response.data],
-      //     text: [...(prev.output?.[id]?.text || [])],
-      //     video: [...(prev.output?.[id]?.video || [])],
-      //   },
-      // }));
-      // setCredits((prev) => (Number(prev) - 1).toString());
+      const response = await axios.post("/api/ai/fal/train-flux", {
+        images_data_url: nodeConnection.trainFluxNode[id].images_data_url,
+        trigger_word: nodeConnection.trainFluxNode[id].trigger_word,
+        userid: user?.id,
+        iter_multiplier: nodeConnection.trainFluxNode[id].iter_multiplier,
+      });
+      nodeConnection.setOutput((prev: any) => ({
+        ...prev,
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || []), response.data],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || [])],
+        },
+      }));
+      setCredits((prev) => (Number(prev) - 60).toString());
     } catch (error) {
       console.error("Error during Train Flux API call:", error);
     } finally {
@@ -231,6 +247,10 @@ const ActionButton = ({
   }, []);
   const onStableVideo = useCallback(async (id: string, nodeConnection: any) => {
     try {
+      if (Number(credits) < 10) {
+        toast.error("Insufficient credits");
+        return;
+      }
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/fal/stable-video", {
         image_url: nodeConnection.stableVideoNode[id].image_url,
@@ -264,6 +284,10 @@ const ActionButton = ({
   const onConsistantChar = useCallback(
     async (id: string, nodeConnection: any) => {
       try {
+        if (Number(credits) < 1) {
+          toast.error("Insufficient credits");
+          return;
+        }
         setIsLoading(id, true);
         nodeConnection.consistentCharacterNode[id];
         const response = await axios.post(
@@ -313,6 +337,10 @@ const ActionButton = ({
 
   const onFluxDevLora = useCallback(async (id: string, nodeConnection: any) => {
     try {
+      if (Number(credits) < 1) {
+        toast.error("Insufficient credits");
+        return;
+      }
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/replicate/fluxDevlora", {
         prompt: nodeConnection.fluxDevLoraNode[id]?.prompt,
@@ -345,6 +373,10 @@ const ActionButton = ({
 
   const onDreamShaper = useCallback(async (id: string, nodeConnection: any) => {
     try {
+      if (Number(credits) < 1) {
+        toast.error("Insufficient credits");
+        return;
+      }
       setIsLoading(id, true);
       console.log("from api", nodeConnection.dreamShaperNode[id]);
       const response = await axios.post("/api/ai/replicate/dreamshaper", {
@@ -377,6 +409,10 @@ const ActionButton = ({
 
   const onFluxGeneral = useCallback(async (id: string, nodeConnection: any) => {
     try {
+      if (Number(credits) < 1) {
+        toast.error("Insufficient credits");
+        return;
+      }
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/fal/flux-general", {
         prompt: nodeConnection.fluxGeneralNode[id]?.prompt,
@@ -410,6 +446,10 @@ const ActionButton = ({
 
   const onMusicGen = useCallback(async (id: string, nodeConnection: any) => {
     try {
+      if (Number(credits) < 1) {
+        toast.error("Insufficient credits");
+        return;
+      }
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/replicate/musicgen", {
         prompt: nodeConnection.musicgenNode[id]?.prompt,
@@ -450,6 +490,10 @@ const ActionButton = ({
 
   const onCogVideoX = useCallback(async (id: string, nodeConnection: any) => {
     try {
+      if (Number(credits) < 10) {
+        toast.error("Insufficient credits");
+        return;
+      }
       setIsLoading(id, true);
       const response = await axios.post("/api/ai/fal/cogVideox-5b", {
         prompt: nodeConnection.CogVideoX5BNode[id]?.prompt,
@@ -488,6 +532,10 @@ const ActionButton = ({
         toast.error("Please enter a prompt first");
         return;
       }
+      if (Number(credits) < 1) {
+        toast.error("Insufficient credits");
+        return;
+      }
       setIsLoading(id, true);
       if (nodeConnection.aiNode[id].model === "vercel") {
         try {
@@ -510,6 +558,7 @@ const ActionButton = ({
               video: [...(prev.output?.[id]?.video || [])],
             },
           }));
+          setCredits((prev) => (Number(prev) - 1).toString());
         } catch (error) {
           console.error("Error during AI search:", error);
         } finally {
@@ -564,6 +613,7 @@ const ActionButton = ({
               video: [...(prev.output?.[id]?.video || [])],
             },
           }));
+          setCredits((prev) => (Number(prev) - 1).toString());
         } catch (error) {
           console.error("Error during superAgent API call:", error);
         } finally {
@@ -577,6 +627,10 @@ const ActionButton = ({
   const onVideoToVideo = useCallback(
     async (id: string, nodeConnection: any) => {
       try {
+        if (Number(credits) < 10) {
+          toast.error("Insufficient credits");
+          return;
+        }
         setIsLoading(id, true);
         const response = await axios.post("/api/ai/fal/video-to-video", {
           prompt: nodeConnection.videoToVideoNode[id].prompt,
@@ -612,11 +666,16 @@ const ActionButton = ({
   const onLunaLabsTextToVideo = useCallback(
     async (id: string, nodeConnection: any) => {
       try {
+        if (Number(credits) < 10) {
+          toast.error("Insufficient credits");
+          return;
+        }
         setIsLoading(id, true);
         const response = await axios.post("/api/ai/lunalabs/text-video", {
           prompt: nodeConnection.lunalabsTextToVideoNode[id]?.prompt,
           userid: user?.id,
-          aspect_ratio: nodeConnection.lunalabsTextToVideoNode[id]?.aspect_ratio,
+          aspect_ratio:
+            nodeConnection.lunalabsTextToVideoNode[id]?.aspect_ratio,
           loop: nodeConnection.lunalabsTextToVideoNode[id]?.loop,
         });
         nodeConnection.setOutput((prev: any) => ({
@@ -641,6 +700,10 @@ const ActionButton = ({
   const onLunaLabsImageToVideo = useCallback(
     async (id: string, nodeConnection: any) => {
       try {
+        if (Number(credits) < 10) {
+          toast.error("Insufficient credits");
+          return;
+        }
         setIsLoading(id, true);
         const response = await axios.post("/api/ai/lunalabs/image-video", {
           prompt: nodeConnection.lunalabsImageToVideoNode[id]?.prompt,
