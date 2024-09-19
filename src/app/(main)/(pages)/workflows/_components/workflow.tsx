@@ -43,14 +43,14 @@ const Workflow = ({ name, description, id, publish }: Props) => {
             />
             <Image
               src="/openai.ico"
-              alt="Google Drive"
+              alt="openai"
               height={34}
               width={34}
               className="object-contain"
             />
             <Image
               src="/claude.ico"
-              alt="Notion"
+              alt="claude"
               height={30}
               width={30}
               className="object-contain -ml-1"
