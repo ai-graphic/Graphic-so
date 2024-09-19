@@ -39,16 +39,16 @@ export default async function Home() {
       view_count: 0,
       approved: false,
       featured: workflow.featured,
-      logo_src: workflow.thumbnail  ?? (logo_src && isValidImageUrl(logo_src) && logo_src),
-      tags: [], 
-      labels: [], 
+      logo_src:
+        workflow.thumbnail ??
+        (logo_src && isValidImageUrl(logo_src) && logo_src),
+      tags: [],
+      labels: [],
       categories: "",
     };
   });
 
-  const filteredFeaturedData = data.filter(
-    (product) => product.featured
-  );
+  const filteredFeaturedData = data.filter((product) => product.featured);
 
   return (
     <main>
@@ -60,7 +60,7 @@ export default async function Home() {
             sortedData={data}
             filteredFeaturedData={filteredFeaturedData}
           >
-             <div className="grid grid-cols-1 xl:grid-cols-6 lg:gap-16 pb-8 pt-8 custom-grid">
+            <div className="grid grid-cols-1 xl:grid-cols-6 lg:gap-16 pb-8 pt-8 custom-grid">
               <div className="col-span-1 md:col-span-2 z-10">
                 <Hero>
                   <DirectorySearch />

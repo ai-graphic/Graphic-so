@@ -19,11 +19,14 @@ import { motion } from "framer-motion";
 import { UserButton } from "@clerk/nextjs";
 import { useBilling } from "@/providers/billing-provider";
 import { onPaymentDetails } from "@/app/(main)/(pages)/billing/_actions/payment-connections";
+import Image from "next/image";
 
 type Props = {};
 const MenuOptions = (props: Props) => {
   const pathName = usePathname();
-  const [isVisible, setIsVisible] = useState(pathName.includes("chat") ? false:  true);
+  const [isVisible, setIsVisible] = useState(
+    pathName.includes("chat") ? false : true
+  );
   const isControllable = pathName.includes("editor");
   const { credits, tier, setCredits, setTier } = useBilling();
 
@@ -49,7 +52,11 @@ const MenuOptions = (props: Props) => {
   };
 
   return (
-    <div className={pathName.includes("chat") ? "absolute top-0 left-0 z-10" : "relative"}>
+    <div
+      className={
+        pathName.includes("chat") ? "absolute top-0 left-0 z-10" : "relative"
+      }
+    >
       {!isVisible && isControllable ? (
         <Button
           variant="outline"
@@ -67,9 +74,15 @@ const MenuOptions = (props: Props) => {
           initial="closed"
           animate={isVisible ? "open" : "closed"}
         >
-          <div className="flex items-center justify-center flex-col gap-8">
+          <div className="flex items-center justify-center flex-col gap-8 mx-4">
             <Link href="/" className="flex font-bold m-2 flex-row">
-              graphic.so
+              <Image
+                src="/logo.webp"
+                alt="logo"
+                width={35}
+                height={35}
+                className="shadow-sm rounded-lg"
+              />
             </Link>
             <TooltipProvider>
               {menuOptions.map((menuItem) => (
@@ -87,12 +100,11 @@ const MenuOptions = (props: Props) => {
                             }
                           )}
                         >
-                          <menuItem.Component
-                            selected={pathName === menuItem.href}
-                          />
+                          <menuItem.Component size={20} />
                         </Link>
                       </li>
                     </TooltipTrigger>
+                    <TooltipContent >{menuItem.name}</TooltipContent>
                   </Tooltip>
                 </ul>
               ))}

@@ -25,7 +25,7 @@ export async function POST(req: Request, res: Response) {
       }
     })
 
-    if (Number(dbUser?.credits) < 1) {
+    if (Number(dbUser?.credits) < 60) {
       return new Response("Insufficient credits", {
         status: 402,
         headers: { "Content-Type": "application/json" },
@@ -54,7 +54,7 @@ export async function POST(req: Request, res: Response) {
         clerkId: userid,
       },
       data: {
-        credits: (Number(dbUser?.credits) - 1).toString(),
+        credits: (Number(dbUser?.credits) - 60).toString(),
       },
     });
 

@@ -104,6 +104,8 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             ].includes(nodeType)
           ) {
             requiredCredits += 10;
+          } else if (["train-flux"].includes(nodeType)) {
+            requiredCredits += 60;
           }
         });
 

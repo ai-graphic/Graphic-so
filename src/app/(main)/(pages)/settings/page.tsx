@@ -63,7 +63,7 @@ const Settings = async (props: Props) => {
             border-b bg-background/50 p-6 text-4xl backdrop-blur-lg">
                 <span>Settings</span>
             </h1>
-            <div className="flex flex-col gap-10 p-6">
+            <div className="flex gap-10 p-6 flex-col w-[50vh]">
                 <div>
                     <h2 className="text-2xl font-bold">User Profile</h2>
                     <p className="text-base text-white/50">
@@ -77,6 +77,7 @@ const Settings = async (props: Props) => {
                 >
 
                 </ProfilePicture>
+
                 <ProfileForm
                     user={user}
                     onUpdate={updateUserInfo}

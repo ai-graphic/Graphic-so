@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MenuIcon } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
+import { ModeToggle } from "./mode-toggle";
 
 type Props = {};
 const Navbar = async (props: Props) => {
@@ -15,11 +16,11 @@ const Navbar = async (props: Props) => {
     >
       <aside className="flex items-center gap-[5px]">
         <Image
-          src={Logo}
+          src="/logo.webp"
           alt="logo"
-          width={15}
-          height={15}
-          className="shadow-sm"
+          width={35}
+          height={35}
+          className="shadow-sm rounded-lg"
         />
       </aside>
       {/* <nav
@@ -41,7 +42,8 @@ const Navbar = async (props: Props) => {
           </li>
         </ul>
       </nav> */}
-      <aside className="flex items-center gap-4">
+      <aside className="flex items-center gap-4 z-10000">
+        <ModeToggle />
         <Link
           href="/workflows"
           className="relative inline-flex h-10 overflow-hidden

@@ -55,6 +55,8 @@ export async function POST(req: Request, res: Response) {
           ].includes(nodeType)
         ) {
           requiredCredits += 10;
+        } else if (["train-flux"].includes(nodeType)) {
+          requiredCredits += 60;
         }
       });
 
