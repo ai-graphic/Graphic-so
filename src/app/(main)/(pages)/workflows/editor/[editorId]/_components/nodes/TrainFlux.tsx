@@ -1,8 +1,8 @@
-import { useEditor } from "@/providers/editor-provider";
+import { useEditor } from "@/hooks/editor-provider";
 import React from "react";
 import { Input } from "@/components/ui/input"; // Assuming you have an Input component
 import { onContentChange } from "@/lib/editor-utils";
-import { useNodeConnections } from "@/providers/connections-providers";
+import { useNodeConnections } from "@/hooks/connections-providers";
 import { Option } from "@/lib/types";
 
 const trainFluxNodeOptions: Option[] = [

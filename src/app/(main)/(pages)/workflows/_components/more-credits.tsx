@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useBilling } from "@/providers/billing-provider";
+import { useBilling } from "@/hooks/billing-provider";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 
 type Props = {};

@@ -1,11 +1,11 @@
 import type {Metadata} from "next";
 import {Inter, DM_Sans} from "next/font/google";
 import "./globals.css";
-import {ThemeProvider} from "@/providers/theme-provider";
+import {ThemeProvider} from "@/hooks/theme-provider";
 import {ClerkProvider} from "@clerk/nextjs";
-import ModalProvider from "@/providers/modal-provider";
+import ModalProvider from "@/hooks/modal-provider";
 import {Toaster} from "@/components/ui/sonner";
-import {BillingProvider} from "@/providers/billing-provider";
+import {BillingProvider} from "@/hooks/billing-provider";
 
 const font = DM_Sans({subsets: ["latin"]});
 

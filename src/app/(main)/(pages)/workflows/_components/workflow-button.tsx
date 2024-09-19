@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useModal } from "@/providers/modal-provider";
+import { useModal } from "@/hooks/modal-provider";
 import CustomModal from "@/components/global/custom-modal";
 import WorkflowForm from "@/components/forms/workflow-forms";
-import { useBilling } from "@/providers/billing-provider";
+import { useBilling } from "@/hooks/billing-provider";
 
 type Props = {};
 const WorkflowButton = (props: Props) => {

@@ -23,25 +23,6 @@ const Navbar = async (props: Props) => {
           className="shadow-sm rounded-lg"
         />
       </aside>
-      {/* <nav
-        className="absolute left-[50%] top-[50%] transform translate-x-[-50%] translate-y-[-50%]
-            hidden md:block border-2 border-neutral-900 rounded-lg p-4"
-      >
-        <ul className="flex items-center gap-4 list-none">
-          <li>
-            <Link href="#Pricing">Pricing</Link>
-          </li>
-          <li>
-            <Link href="#Resources">Resources</Link>
-          </li>
-          <li>
-            <Link href="#Documentation">Documentation</Link>
-          </li>
-          <li>
-            <Link href="#Feed">Feed</Link>
-          </li>
-        </ul>
-      </nav> */}
       <aside className="flex items-center gap-4 z-10000">
         <ModeToggle />
         <Link
@@ -63,7 +44,6 @@ const Navbar = async (props: Props) => {
           </span>
         </Link>
         {user ? <UserButton /> : null}
-        <MenuIcon className="md:hidden" />
       </aside>
     </header>
   );

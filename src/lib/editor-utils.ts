@@ -1,7 +1,7 @@
 import { EditorCanvasCardType } from "@/lib/types";
-import { ConnectionProviderProps } from "@/providers/connections-providers";
+import { ConnectionProviderProps } from "@/hooks/connections-providers";
 import React from "react";
-import { EditorState, useEditor } from "@/providers/editor-provider";
+import { EditorState, useEditor } from "@/hooks/editor-provider";
 import { getDiscordConnectionUrl } from "@/app/(main)/(pages)/connections/_actions/discord-connection";
 import {
   getNotionConnection,

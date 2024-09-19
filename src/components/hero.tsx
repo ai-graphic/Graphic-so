@@ -37,13 +37,13 @@ export function Hero({ children }: { children?: React.ReactNode }) {
       </div>
       <div className="flex mt-4 mb-4 space-x-4">
         <Button variant="secondary" asChild>
-          <Link href="https://discord.com/invite/your-discord-invite" className="flex items-center text-black">
+          <Link href="https://discord.gg/TPY22KvF5X" className="flex items-center text-black">
             <PlusIcon className="size-4 mr-1" />
             Join Discord
           </Link>
         </Button>
         <a
-          href="https://twitter.com/your-twitter-handle"
+          href="https://x.com/seshubon"
           target="_blank"
           rel="noreferrer"
           className="flex items-center"

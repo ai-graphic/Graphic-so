@@ -1,5 +1,5 @@
 import { EditorCanvasCardType } from "@/lib/types";
-import { useEditor } from "@/providers/editor-provider";
+import { useEditor } from "@/hooks/editor-provider";
 import React, { use, useEffect, useMemo, useState } from "react";
 import { Position, SelectionMode, useNodeId } from "@xyflow/react";
 import EditorCanvasIconHelper from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/editor-canvas-icon-helper";
@@ -13,15 +13,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import clsx from "clsx";
-import { useNodeConnections } from "@/providers/connections-providers";
-import { useLoading } from "@/providers/loading-provider";
+import { useNodeConnections } from "@/hooks/connections-providers";
+import { useLoading } from "@/hooks/loading-provider";
 import { Input } from "@/components/ui/input";
 import { onContentChange } from "@/lib/editor-utils";
 import { Button } from "@/components/ui/button";
 import { Icon, MousePointerClickIcon, TableRowsSplitIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useWorkflow } from "@/providers/workflow-providers";
-import { useBilling } from "@/providers/billing-provider";
+import { useWorkflow } from "@/hooks/workflow-providers";
+import { useBilling } from "@/hooks/billing-provider";
 import { set } from "zod";
 
 type Props = {};
@@ -29,7 +29,7 @@ type LatestOutputsType = {
   [key: string]: string;
 };
 
-const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
+const CanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
   const { dispatch, state } = useEditor();
   const nodeId = useNodeId();
   const logo = useMemo(() => {
@@ -233,4 +233,4 @@ const EditorCanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
   );
 };
 
-export default EditorCanvasCardSingle;
+export default CanvasCardSingle;

@@ -1,6 +1,6 @@
 "use client";
 import { EditorCanvasCardType, EditorNodeType } from "@/lib/types";
-import { useEditor } from "@/providers/editor-provider";
+import { useEditor } from "@/hooks/editor-provider";
 import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
   Background,
@@ -16,12 +16,10 @@ import {
   MarkerType,
   reconnectEdge,
   addEdge,
-  useNodesState,
-  useEdgesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Cog, MenuIcon } from "lucide-react";
-import EditorCanvasCardSingle from "./editor-canvas-card-single";
+import { MenuIcon } from "lucide-react";
+import CanvasCardSingle from "./canvasCardSingle";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -33,7 +31,7 @@ import { v4 } from "uuid";
 import { EditorCanvasDefaultCardTypes } from "@/lib/constants";
 import EditorCanvasSidebar from "./editor-canvas-sidebar";
 import { onGetNodesEdges } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
-import { useNodeConnections } from "@/providers/connections-providers";
+import { useNodeConnections } from "@/hooks/connections-providers";
 import "./index.css"
 
 const initialNodes: EditorNodeType[] = [];
@@ -235,32 +233,32 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
 
   const nodeTypes = useMemo(
     () => ({
-      Chat: EditorCanvasCardSingle,
-      Trigger: EditorCanvasCardSingle,
-      Email: EditorCanvasCardSingle,
-      Condition: EditorCanvasCardSingle,
-      "flux-dev": EditorCanvasCardSingle,
-      "image-to-image": EditorCanvasCardSingle,
-      "flux-lora": EditorCanvasCardSingle,
-      "stable-video": EditorCanvasCardSingle,
-      "CogVideoX-5B": EditorCanvasCardSingle,
-      musicGen : EditorCanvasCardSingle,
-      "train-flux": EditorCanvasCardSingle,
-      "consistent-character": EditorCanvasCardSingle,
-      dreamShaper: EditorCanvasCardSingle,
-      fluxGeneral: EditorCanvasCardSingle,
-      fluxDevLora: EditorCanvasCardSingle,
-      AI: EditorCanvasCardSingle,
-      Slack: EditorCanvasCardSingle,
-      "Google Drive": EditorCanvasCardSingle,
-      Notion: EditorCanvasCardSingle,
-      Discord: EditorCanvasCardSingle,
-      "Custom Webhook": EditorCanvasCardSingle,
-      "Google Calendar": EditorCanvasCardSingle,
-      Wait: EditorCanvasCardSingle,
-      "video-to-video": EditorCanvasCardSingle,
-      "lunalabs-ImageToVideo": EditorCanvasCardSingle,
-      "lunalabs-TextToVideo": EditorCanvasCardSingle,
+      Chat: CanvasCardSingle,
+      Trigger: CanvasCardSingle,
+      Email: CanvasCardSingle,
+      Condition: CanvasCardSingle,
+      "flux-dev": CanvasCardSingle,
+      "image-to-image": CanvasCardSingle,
+      "flux-lora": CanvasCardSingle,
+      "stable-video": CanvasCardSingle,
+      "CogVideoX-5B": CanvasCardSingle,
+      musicGen : CanvasCardSingle,
+      "train-flux": CanvasCardSingle,
+      "consistent-character": CanvasCardSingle,
+      dreamShaper: CanvasCardSingle,
+      fluxGeneral: CanvasCardSingle,
+      fluxDevLora: CanvasCardSingle,
+      AI: CanvasCardSingle,
+      Slack: CanvasCardSingle,
+      "Google Drive": CanvasCardSingle,
+      Notion: CanvasCardSingle,
+      Discord: CanvasCardSingle,
+      "Custom Webhook": CanvasCardSingle,
+      "Google Calendar": CanvasCardSingle,
+      Wait: CanvasCardSingle,
+      "video-to-video": CanvasCardSingle,
+      "lunalabs-ImageToVideo": CanvasCardSingle,
+      "lunalabs-TextToVideo": CanvasCardSingle,
     }),
     []
   );

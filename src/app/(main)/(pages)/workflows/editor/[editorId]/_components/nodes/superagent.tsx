@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useEditor } from "@/providers/editor-provider";
+import { useEditor } from "@/hooks/editor-provider";
 import { useForm, FormProvider } from "react-hook-form";
 import { FormItem, FormField } from "@/components/ui/form";
 import { toast } from "sonner";

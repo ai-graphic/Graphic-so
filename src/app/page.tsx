@@ -54,7 +54,7 @@ export default async function Home() {
     <main>
       <Navbar />
 
-      <div className="w-full px-2 md:px-4 flex mt-40">
+      <div className="w-full px-2 md:px-4 flex mt-40 max-sm:mt-10">
         <FadeIn>
           <ResourceCardGrid
             sortedData={data}

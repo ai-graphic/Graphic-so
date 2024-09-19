@@ -1,8 +1,8 @@
-import { ConnectionProviderProps } from "@/providers/connections-providers";
-import { EditorState } from "@/providers/editor-provider";
+import { ConnectionProviderProps } from "@/hooks/connections-providers";
+import { EditorState } from "@/hooks/editor-provider";
 import { usegraphicStore } from "@/store";
 import React from "react";
-import ContentBasedOnTitle from "./content-based-on-title";
+import SettingsContent from "./Settings-content";
 import { EditorNodeType } from "@/lib/types";
 import { set } from "zod";
 
@@ -31,7 +31,7 @@ const RenderOutputAccordion = ({
 
   } = usegraphicStore();
   return (
-    <ContentBasedOnTitle
+    <SettingsContent
       nodes={nodes}
       edges={edges}
       nodeConnection={nodeConnection}

@@ -1,6 +1,6 @@
 'use client'
 
-import {useBilling} from "@/providers/billing-provider";
+import {useBilling} from "@/hooks/billing-provider";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import CreditTracker from "@/app/(main)/(pages)/billing/_components/credits-tracker";

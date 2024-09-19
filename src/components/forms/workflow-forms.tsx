@@ -10,7 +10,7 @@ import {Button} from "@/components/ui/button";
 import {Loader2} from "lucide-react";
 import {toast} from "sonner";
 import {onCreateWorkflow} from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
-import {useModal} from "@/providers/modal-provider";
+import {useModal} from "@/hooks/modal-provider";
 
 type Props = {
     title?: string;

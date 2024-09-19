@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { motion } from "framer-motion";
 import { UserButton } from "@clerk/nextjs";
-import { useBilling } from "@/providers/billing-provider";
+import { useBilling } from "@/hooks/billing-provider";
 import { onPaymentDetails } from "@/app/(main)/(pages)/billing/_actions/payment-connections";
 import Image from "next/image";
 
@@ -67,7 +67,7 @@ const MenuOptions = (props: Props) => {
         </Button>
       ) : (
         <motion.nav
-          className={`dark:bg-black h-screen overflow-scroll justify-between flex items-center flex-col gap-10 py-6 px-2 ${
+          className={`dark:bg-black  xl:px-4 h-screen overflow-scroll justify-between flex items-center flex-col gap-10 py-6 px-2 ${
             isVisible ? "menu-enter-active" : "menu-exit-active"
           }`}
           variants={sidebarVariants}
@@ -75,7 +75,7 @@ const MenuOptions = (props: Props) => {
           animate={isVisible ? "open" : "closed"}
         >
           <div className="flex items-center justify-center flex-col gap-8 mx-4">
-            <Link href="/" className="flex font-bold m-2 flex-row">
+            <Link href="/" className="flex font-bold flex-row ">
               <Image
                 src="/logo.webp"
                 alt="logo"
@@ -112,8 +112,8 @@ const MenuOptions = (props: Props) => {
               {isControllable && (
                 <Button
                   variant="outline"
-                  className="m-2 p-2"
                   onClick={() => setIsVisible(false)}
+                  className="px-1 -mx-1"
                 >
                   <ChevronsLeft />
                 </Button>

@@ -1,8 +1,8 @@
 "use client";
 
 import { EditorCanvasTypes, EditorNodeType } from "@/lib/types";
-import { useEditor } from "@/providers/editor-provider";
-import { useNodeConnections } from "@/providers/connections-providers";
+import { useEditor } from "@/hooks/editor-provider";
+import { useNodeConnections } from "@/hooks/connections-providers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { CONNECTIONS, EditorCanvasDefaultCardTypes } from "@/lib/constants";

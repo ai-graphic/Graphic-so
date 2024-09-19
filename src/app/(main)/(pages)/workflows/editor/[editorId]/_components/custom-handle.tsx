@@ -1,4 +1,4 @@
-import { useEditor } from "@/providers/editor-provider";
+import { useEditor } from "@/hooks/editor-provider";
 import React, { CSSProperties } from "react";
 import { Handle, HandleProps, useStore } from "@xyflow/react";
 

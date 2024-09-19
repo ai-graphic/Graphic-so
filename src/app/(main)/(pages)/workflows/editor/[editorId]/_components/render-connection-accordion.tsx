@@ -4,8 +4,8 @@ import ConnectionCard from "@/app/(main)/(pages)/connections/_components/connect
 import { AccordionContent } from "@/components/ui/accordion";
 import MultipleSelector from "@/components/ui/multiple-selector";
 import { Connection } from "@/lib/types";
-import { useNodeConnections } from "@/providers/connections-providers";
-import { EditorState } from "@/providers/editor-provider";
+import { useNodeConnections } from "@/hooks/connections-providers";
+import { EditorState } from "@/hooks/editor-provider";
 import { usegraphicStore } from "@/store";
 import {
   Command,

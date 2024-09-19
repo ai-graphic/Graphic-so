@@ -1,5 +1,5 @@
 import React from "react";
-import {useModal} from "@/providers/modal-provider";
+import {useModal} from "@/hooks/modal-provider";
 import {
     Drawer, DrawerClose,
     DrawerContent,

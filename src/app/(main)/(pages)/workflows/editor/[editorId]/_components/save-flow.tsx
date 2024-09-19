@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useNodeConnections } from "@/providers/connections-providers";
+import { useNodeConnections } from "@/hooks/connections-providers";
 import { usePathname } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -9,7 +9,7 @@ import {
 } from "../_actions/workflow-connections";
 import { toast } from "sonner";
 import { set } from "zod";
-import { useEditor } from "@/providers/editor-provider";
+import { useEditor } from "@/hooks/editor-provider";
 
 type Props = {
   edges: any[];
@@ -18,7 +18,7 @@ type Props = {
   setEdges: (edges: any[]) => void;
 };
 
-const FlowInstance = ({ edges, nodes, setNodes, setEdges }: Props) => {
+const SaveFlow = ({ edges, nodes, setNodes, setEdges }: Props) => {
   const pathname = usePathname();
   const { nodeConnection, } = useNodeConnections();
   const {dispatch, state } = useEditor();
@@ -115,4 +115,4 @@ const FlowInstance = ({ edges, nodes, setNodes, setEdges }: Props) => {
   );
 };
 
-export default FlowInstance;
+export default SaveFlow;

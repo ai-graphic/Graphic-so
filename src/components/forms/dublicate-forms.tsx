@@ -26,7 +26,7 @@ import {
   onCreateWorkflow,
   ondublicateWorkflow,
 } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
-import { useModal } from "@/providers/modal-provider";
+import { useModal } from "@/hooks/modal-provider";
 
 type Props = {
   id: string;

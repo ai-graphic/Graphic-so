@@ -1,12 +1,12 @@
 "use client";
-import EditorProvider from "@/providers/editor-provider";
+import EditorProvider from "@/hooks/editor-provider";
 import {
   ConnectionsProvider,
   useNodeConnections,
-} from "@/providers/connections-providers";
+} from "@/hooks/connections-providers";
 import EditorCanvas from "@/app/(main)/(pages)/workflows/editor/[editorId]/_components/editor-canvas";
-import { LoadingProvider } from "@/providers/loading-provider";
-import { WorkflowProvider } from "@/providers/workflow-providers";
+import { LoadingProvider } from "@/hooks/loading-provider";
+import { WorkflowProvider } from "@/hooks/workflow-providers";
 import { getworkflow } from "./_actions/workflow-connections";
 import { usePathname, useRouter } from "next/navigation"; // Updated import
 import { useUser } from "@clerk/nextjs";

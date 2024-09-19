@@ -1,5 +1,5 @@
 "use client";
-import { useEditor } from "@/providers/editor-provider";
+import { useEditor } from "@/hooks/editor-provider";
 import { Input } from "@/components/ui/input";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePathname } from "next/navigation";
@@ -7,12 +7,12 @@ import { useEffect, useRef, useState } from "react";
 import { getworkflow } from "../_actions/workflow-connections";
 import { Button } from "@/components/ui/button";
 import { BotIcon, HistoryIcon, SendIcon, UploadIcon } from "lucide-react";
-import { useNodeConnections } from "@/providers/connections-providers";
+import { useNodeConnections } from "@/hooks/connections-providers";
 import { onContentChange } from "@/lib/editor-utils";
 import { toast } from "sonner";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
-import { useBilling } from "@/providers/billing-provider";
+import { useBilling } from "@/hooks/billing-provider";
 import { onPaymentDetails } from "@/app/(main)/(pages)/billing/_actions/payment-connections";
 import {
   SheetContent,

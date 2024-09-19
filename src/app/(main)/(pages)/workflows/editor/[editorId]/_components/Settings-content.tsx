@@ -1,7 +1,7 @@
 "use client";
 
-import { ConnectionProviderProps } from "@/providers/connections-providers";
-import { EditorState, useEditor } from "@/providers/editor-provider";
+import { ConnectionProviderProps } from "@/hooks/connections-providers";
+import { EditorState, useEditor } from "@/hooks/editor-provider";
 import { EditorNodeType, nodeMapper, OutputType } from "@/lib/types";
 import { AccordionContent } from "@/components/ui/accordion";
 import {
@@ -60,7 +60,7 @@ type Props = {
   setNodes: (nodes: EditorNodeType[]) => void;
   setEdges: (edges: any) => void;
 };
-const ContentBasedOnTitle = ({
+const SettingsContent = ({
   nodes,
   edges,
   nodeConnection,
@@ -574,4 +574,4 @@ const ContentBasedOnTitle = ({
     </AccordionContent>
   );
 };
-export default ContentBasedOnTitle;
+export default SettingsContent;

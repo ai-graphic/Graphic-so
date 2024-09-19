@@ -1,4 +1,4 @@
-import { useEditor } from "@/providers/editor-provider";
+import { useEditor } from "@/hooks/editor-provider";
 import { Input } from "@/components/ui/input";
 import { AccordionContent } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,12 +15,12 @@ import {
   UploadIcon,
   UserCircle,
 } from "lucide-react";
-import { useWorkflow } from "@/providers/workflow-providers";
-import { useNodeConnections } from "@/providers/connections-providers";
-import { useLoading } from "@/providers/loading-provider";
+import { useWorkflow } from "@/hooks/workflow-providers";
+import { useNodeConnections } from "@/hooks/connections-providers";
+import { useLoading } from "@/hooks/loading-provider";
 import { onContentChange } from "@/lib/editor-utils";
 import { toast } from "sonner";
-import { useBilling } from "@/providers/billing-provider";
+import { useBilling } from "@/hooks/billing-provider";
 import axios from "axios";
 import { userAgent } from "next/server";
 import {
@@ -382,7 +382,7 @@ export default Chat;
 // } from '@assistant-ui/react-ai-sdk'
 // import { useActions, useUIState } from 'ai/rsc'
 // import { nanoid } from '@/lib/utils'
-// import { useLoading } from '@/providers/loading-provider'
+// import { useLoading } from '@/hooks/loading-provider'
 // import { useUser } from '@clerk/nextjs'
 // import { usePathname } from 'next/navigation'
 // import { getworkflow } from '../_actions/workflow-connections'

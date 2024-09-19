@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Option } from "./content-based-on-title";
+import { Option } from "./Settings-content";
 import {
   ConnectionProviderProps,
   useNodeConnections,
-} from "@/providers/connections-providers";
+} from "@/hooks/connections-providers";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { postContentToWebHook } from "@/app/(main)/(pages)/connections/_actions/discord-connection";
@@ -12,14 +12,14 @@ import { toast } from "sonner";
 import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_actions/notion-connection";
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
 import axios from "axios";
-import { useEditor } from "@/providers/editor-provider";
+import { useEditor } from "@/hooks/editor-provider";
 import Link from "next/link";
-import { useLoading } from "@/providers/loading-provider";
-import FlowInstance from "./flow-instance";
+import { useLoading } from "@/hooks/loading-provider";
+import SaveFlow from "./save-flow";
 import { EditorNodeType } from "@/lib/types";
 import { useUser } from "@clerk/nextjs";
 import { on } from "events";
-import { useBilling } from "@/providers/billing-provider";
+import { useBilling } from "@/hooks/billing-provider";
 
 type Props = {
   currentService: string;
@@ -1537,7 +1537,7 @@ const ActionButton = ({
   return (
     <div className="flex flex-col gap-2 w-full">
       {renderActionButton()}
-      <FlowInstance
+      <SaveFlow
         edges={edges}
         nodes={nodes}
         setNodes={setNodes}
