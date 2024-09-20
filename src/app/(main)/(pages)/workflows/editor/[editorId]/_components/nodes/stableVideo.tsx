@@ -89,7 +89,7 @@ const StableVideo = (nodeConnectionType: any, title: string) => {
           <Input
             type="text"
             className="col-span-3"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="Enter image URL"
             value={
               selectedurl ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.image_url

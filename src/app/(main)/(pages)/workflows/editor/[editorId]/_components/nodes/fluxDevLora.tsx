@@ -54,7 +54,7 @@ const FluxDevLora =  (nodeConnectionType: any, title: string) => {
         <div className="flex gap-2">
           <Input
             type="text"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="a photo of TOK, sftsrv style"
             value={
               selectedPrompt ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.prompt

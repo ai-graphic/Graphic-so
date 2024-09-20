@@ -95,7 +95,7 @@ const VideoToVideo = (nodeConnectionType: any, title: string) => {
         <div className="flex gap-2">
           <Input
             type="text"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="An astronaut stands triumphantly at the peak of a towering mountain. Panorama of rugged peaks and valleys. Very futuristic vibe and animated aesthetic. Highlights of purple and golden colors in the scene. The sky is looks like an animated/cartoonish dream of galaxies, nebulae, stars, planets, moons, but the remainder of the scene is mostly realistic. "
             value={
               selectedPrompt ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.prompt
@@ -159,7 +159,7 @@ const VideoToVideo = (nodeConnectionType: any, title: string) => {
           <Input
             type="text"
             className="col-span-3"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="Enter Your video_url Url Here"
             value={
               selectedurl ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.video_url

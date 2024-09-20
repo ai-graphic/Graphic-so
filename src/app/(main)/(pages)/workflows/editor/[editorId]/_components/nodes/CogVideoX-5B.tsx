@@ -7,12 +7,12 @@ import { useEditor } from "@/hooks/editor-provider";
 import React from "react";
 
 const cogvideoOptions: Option[] = [
-    { num_inference_steps: { placeholder: 50, type: "number" } }, 
-    { guidance_scale: { placeholder: 7, type: "number" } },
-    { negative_prompt: { placeholder: "Enter negative prompt", type: "text" } },
-    { use_rife: { placeholder: true, type: "checkbox" } },
-    { export_fps: { placeholder: 30, type: "number" } },
-  ];
+  { num_inference_steps: { placeholder: 50, type: "number" } },
+  { guidance_scale: { placeholder: 7, type: "number" } },
+  { negative_prompt: { placeholder: "Enter negative prompt", type: "text" } },
+  { use_rife: { placeholder: true, type: "checkbox" } },
+  { export_fps: { placeholder: 30, type: "number" } },
+];
 
 const CogVideoX = (nodeConnectionType: any, title: string) => {
   const { selectedNode } = useEditor().state.editor;
@@ -51,7 +51,7 @@ const CogVideoX = (nodeConnectionType: any, title: string) => {
           <Input
             type="text"
             className="col-span-3"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="A garden comes to life as a kaleidoscope of butterflies flutters amidst the blossoms, their delicate wings casting shadows on the petals below. In the background, a grand fountain cascades water with a gentle splendor, its rhythmic sound providing a soothing backdrop. Beneath the cool shade of a mature tree, a solitary wooden chair invites solitude and reflection, its smooth surface worn by the touch of countless visitors seeking a moment of tranquility in nature's embrace."
             value={
               selectedPrompt ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.prompt
@@ -64,9 +64,8 @@ const CogVideoX = (nodeConnectionType: any, title: string) => {
               setselectedPrompt(newValue);
               console.log(newValue);
               if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
-                nodeConnectionType.nodeConnectionType[
-                  selectedNode.id
-                ].prompt = newValue;
+                nodeConnectionType.nodeConnectionType[selectedNode.id].prompt =
+                  newValue;
               }
               onContentChange(
                 state,

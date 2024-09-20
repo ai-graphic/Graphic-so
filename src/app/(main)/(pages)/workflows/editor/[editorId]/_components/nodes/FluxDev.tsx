@@ -55,7 +55,7 @@ const FluxDev = (nodeConnectionType: any, title: string) => {
         <div className="flex gap-2">
           <Input
             type="text"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="Extreme close-up of a single tiger eye, direct frontal view. Detailed iris and pupil. Sharp focus on eye texture and color. Natural lighting to capture authentic eye shine and depth. The word 'FLUX' is painted over it in big, white brush strokes with visible texture."
             value={
               selectedPrompt ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.prompt

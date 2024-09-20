@@ -896,7 +896,7 @@ const ActionButton = ({
         }
       }
 
-      if (currentService === "lunalabs-TextToVideo") {
+      if (currentService === "lumalabs-TextToVideo") {
         const aiNodeAsString = JSON.stringify(
           nodeConnection.lunalabsTextToVideoNode
         );
@@ -911,7 +911,7 @@ const ActionButton = ({
         }
       }
 
-      if (currentService === "lunalabs-ImageToVideo") {
+      if (currentService === "lumalabs-ImageToVideo") {
         const aiNodeAsString = JSON.stringify(
           nodeConnection.lunalabsImageToVideoNode
         );
@@ -1456,7 +1456,7 @@ const ActionButton = ({
             </Button>
           </>
         );
-      case "lunalabs-TextToVideo":
+      case "lumalabs-TextToVideo":
         return (
           <>
             {nodeConnection.lunalabsTextToVideoNode[selectedNode.id] &&
@@ -1492,7 +1492,7 @@ const ActionButton = ({
             </Button>
           </>
         );
-      case "lunalabs-ImageToVideo":
+      case "lumalabs-ImageToVideo":
         return (
           <>
             {nodeConnection.lunalabsImageToVideoNode[selectedNode.id] &&

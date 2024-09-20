@@ -1,7 +1,13 @@
 "use client";
 import { EditorCanvasCardType, EditorNodeType } from "@/lib/types";
 import { useEditor } from "@/hooks/editor-provider";
-import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import {
   Background,
   Connection,
@@ -32,12 +38,11 @@ import { EditorCanvasDefaultCardTypes } from "@/lib/constants";
 import EditorCanvasSidebar from "./editor-canvas-sidebar";
 import { onGetNodesEdges } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
 import { useNodeConnections } from "@/hooks/connections-providers";
-import "./index.css"
+import "./index.css";
 
 const initialNodes: EditorNodeType[] = [];
 
 const initialEdges: { id: string; source: string; target: string }[] = [];
-
 
 const EditorCanvas = (workflow: any, setworkflow: any) => {
   const { dispatch, state } = useEditor();
@@ -93,27 +98,23 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
     [setEdges]
   );
 
-
-  const onConnect = useCallback(
-    (params: Edge | Connection) => {
-      const newEdge = {
-        ...params,
-        id: `${params.source}->${params.target}`,
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          width: 20,
-          height: 20,
-          color: '#95679e',
-        },
-        style: {
-          strokeWidth: 2,
-          stroke: '#95679e',
-        },
-      };
-      setEdges((eds) => addEdge(newEdge, eds));
-    },
-    []
-  );
+  const onConnect = useCallback((params: Edge | Connection) => {
+    const newEdge = {
+      ...params,
+      id: `${params.source}->${params.target}`,
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        width: 20,
+        height: 20,
+        color: "#95679e",
+      },
+      style: {
+        strokeWidth: 2,
+        stroke: "#95679e",
+      },
+    };
+    setEdges((eds) => addEdge(newEdge, eds));
+  }, []);
 
   const onDrop = useCallback(
     (event: any) => {
@@ -230,7 +231,6 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
     dispatch({ type: "LOAD_DATA", payload: { edges, elements: nodes } });
   }, [nodes, edges]);
 
-
   const nodeTypes = useMemo(
     () => ({
       Chat: CanvasCardSingle,
@@ -242,7 +242,7 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
       "flux-lora": CanvasCardSingle,
       "stable-video": CanvasCardSingle,
       "CogVideoX-5B": CanvasCardSingle,
-      musicGen : CanvasCardSingle,
+      musicGen: CanvasCardSingle,
       "train-flux": CanvasCardSingle,
       "consistent-character": CanvasCardSingle,
       dreamShaper: CanvasCardSingle,
@@ -257,8 +257,8 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
       "Google Calendar": CanvasCardSingle,
       Wait: CanvasCardSingle,
       "video-to-video": CanvasCardSingle,
-      "lunalabs-ImageToVideo": CanvasCardSingle,
-      "lunalabs-TextToVideo": CanvasCardSingle,
+      "lumalabs-ImageToVideo": CanvasCardSingle,
+      "lumalabs-TextToVideo": CanvasCardSingle,
     }),
     []
   );
@@ -278,25 +278,27 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
     onGetWorkFlow();
   }, []);
 
-    const edgeReconnectSuccessful = useRef(true);
+  const edgeReconnectSuccessful = useRef(true);
 
-    const onReconnectStart = useCallback(() => {
-      edgeReconnectSuccessful.current = false;
-    }, []);
-  
-    const onReconnect = useCallback((oldEdge: Edge, newConnection: Connection) => {
+  const onReconnectStart = useCallback(() => {
+    edgeReconnectSuccessful.current = false;
+  }, []);
+
+  const onReconnect = useCallback(
+    (oldEdge: Edge, newConnection: Connection) => {
       edgeReconnectSuccessful.current = true;
       setEdges((els) => reconnectEdge(oldEdge, newConnection, els));
-    }, []);
+    },
+    []
+  );
 
-    
-    const onReconnectEnd = useCallback((_: any, edge: Edge) => {
-      if (!edgeReconnectSuccessful.current) {
-        setEdges((eds) => eds.filter((e) => e.id !== edge.id));
-      }
-  
-      edgeReconnectSuccessful.current = true;
-    }, []);
+  const onReconnectEnd = useCallback((_: any, edge: Edge) => {
+    if (!edgeReconnectSuccessful.current) {
+      setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+    }
+
+    edgeReconnectSuccessful.current = true;
+  }, []);
 
   return (
     <ResizablePanelGroup direction="horizontal">
@@ -340,9 +342,9 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
                 fitView={nodes?.length === 1}
                 nodeTypes={nodeTypes}
                 snapToGrid
-      onReconnect={onReconnect}
-      onReconnectStart={onReconnectStart}
-      onReconnectEnd={onReconnectEnd}
+                onReconnect={onReconnect}
+                onReconnectStart={onReconnectStart}
+                onReconnectEnd={onReconnectEnd}
               >
                 <Background
                   //@ts-ignore

@@ -99,7 +99,7 @@ const ImageToImage = (nodeConnectionType: any, title: string) => {
         <div className="flex gap-2">
           <Input
             type="text"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="a cat dressed as a wizard with a background of a mystic forest."
             value={
               selectedPrompt ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.prompt
@@ -163,7 +163,7 @@ const ImageToImage = (nodeConnectionType: any, title: string) => {
           <Input
             type="text"
             className="col-span-3"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="Enter your Image Url here"
             value={
               selectedurl ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.image_url

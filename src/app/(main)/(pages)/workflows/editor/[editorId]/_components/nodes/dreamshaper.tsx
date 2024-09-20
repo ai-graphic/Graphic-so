@@ -96,7 +96,7 @@ const DreamShaper = (nodeConnectionType: any, title: string) => {
         <div className="flex gap-2">
           <Input
             type="text"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="Photo of a lone astronaut standing on a barren planet, looking up at the stars, surrounded by remnants of a destroyed spaceship. Deep blue filter, harsh shadows, intense stare, gritty texture, captured by a Sony Alpha 7S III camera."
             value={
               selectedPrompt ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.prompt
@@ -160,7 +160,7 @@ const DreamShaper = (nodeConnectionType: any, title: string) => {
           <Input
             type="text"
             className="col-span-3"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="Enter your link here"
             value={
               selectedurl ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.image

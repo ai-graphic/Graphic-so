@@ -88,7 +88,7 @@ const ImageToVideo = (nodeConnectionType: any, title: string) => {
         <div className="flex gap-2">
           <Input
             type="text"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="A time-lapse sequence showing a vibrant coral reef transforming from day to night. As darkness falls, bioluminescent creatures emerge, creating a mesmerizing light show beneath the waves."
             value={
               selectedPrompt ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.prompt
@@ -106,7 +106,7 @@ const ImageToVideo = (nodeConnectionType: any, title: string) => {
               onContentChange(
                 state,
                 nodeConnection,
-                "lunalabs-ImageToVideo",
+                "lumalabs-ImageToVideo",
                 event,
                 "prompt"
               );
@@ -173,7 +173,7 @@ const ImageToVideo = (nodeConnectionType: any, title: string) => {
               onContentChange(
                 state,
                 nodeConnection,
-                "lunalabs-ImageToVideo",
+                "lumalabs-ImageToVideo",
                 event,
                 "start_frame_url"
               );
@@ -269,7 +269,7 @@ const ImageToVideo = (nodeConnectionType: any, title: string) => {
                 onContentChange(
                   state,
                   nodeConnection,
-                  "lunalabs-ImageToVideo",
+                  "lumalabs-ImageToVideo",
                   event,
                   optionKey
                 );

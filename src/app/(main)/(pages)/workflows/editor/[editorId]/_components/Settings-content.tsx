@@ -259,7 +259,7 @@ const SettingsContent = ({
                     <div className="flex gap-2">
                       <Input
                         type="text"
-                        placeholder="a beautiful castle frstingln illustration"
+                        placeholder="Enter your prompt here"
                         value={
                           selectedOutput ??
                           nodeConnectionType[selectedNode.id]?.prompt
@@ -534,13 +534,13 @@ const SettingsContent = ({
                   title={title}
                 />
               )}
-              {title === "lunalabs-ImageToVideo" && (
+              {title === "lumalabs-ImageToVideo" && (
                 <ImageToVideo
                   nodeConnectionType={nodeConnectionType}
                   title={title}
                 />
               )}
-              {title === "lunalabs-TextToVideo" && (
+              {title === "lumalabs-TextToVideo" && (
                 <TextToVideo
                   nodeConnectionType={nodeConnectionType}
                   title={title}

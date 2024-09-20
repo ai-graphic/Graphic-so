@@ -284,7 +284,7 @@ export const onCreateNodeTemplate = async (
       return "video-to-video template saved";
     }
   }
-  if (type === "lunalabs-ImageToVideo") {
+  if (type === "lumalabs-ImageToVideo") {
     const response = await db.workflows.update({
       where: {
         id: workflowId,
@@ -295,10 +295,10 @@ export const onCreateNodeTemplate = async (
     });
 
     if (response) {
-      return "lunalabs-ImageToVideo template saved";
+      return "lumalabs-ImageToVideo template saved";
     }
   }
-  if (type === "lunalabs-TextToVideo") {
+  if (type === "lumalabs-TextToVideo") {
     const response = await db.workflows.update({
       where: {
         id: workflowId,
@@ -309,7 +309,7 @@ export const onCreateNodeTemplate = async (
     });
 
     if (response) {
-      return "lunalabs-TextToVideo template saved";
+      return "lumalabs-TextToVideo template saved";
     }
   }
 };

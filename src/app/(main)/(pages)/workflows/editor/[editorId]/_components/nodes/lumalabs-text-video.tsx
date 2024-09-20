@@ -6,15 +6,12 @@ import { useNodeConnections } from "@/hooks/connections-providers";
 import { useEditor } from "@/hooks/editor-provider";
 import React from "react";
 
+const TextToVideoNodeOptions: Option[] = [
+  { aspect_ratio: { placeholder: "16:9", type: "text" } },
+  { loop: { placeholder: false, type: "checkbox" } },
+];
 
-const TextToVideoNodeOptions : Option[]  = [
-    { aspect_ratio : { placeholder: "16:9", type: "text" } },
-    { loop : { placeholder: false, type: "checkbox" } },
-  ];
-  
-
-
-const TextToVideo =(nodeConnectionType: any, title: string) => {
+const TextToVideo = (nodeConnectionType: any, title: string) => {
   const { selectedNode } = useEditor().state.editor;
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
@@ -36,7 +33,7 @@ const TextToVideo =(nodeConnectionType: any, title: string) => {
   };
   console.log(loading);
   console.log(nodeConnectionType);
-  console.log(nodeConnection)
+  console.log(nodeConnection);
   return (
     <div className="flex flex-col gap-2">
       <div>
@@ -46,7 +43,7 @@ const TextToVideo =(nodeConnectionType: any, title: string) => {
         <div className="flex gap-2">
           <Input
             type="text"
-            placeholder="a beautiful castle frstingln illustration"
+            placeholder="A time-lapse sequence showing a vibrant coral reef transforming from day to night. As darkness falls, bioluminescent creatures emerge, creating a mesmerizing light show beneath the waves."
             value={
               selectedPrompt ??
               nodeConnectionType.nodeConnectionType[selectedNode.id]?.prompt
@@ -64,7 +61,7 @@ const TextToVideo =(nodeConnectionType: any, title: string) => {
               onContentChange(
                 state,
                 nodeConnection,
-                "lunalabs-TextToVideo",
+                "lumalabs-TextToVideo",
                 event,
                 "prompt"
               );
@@ -105,17 +102,17 @@ const TextToVideo =(nodeConnectionType: any, title: string) => {
             )}
       </div>
 
-        {TextToVideoNodeOptions.map((optionObj) => {
-          const optionKey = Object.keys(optionObj)[0];
-          const optionValue = optionObj[optionKey];
-  
-          return (
-            <div key={optionKey}>
-              <p className="block text-sm font-medium text-gray-300">
-                Enter Your{" "}
-                {optionKey.charAt(0).toUpperCase() + optionKey.slice(1)} here
-              </p>
-             <Input
+      {TextToVideoNodeOptions.map((optionObj) => {
+        const optionKey = Object.keys(optionObj)[0];
+        const optionValue = optionObj[optionKey];
+
+        return (
+          <div key={optionKey}>
+            <p className="block text-sm font-medium text-gray-300">
+              Enter Your{" "}
+              {optionKey.charAt(0).toUpperCase() + optionKey.slice(1)} here
+            </p>
+            <Input
               type={optionValue.type}
               placeholder={
                 optionValue.placeholder
@@ -141,17 +138,17 @@ const TextToVideo =(nodeConnectionType: any, title: string) => {
                 onContentChange(
                   state,
                   nodeConnection,
-                  "lunalabs-TextToVideo",
+                  "lumalabs-TextToVideo",
                   event,
                   optionKey
                 );
               }}
             />
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 export default TextToVideo;
