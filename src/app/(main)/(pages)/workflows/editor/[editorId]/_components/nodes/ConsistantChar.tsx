@@ -7,6 +7,7 @@ import { useEditor } from "@/hooks/editor-provider";
 import axios from "axios";
 import React from "react";
 import { toast } from "sonner";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const consistentCharOptions : Option[] = [
     { num_outputs: { placeholder: 1, type: "number" } },
@@ -41,6 +42,7 @@ const ConsistentChar =  (nodeConnectionType: any, title: string) => {
     output_format: null,
     output_quality: null,
   });
+  const [showOptions, setShowOptions] = React.useState<boolean>(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
@@ -239,8 +241,26 @@ const ConsistentChar =  (nodeConnectionType: any, title: string) => {
               )
             )}
       </div>
-
-      {consistentCharOptions.map((optionObj) => {
+      <div className="flex justify-between items-center gap-2">
+        <p className="whitespace-nowrap">Additional Settings</p>
+        <hr className=" w-full mx-1 border-gray-300" />
+        <Button
+          variant="outline"
+          onClick={() => setShowOptions((prev) => !prev)}
+          className=" whitespace-nowrap  font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          {showOptions ? (
+            <p className="flex gap-1 justify-center items-center">
+              Show less <ChevronUp />
+            </p>
+          ) : (
+            <p className="flex gap-1 justify-center items-center">
+              Show more <ChevronDown />
+            </p>
+          )}
+        </Button>
+      </div>
+      {showOptions && consistentCharOptions.map((optionObj) => {
         const optionKey = Object.keys(optionObj)[0];
         const optionValue = optionObj[optionKey];
 

@@ -33,6 +33,7 @@ import MusicGen from "./nodes/MusicGen";
 import VideoToVideo from "./nodes/videoToVideo";
 import TextToVideo from "./nodes/lumalabs-text-video";
 import ImageToVideo from "./nodes/lumalabs-img-video";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export interface Option {
   value: string;
@@ -82,6 +83,7 @@ const SettingsContent = ({
   const [tool, setTool] = useState<string>("bing Search");
   const [localModel, setLocalModel] = useState<string>("Claude");
   // const [showSuperAgent, setShowSuperAgent] = useState(false);
+  const [showOptions, setShowOptions] = useState<boolean>(false);
 
   const vercelOptions = [
     { system: { placeholder: "Enter your system Message", type: "text" } },
@@ -343,8 +345,26 @@ const SettingsContent = ({
                   </div>
                 </div>
               )}
-
-              {nodeConnectionType[selectedNode.id]?.model &&
+     <div className="flex justify-between items-center gap-2">
+        <p className="whitespace-nowrap">Additional Settings</p>
+        <hr className=" w-full mx-1 border-gray-300" />
+        <Button
+          variant="outline"
+          onClick={() => setShowOptions((prev) => !prev)}
+          className=" whitespace-nowrap  font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          {showOptions ? (
+            <p className="flex gap-1 justify-center items-center">
+              Show less <ChevronUp />
+            </p>
+          ) : (
+            <p className="flex gap-1 justify-center items-center">
+              Show more <ChevronDown />
+            </p>
+          )}
+        </Button>
+      </div>
+      {showOptions && nodeConnectionType[selectedNode.id]?.model &&
                 modelOptionsMap[nodeConnectionType[selectedNode.id].model]?.map(
                   (optionObj) => {
                     const optionKey = Object.keys(optionObj)[0];

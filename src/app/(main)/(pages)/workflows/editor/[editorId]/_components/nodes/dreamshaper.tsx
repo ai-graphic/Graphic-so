@@ -9,6 +9,7 @@ import axios from "axios";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
 import { string } from "zod";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const DreamShaperOptions: Option[] = [
   { num_outputs: { placeholder: 1, type: "number" } },
@@ -40,6 +41,7 @@ const DreamShaper = (nodeConnectionType: any, title: string) => {
     num_inference_steps: null,
     upscale: null,
   });
+  const [showOptions, setShowOptions] = React.useState<boolean>(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
@@ -239,7 +241,26 @@ const DreamShaper = (nodeConnectionType: any, title: string) => {
             )}
       </div>
 
-      {DreamShaperOptions.map((optionObj) => {
+      <div className="flex justify-between items-center gap-2">
+        <p className="whitespace-nowrap">Additional Settings</p>
+        <hr className=" w-full mx-1 border-gray-300" />
+        <Button
+          variant="outline"
+          onClick={() => setShowOptions((prev) => !prev)}
+          className=" whitespace-nowrap  font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          {showOptions ? (
+            <p className="flex gap-1 justify-center items-center">
+              Show less <ChevronUp />
+            </p>
+          ) : (
+            <p className="flex gap-1 justify-center items-center">
+              Show more <ChevronDown />
+            </p>
+          )}
+        </Button>
+      </div>
+      {showOptions && DreamShaperOptions.map((optionObj) => {
         const optionKey = Object.keys(optionObj)[0];
         const optionValue = optionObj[optionKey];
         return (
