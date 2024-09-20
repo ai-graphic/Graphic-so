@@ -84,18 +84,15 @@ const SettingsContent = ({
   // const [showSuperAgent, setShowSuperAgent] = useState(false);
 
   const vercelOptions = [
-    {
-      localModel: {
-        placeholder: "Enter your model",
-        type: "select",
-        options: ["vercel", "claude", "mistral"],
-      },
-    },
     { system: { placeholder: "Enter your system Message", type: "text" } },
     { max_tokens: { placeholder: 100, type: "number" } },
     { temperature: { placeholder: 0.7, type: "number" } },
   ];
-
+  const [params, setParams] = useState<any>({
+    system: null,
+    max_tokens: null,
+    temperature: null,
+  });
   // interface Model {
   //   key: string;
   //   name: string;
@@ -368,18 +365,27 @@ const SettingsContent = ({
                           type={optionValue.type}
                           placeholder={optionValue.placeholder}
                           value={
-                            nodeConnectionType[selectedNode.id]?.[optionKey] ||
-                            ""
+                            params[optionKey] ??
+                            nodeConnectionType[selectedNode.id]?.[optionKey]
                           }
-                          onChange={(event) =>
+                          onChange={(event) => {
+                            setParams((prevParams: any) => ({
+                              ...prevParams,
+                              [optionKey]: event.target.value,
+                            }));
+                            if (nodeConnectionType[selectedNode.id]) {
+                              nodeConnectionType[selectedNode.id][optionKey] =
+                                event.target.value;
+                            }
+
                             onContentChange(
                               state,
                               nodeConnection,
                               title,
                               event,
                               optionKey
-                            )
-                          }
+                            );
+                          }}
                         />
                       </div>
                     );

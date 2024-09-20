@@ -47,13 +47,13 @@ const Page = (props: Props) => {
                 id: nodeId,
                 prompt: "",
                 image: "",
-                num_outputs: 0,
                 negative_prompt: "",
-                strength: 0,
-                guidance_scale: 0,
-                scheduler: "",
-                num_inference_steps: 0,
-                upscale: 0,
+                num_inference_steps: 30,
+                guidance_scale: 7.5,
+                num_outputs: 1,
+                scheduler: "EulerAncestralDiscrete",
+                upscale: 2,
+                strength: 0.5,
               };
             } else {
               nodeConnection.dreamShaperNode[nodeId] = {
@@ -83,14 +83,14 @@ const Page = (props: Props) => {
                 id: nodeId,
                 prompt: "",
                 subject: "",
-                num_outputs: 0,
                 negative_prompt: "",
                 randomise_poses: false,
-                number_of_outputs: 0,
+                number_of_outputs: 1,
+                number_of_images_per_pose: 1,
+                num_outputs: 1,
+                output_format: "webp",
                 disable_safety_checker: false,
-                number_of_images_per_pose: 0,
-                output_format: "",
-                output_quality: 0,
+                output_quality: 80,
               };
             } else {
               nodeConnection.consistentCharacterNode[nodeId] = {
@@ -118,13 +118,13 @@ const Page = (props: Props) => {
             if (!fluxDev[nodeId]) {
               nodeConnection.fluxDevNode[nodeId] = {
                 id: nodeId,
-                model: "", // Added missing property
-                output: "", // Added missing property
+                model: "",
+                output: "",
                 prompt: "",
-                image_size: "",
-                num_inference_steps: 0,
-                guidance_scale: 0,
-                num_images: 0,
+                image_size: "landscape_4_3",
+                num_inference_steps: 28,
+                guidance_scale: 3.5,
+                num_images: 1,
                 seed: 0,
                 enable_safety_checker: false,
                 sync_mode: false,
@@ -157,12 +157,12 @@ const Page = (props: Props) => {
                 id: nodeId,
                 prompt: "",
                 image_size: "",
-                num_inference_steps: 0,
-                guidance_scale: 0,
-                num_images: 0,
+                num_inference_steps: 28,
+                guidance_scale: 3.5,
+                num_images: 1,
                 seed: 0,
-                enable_safety_checker: false,
                 sync_mode: false,
+                enable_safety_checker: false,
               };
             } else {
               nodeConnection.fluxGeneralNode[nodeId] = {
@@ -191,11 +191,11 @@ const Page = (props: Props) => {
                 prompt: "",
                 hf_loras: [],
                 num_outputs: 1,
-                aspect_ratio: "",
-                output_format: "",
-                guidance_scale: 0,
-                output_quality: "",
-                num_inference_steps: 0,
+                aspect_ratio: "1:1",
+                output_format: "webp",
+                guidance_scale: 3.5,
+                output_quality: 3.5,
+                num_inference_steps: 28,
               };
             } else {
               nodeConnection.fluxDevLoraNode[nodeId] = {
@@ -224,10 +224,10 @@ const Page = (props: Props) => {
                 prompt: "",
                 num_inference_steps: 50,
                 guidance_scale: 7,
-                negative_prompt: "",
-                use_rife: true,
-                export_fps: 30,
                 seed: 0,
+                export_fps: 30,
+                use_rife: false,
+                negative_prompt: "",
               };
             } else {
               nodeConnection.CogVideoX5BNode[nodeId] = {
@@ -253,7 +253,7 @@ const Page = (props: Props) => {
               nodeConnection.musicgenNode[nodeId] = {
                 id: nodeId,
                 prompt: "",
-                seed: 0,
+                seed: 42,
                 top_k: 250,
                 top_p: 0,
                 duration: 8,
@@ -300,13 +300,13 @@ const Page = (props: Props) => {
                 prompt: "",
                 image_size: "",
                 image_url: "",
-                num_inference_steps: 0,
-                guidance_scale: 0,
-                num_images: 0,
+                num_inference_steps: 28,
+                guidance_scale: 3.5,
+                num_images: 1,
                 seed: 0,
                 enable_safety_checker: false,
                 sync_mode: false,
-                strength: 0,
+                strength: 0.95,
               };
             } else {
               nodeConnection.imageToImageNode[nodeId] = {
@@ -335,8 +335,8 @@ const Page = (props: Props) => {
               nodeConnection.stableVideoNode[nodeId] = {
                 id: nodeId,
                 image_url: "",
-                motion_bucket_id: "",
-                fps: 0,
+                motion_bucket_id: 127,
+                fps: 25,
                 cond_aug: false,
               };
             } else {
@@ -363,15 +363,15 @@ const Page = (props: Props) => {
               nodeConnection.fluxLoraNode[nodeId] = {
                 id: nodeId,
                 prompt: "",
-                image_size: "",
-                num_inference_steps: 0,
-                guidance_scale: 0,
-                num_images: 0,
+                image_size: "landscape_4_3",
+                num_inference_steps: 28,
+                guidance_scale: 3.5,
+                num_images: 1,
                 seed: 0,
                 enable_safety_checker: false,
                 loras: [],
                 sync_mode: false,
-                output_format: "",
+                output_format: "jpeg",
               };
             } else {
               nodeConnection.fluxLoraNode[nodeId] = {
@@ -400,13 +400,12 @@ const Page = (props: Props) => {
               nodeConnection.videoToVideoNode[nodeId] = {
                 id: nodeId,
                 prompt: "",
+                num_inference_steps: 50,
+                guidance_scale: 7,
                 seed: 0,
-                num_inference_steps: 0,
-                guidance_scale: 0,
-
-                export_fps: 0,
+                export_fps: 30,
                 video_url: "",
-                strength: 0,
+                strength: 0.5,
               };
             } else {
               nodeConnection.videoToVideoNode[nodeId] = {
@@ -433,10 +432,10 @@ const Page = (props: Props) => {
               nodeConnection.lunalabsImageToVideoNode[nodeId] = {
                 id: nodeId,
                 prompt: "",
-                loop: false,
-                aspect_ratio: "",
                 start_frame_url: "",
                 end_frame_url: "",
+                aspect_ratio: "16:9",
+                loop: false,
               };
             } else {
               nodeConnection.lunalabsImageToVideoNode[nodeId] = {
@@ -460,7 +459,7 @@ const Page = (props: Props) => {
               nodeConnection.lunalabsTextToVideoNode[nodeId] = {
                 id: nodeId,
                 prompt: "",
-                aspect_ratio: "",
+                aspect_ratio: "16:9",
                 loop: false,
               };
             } else {
@@ -487,8 +486,8 @@ const Page = (props: Props) => {
                 prompt: "",
                 model: "",
                 localModel: "",
-                temperature: 0,
-                maxTokens: 0,
+                temperature: 0.7,
+                maxTokens: 100,
                 endpoint: "",
                 num_outputs: 0,
                 aspect_ratio: "",

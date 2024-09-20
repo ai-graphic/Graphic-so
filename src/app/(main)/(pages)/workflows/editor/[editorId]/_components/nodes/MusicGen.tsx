@@ -34,6 +34,21 @@ const MusicGen = (nodeConnectionType: any, title: string) => {
   ]);
   const [selectedPrompt, setSelectedPrompt] = React.useState<string | null>();
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [params, setParams] = React.useState<any>({
+    seed: null,
+    top_k: null,
+    top_p: null,
+    duration: null,
+    input_audio: null,
+    temperature: null,
+    continuation: null,
+    model_version: null,
+    output_format: null,
+    continuation_start: null,
+    multi_band_diffusion: null,
+    normalization_strategy: null,
+    classifier_free_guidance: null,
+  });
 
   const setoptions = (id: number) => {
     setShowButtons((prev) =>
@@ -128,10 +143,21 @@ const MusicGen = (nodeConnectionType: any, title: string) => {
                   ? optionValue.placeholder.toString()
                   : ""
               }
+              value={
+                params[optionKey] ??
+                nodeConnectionType.nodeConnectionType[selectedNode.id]?.[
+                  optionKey
+                ]
+              }
               onChange={(event) => {
-                if (nodeConnectionType[selectedNode.id]) {
-                  nodeConnectionType[selectedNode.id][optionKey] =
-                    event.target.value;
+                setParams((prevParams: any) => ({
+                  ...prevParams,
+                  [optionKey]: event.target.value,
+                }));
+                if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
+                  nodeConnectionType.nodeConnectionType[selectedNode.id][
+                    optionKey
+                  ] = event.target.value;
                 }
                 onContentChange(
                   state,

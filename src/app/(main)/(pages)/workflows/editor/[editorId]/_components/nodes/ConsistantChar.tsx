@@ -31,6 +31,16 @@ const ConsistentChar =  (nodeConnectionType: any, title: string) => {
   const [selectedPrompt, setSelectedPrompt] = React.useState<string | null>();
   const [selectedurl, setSelectedurl] = React.useState<string | null>();
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [params, setParams] = React.useState<any>({
+    num_outputs: null,
+    negative_prompt: null,
+    randomise_poses: null,
+    number_of_outputs: null,
+    disable_safety_checker: null,
+    number_of_images_per_pose: null,
+    output_format: null,
+    output_quality: null,
+  });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
@@ -247,10 +257,21 @@ const ConsistentChar =  (nodeConnectionType: any, title: string) => {
                   ? optionValue.placeholder.toString()
                   : ""
               }
+              value={
+                params[optionKey] ??
+                nodeConnectionType.nodeConnectionType[selectedNode.id]?.[
+                  optionKey
+                ]
+              }
               onChange={(event) => {
-                if (nodeConnectionType[selectedNode.id]) {
-                  nodeConnectionType[selectedNode.id][optionKey] =
-                    event.target.value;
+                setParams((prevParams: any) => ({
+                  ...prevParams,
+                  [optionKey]: event.target.value,
+                }));
+                if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
+                  nodeConnectionType.nodeConnectionType[selectedNode.id][
+                    optionKey
+                  ] = event.target.value;
                 }
                 onContentChange(
                   state,

@@ -27,6 +27,15 @@ const FluxDevLora =  (nodeConnectionType: any, title: string) => {
   ]);
   const [selectedPrompt, setSelectedPrompt] = React.useState<string | null>();
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [params, setParams] = React.useState<any>({
+    hf_loras: null,
+    num_outputs: null,
+    aspect_ratio: null,
+    output_format: null,
+    guidance_scale: null,
+    output_quality: null,
+    num_inference_steps: null,
+  });
 
   const setoptions = (id: number) => {
     setShowButtons((prev) =>
@@ -121,10 +130,21 @@ const FluxDevLora =  (nodeConnectionType: any, title: string) => {
                   ? optionValue.placeholder.toString()
                   : ""
               }
+              value={
+                params[optionKey] ??
+                nodeConnectionType.nodeConnectionType[selectedNode.id]?.[
+                  optionKey
+                ]
+              }
               onChange={(event) => {
-                if (nodeConnectionType[selectedNode.id]) {
-                  nodeConnectionType[selectedNode.id][optionKey] =
-                    event.target.value;
+                setParams((prevParams: any) => ({
+                  ...prevParams,
+                  [optionKey]: event.target.value,
+                }));
+                if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
+                  nodeConnectionType.nodeConnectionType[selectedNode.id][
+                    optionKey
+                  ] = event.target.value;
                 }
                 onContentChange(
                   state,

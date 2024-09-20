@@ -103,7 +103,7 @@ export type ConnectionProviderProps = {
     [id: string]: {
       id: string;
       image_url: string;
-      motion_bucket_id: string;
+      motion_bucket_id: number;
       fps: number;
       cond_aug: boolean;
     };
@@ -167,7 +167,7 @@ export type ConnectionProviderProps = {
       aspect_ratio: string;
       output_format: string;
       guidance_scale: number;
-      output_quality: string;
+      output_quality: number;
       num_inference_steps: number;
     };
   };
@@ -220,7 +220,7 @@ export type ConnectionProviderProps = {
       prompt: string;
       start_frame_url : string,
       end_frame_url : string,
-      aspect_ratio : "",
+      aspect_ratio : string,
       loop : boolean,
     };
   };
@@ -228,7 +228,7 @@ export type ConnectionProviderProps = {
     [id: string]: {
       id: string;
       prompt: string;
-      aspect_ratio : "",
+      aspect_ratio : string,
       loop : boolean,
     };
   };
@@ -489,10 +489,10 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           model: "",
           output: "",
           prompt: "",
-          image_size: "",
-          num_inference_steps: 0,
-          guidance_scale: 0,
-          num_images: 0,
+          image_size: "landscape_4_3",
+          num_inference_steps: 28,
+          guidance_scale: 3.5,
+          num_images: 1,
           seed: 0,
           enable_safety_checker: false,
           sync_mode: false,
@@ -506,13 +506,13 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           prompt: "",
           image_size: "",
           image_url: "",
-          num_inference_steps: 0,
-          guidance_scale: 0,
-          num_images: 0,
+          num_inference_steps: 28,
+          guidance_scale: 3.5,
+          num_images: 1,
           seed: 0,
           enable_safety_checker: false,
           sync_mode: false,
-          strength: 0,
+          strength: 0.95,
         },
       }));
     } else if (type === "flux-lora") {
@@ -521,15 +521,15 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
         [id]: {
           id,
           prompt: "",
-          image_size: "",
-          num_inference_steps: 0,
-          guidance_scale: 0,
-          num_images: 0,
+          image_size: "landscape_4_3",
+          num_inference_steps: 28,
+          guidance_scale: 3.5,
+          num_images: 1,
           seed: 0,
           enable_safety_checker: false,
           loras: [],
           sync_mode: false,
-          output_format: "",
+          output_format: "jpeg",
         },
       }));
     } else if (type === "stable-video") {
@@ -538,8 +538,8 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
         [id]: {
           id,
           image_url: "",
-          motion_bucket_id: "",
-          fps: 0,
+          motion_bucket_id: 127,
+          fps: 25,
           cond_aug: false,
         },
       }));
@@ -550,7 +550,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           id,
           images_data_url: "",
           trigger_word: "",
-          iter_multiplier: 0,
+          iter_multiplier: 1,
         },
       }));
     } else if (type === "consistent-character") {
@@ -562,12 +562,12 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           subject: "",
           negative_prompt: "",
           randomise_poses: false,
-          number_of_outputs: 0,
-          number_of_images_per_pose: 0,
-          num_outputs: 0,
-          output_format: "",
+          number_of_outputs: 1,
+          number_of_images_per_pose: 1,
+          num_outputs: 1,
+          output_format: "webp",
           disable_safety_checker: false,
-          output_quality: 0,
+          output_quality: 80,
         },
       }));
     } else if (type === "dreamShaper") {
@@ -578,12 +578,12 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           prompt: "",
           image: "",
           negative_prompt: "",
-          num_inference_steps: 0,
-          guidance_scale: 0,
-          num_outputs: 0,
-          scheduler: "",
-          upscale: 0,
-          strength: 0,
+          num_inference_steps: 30,
+          guidance_scale: 7.5,
+          num_outputs: 1,
+          scheduler: "EulerAncestralDiscrete",
+          upscale: 2,
+          strength: 0.5,
         },
       }));
     } else if (type === "fluxGeneral") {
@@ -593,9 +593,9 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           id,
           prompt: "",
           image_size: "",
-          num_inference_steps: 0,
-          guidance_scale: 0,
-          num_images: 0,
+          num_inference_steps: 28,
+          guidance_scale: 3.5,
+          num_images: 1,
           seed: 0,
           sync_mode: false,
           enable_safety_checker: false,
@@ -608,12 +608,12 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           id,
           prompt: "",
           hf_loras: [],
-          num_outputs: 0,
-          aspect_ratio: "",
-          output_format: "",
-          guidance_scale: 0,
-          output_quality: "",
-          num_inference_steps: 0,
+          num_outputs: 1,
+          aspect_ratio: "1:1",
+          output_format: "webp",
+          guidance_scale: 3.5,
+          output_quality: 3.5,
+          num_inference_steps: 28,
         },
       }));
     } else if (type === "musicGen") {
@@ -622,19 +622,19 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
         [id]: {
           prompt: "",
           id,
-          seed: 0,
-          top_k: 0,
+          seed: 42,
+          top_k: 250,
           top_p: 0,
-          duration: 0,
+          duration: 8,
           input_audio: "",
-          temperature: 0,
+          temperature: 1,
           continuation: false,
-          model_version: "",
-          output_format: "",
+          model_version: "stereo-large",
+          output_format: "mp3",
           continuation_start: 0,
           multi_band_diffusion: false,
-          normalization_strategy: "",
-          classifier_free_guidance: 0,
+          normalization_strategy: "peak",
+          classifier_free_guidance: 3,
         },
       }));
     } else if (type === "CogVideoX-5B") {
@@ -643,10 +643,10 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
         [id]: {
           id,
           prompt: "",
-          num_inference_steps: 0,
-          guidance_scale: 0,
+          num_inference_steps: 50,
+          guidance_scale: 7,
           seed: 0,
-          export_fps: 0,
+          export_fps: 30,
           use_rife: false,
           negative_prompt: "",
         },
@@ -657,12 +657,12 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
         [id]: {
           id,
           prompt: "",
-          num_inference_steps: 0,
-          guidance_scale: 0,
+          num_inference_steps: 50,
+          guidance_scale: 7,
           seed: 0,
-          export_fps: 0,
+          export_fps: 30,
           video_url: "",
-          strength: 0,
+          strength: 0.5,
         },
       }));
     } else if (type === "lumalabs-ImageToVideo") {
@@ -673,7 +673,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           prompt: "",
           start_frame_url: "",
           end_frame_url: "",
-          aspect_ratio: "",
+          aspect_ratio: "16:9",
           loop: false,
         },
       }));
@@ -683,7 +683,7 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
         [id]: {
           id,
           prompt: "",
-          aspect_ratio: "",
+          aspect_ratio: "16:9",
           loop: false,
         },
       }));

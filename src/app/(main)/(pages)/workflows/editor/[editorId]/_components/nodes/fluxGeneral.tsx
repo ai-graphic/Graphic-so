@@ -27,6 +27,15 @@ const FluxGeneral =  (nodeConnectionType: any, title: string) => {
   ]);
   const [selectedPrompt, setSelectedPrompt] = React.useState<string | null>();
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [params, setParams] = React.useState<any>({
+    image_size: null,
+    num_inference_steps: null,
+    guidance_scale: null,
+    num_images: null,
+    enable_safety_checker: null,
+    seed: null,
+    sync_mode: null,
+  });
 
   const setoptions = (id: number) => {
     setShowButtons((prev) =>
@@ -121,10 +130,21 @@ const FluxGeneral =  (nodeConnectionType: any, title: string) => {
                   ? optionValue.placeholder.toString()
                   : ""
               }
+              value={
+                params[optionKey] ??
+                nodeConnectionType.nodeConnectionType[selectedNode.id]?.[
+                  optionKey
+                ]
+              }
               onChange={(event) => {
-                if (nodeConnectionType[selectedNode.id]) {
-                  nodeConnectionType[selectedNode.id][optionKey] =
-                    event.target.value;
+                setParams((prevParams: any) => ({
+                  ...prevParams,
+                  [optionKey]: event.target.value,
+                }));
+                if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
+                  nodeConnectionType.nodeConnectionType[selectedNode.id][
+                    optionKey
+                  ] = event.target.value;
                 }
                 onContentChange(
                   state,

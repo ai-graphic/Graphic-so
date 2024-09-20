@@ -25,6 +25,13 @@ const CogVideoX = (nodeConnectionType: any, title: string) => {
   ]);
   const [selectedPrompt, setselectedPrompt] = React.useState<string | null>();
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [params, setParams] = React.useState<any>({
+    num_inference_steps: null,
+    guidance_scale: null,
+    negative_prompt: null,
+    use_rife: null,
+    export_fps: null,
+  });
 
   const setoptions = (id: number) => {
     setShowButtons((prev) =>
@@ -129,10 +136,21 @@ const CogVideoX = (nodeConnectionType: any, title: string) => {
                   ? optionValue.placeholder.toString()
                   : ""
               }
+              value={
+                params[optionKey] ??
+                nodeConnectionType.nodeConnectionType[selectedNode.id]?.[
+                  optionKey
+                ]
+              }
               onChange={(event) => {
-                if (nodeConnectionType[selectedNode.id]) {
-                  nodeConnectionType[selectedNode.id][optionKey] =
-                    event.target.value;
+                setParams((prevParams: any) => ({
+                  ...prevParams,
+                  [optionKey]: event.target.value,
+                }));
+                if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
+                  nodeConnectionType.nodeConnectionType[selectedNode.id][
+                    optionKey
+                  ] = event.target.value;
                 }
                 onContentChange(
                   state,

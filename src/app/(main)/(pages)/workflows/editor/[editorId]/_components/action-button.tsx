@@ -45,7 +45,6 @@ const ActionButton = ({
   const { user } = useUser();
   const { credits, setCredits } = useBilling();
   const { nodeConnection } = useNodeConnections();
-  console.log("nodeConnection from", nodeConnection);
   const onSendDiscordMessage = useCallback(async () => {
     const response = await postContentToWebHook(
       nodeConnection.discordNode.content,

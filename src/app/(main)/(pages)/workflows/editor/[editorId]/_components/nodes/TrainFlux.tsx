@@ -15,6 +15,11 @@ const TrainFlux = (nodeConnectionType: any, title: string) => {
   const { selectedNode } = useEditor().state.editor;
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
+  const [params, setParams] = React.useState<any>({
+    images_data_url: null,
+    trigger_word: null,
+    iter_multiplier: null,
+  });
 
   return (
     <div className="flex flex-col gap-2">
@@ -35,10 +40,21 @@ const TrainFlux = (nodeConnectionType: any, title: string) => {
                   ? optionValue.placeholder.toString()
                   : ""
               }
+              value={
+                params[optionKey] ??
+                nodeConnectionType.nodeConnectionType[selectedNode.id]?.[
+                  optionKey
+                ]
+              }
               onChange={(event) => {
-                if (nodeConnectionType[selectedNode.id]) {
-                  nodeConnectionType[selectedNode.id][optionKey] =
-                    event.target.value;
+                setParams((prevParams: any) => ({
+                  ...prevParams,
+                  [optionKey]: event.target.value,
+                }));
+                if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
+                  nodeConnectionType.nodeConnectionType[selectedNode.id][
+                    optionKey
+                  ] = event.target.value;
                 }
                
                 onContentChange(
