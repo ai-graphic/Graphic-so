@@ -17,6 +17,7 @@ import {
   Zap,
   MessageCircle,
   Music,
+  CaptionsIcon,
 } from "lucide-react";
 import { EditorCanvasTypes } from "@/lib/types";
 
@@ -35,6 +36,10 @@ const EditorCanvasIconHelper = ({ type }: Props) => {
       return <Image className="flex-shrink-0" size={30} />;
     case "stable-video":
       return <Video className="flex-shrink-0" size={30} />;
+    case "sadTalker":
+      return <Video className="flex-shrink-0" size={30} />;
+    case "autoCaption":
+      return <CaptionsIcon className="flex-shrink-0" size={30} />;
     case "train-flux":
       return <Image className="flex-shrink-0" size={30} />;
     case "consistent-character":

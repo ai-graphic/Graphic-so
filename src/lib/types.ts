@@ -53,7 +53,9 @@ export type EditorCanvasTypes =
   | "musicGen"
   | "video-to-video"
   | "lumalabs-ImageToVideo"
-  | "lumalabs-TextToVideo";
+  | "lumalabs-TextToVideo"
+  | "autoCaption"
+  | "sadTalker";
 
 export type EditorCanvasCardType = {
   title: string;
@@ -125,6 +127,8 @@ export const nodeMapper: Record<string, string> = {
   "video-to-video": "videoToVideoNode",
   "lumalabs-ImageToVideo": "lunalabsImageToVideoNode",
   "lumalabs-TextToVideo": "lunalabsTextToVideoNode",
+  autoCaption: "autocaptionNode",
+  sadTalker: "sadTalkerNode",
 };
 
 export type Option = {

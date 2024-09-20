@@ -218,20 +218,54 @@ export type ConnectionProviderProps = {
     [id: string]: {
       id: string;
       prompt: string;
-      start_frame_url : string,
-      end_frame_url : string,
-      aspect_ratio : string,
-      loop : boolean,
+      start_frame_url: string;
+      end_frame_url: string;
+      aspect_ratio: string;
+      loop: boolean;
     };
   };
   lunalabsTextToVideoNode: {
     [id: string]: {
       id: string;
       prompt: string;
-      aspect_ratio : string,
-      loop : boolean,
+      aspect_ratio: string;
+      loop: boolean;
     };
   };
+  sadTalkerNode: {
+    [id: string]: {
+      id: string;
+      source_image_url: string;
+      driven_audio_url: string;
+      face_model_resolution: string;
+      expression_scale: number;
+      face_enhancer: null | string;
+      preprocess: string;
+    };
+  };
+  autocaptionNode: {
+    [id: string]: {
+      id: string;
+      font: string;
+      color: string;
+      kerning: number;
+      opacity: number;
+      MaxChars: number;
+      fontsize: number;
+      translate: boolean;
+      output_video: boolean;
+      stroke_color: string;
+      stroke_width: number;
+      right_to_left: boolean;
+      subs_position: string;
+      highlight_color: string;
+      video_file_input: string;
+      transcript_file_input: string;
+      output_transcript: boolean;
+    };
+  };
+  setTalkerNode: React.Dispatch<React.SetStateAction<any>>;
+  setAutocaptionNode: React.Dispatch<React.SetStateAction<any>>;
   setvideoToVideoNode: React.Dispatch<React.SetStateAction<any>>;
   setlunalabsImageToVideoNode: React.Dispatch<React.SetStateAction<any>>;
   setlunalabsTextToVideoNode: React.Dispatch<React.SetStateAction<any>>;
@@ -351,23 +385,27 @@ const InitialValues: ConnectionProviderProps = {
   fluxDevLoraNode: {},
   trainFluxNode: {},
   output: {},
-  setOutput: () => undefined,
+
   workflowTemplate: {
     discord: "",
     notion: "",
     slack: "",
     ai: "",
   },
-
-  videoToVideoNode: {},
-  lunalabsImageToVideoNode: {},
-  lunalabsTextToVideoNode: {},
-  setvideoToVideoNode: () => undefined,
-  setlunalabsImageToVideoNode: () => undefined,
-  setlunalabsTextToVideoNode: () => undefined,
   history: {},
   CogVideoX5BNode: {},
   musicgenNode: {},
+  videoToVideoNode: {},
+  lunalabsImageToVideoNode: {},
+  lunalabsTextToVideoNode: {},
+  sadTalkerNode: {},
+  autocaptionNode: {},
+  setTalkerNode: () => undefined,
+  setAutocaptionNode: () => undefined,
+  setvideoToVideoNode: () => undefined,
+  setlunalabsImageToVideoNode: () => undefined,
+  setlunalabsTextToVideoNode: () => undefined,
+  setOutput: () => undefined,
   setmusicgenNode: () => undefined,
   setCogVideoX5BNode: () => undefined,
   isLoading: false,
@@ -397,7 +435,7 @@ const generateDefaultAINode = (id: string) => ({
   prompt: "",
   model: "vercel",
   localModel: "Claude",
-  tool : "",
+  tool: "",
   output: "",
   temperature: 0,
   maxTokens: 0,
@@ -474,7 +512,10 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [lunalabsTextToVideoNode, setlunalabsTextToVideoNode] = useState(
     InitialValues.lunalabsTextToVideoNode
   );
-
+  const [sadTalkerNode, setTalkerNode] = useState(InitialValues.sadTalkerNode);
+  const [autocaptionNode, setAutocaptionNode] = useState(
+    InitialValues.autocaptionNode
+  );
   const addAINode = (id: string, type: string) => {
     if (type === "AI") {
       setAINode((prev) => ({
@@ -687,6 +728,42 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           loop: false,
         },
       }));
+    } else if (type === "sadTalker") {
+      setTalkerNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          source_image_url: "",
+          driven_audio_url: "",
+          face_model_resolution: "256",
+          expression_scale: 1,
+          face_enhancer: null,
+          preprocess: "crop",
+        },
+      }));
+    } else if (type === "autoCaption") {
+      setAutocaptionNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          font: "Poppins/Poppins-ExtraBold.ttf",
+          color: "white",
+          kerning: -5,
+          opacity: 0,
+          MaxChars: 20,
+          fontsize: 7,
+          translate: false,
+          output_video: false,
+          stroke_color: "black",
+          stroke_width: 2.6,
+          right_to_left: false,
+          subs_position: "bottom75",
+          highlight_color: "yellow",
+          video_file_input: "",
+          transcript_file_input: "",
+          output_transcript: true,
+        },
+      }));
     }
   };
 
@@ -743,6 +820,10 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     setlunalabsImageToVideoNode,
     lunalabsTextToVideoNode,
     setlunalabsTextToVideoNode,
+    sadTalkerNode,
+    setTalkerNode,
+    autocaptionNode,
+    setAutocaptionNode,
   };
 
   return <Provider value={values}>{children}</Provider>;

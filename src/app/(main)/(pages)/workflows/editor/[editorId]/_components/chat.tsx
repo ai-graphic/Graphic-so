@@ -53,6 +53,7 @@ const Chat = () => {
   const { credits, setCredits } = useBilling();
   const [loading, setLoading] = useState(false);
   const [selectedurl, setSelectedurl] = useState<string | null>();
+  console.log(selectedurl);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const cardContentRef = useRef<HTMLDivElement>(null);
@@ -347,7 +348,7 @@ const Chat = () => {
                   type="file"
                   className="hidden"
                   onChange={handleFileChange}
-                  accept="image/*"
+                  accept="*"
                 />
               </label>
 

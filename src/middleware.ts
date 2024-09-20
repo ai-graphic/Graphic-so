@@ -24,6 +24,8 @@ export default authMiddleware({
         '/api/ai/lunalabs/text-video',
         '/api/ai/lunalabs/image-video',
         '/api/ai/fal/train-flux',
+        '/api/ai/fal/sadtalker',
+        '/api/ai/replicate/autocaption',
     ],
     ignoredRoutes: [
         '/api/auth/callback/discord',

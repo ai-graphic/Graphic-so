@@ -319,6 +319,14 @@ export const EditorCanvasDefaultCardTypes = {
     description: "Generate stable videos using AI techniques.",
     type: "Action",
   },
+  "autoCaption" : {
+    description: "Generate captions for videos using AI models.",
+    type: "Action",
+  },
+  "sadTalker" : {
+    description: "Generate Video with images and audio files using AI models.",
+    type: "Action",
+  },
   "musicGen": {
     description: "Generate music using Meta Music-Gen models.",
     type: "Action",

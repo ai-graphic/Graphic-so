@@ -42,6 +42,8 @@ export async function POST(req: Request, res: Response) {
             "consistent-character",
             "dreamShaper",
             "musicGen",
+            "sadTalker",
+            "autoCaption",
           ].includes(nodeType)
         ) {
           requiredCredits += 1;
@@ -367,7 +369,7 @@ export async function POST(req: Request, res: Response) {
               }
               if (ImageFromDb) {
                 if (ImageFromDb.includes(":image:")) {
-                  content = ImageFromDb.replace(":image:", image);
+                  Image = ImageFromDb.replace(":image:", image);
                 } else {
                   Image = image;
                 }
@@ -618,7 +620,7 @@ export async function POST(req: Request, res: Response) {
               }
               if (ImageFromDb) {
                 if (ImageFromDb.includes(":image:")) {
-                  content = ImageFromDb.replace(":image:", image);
+                  Image = ImageFromDb.replace(":image:", image);
                 } else {
                   Image = image;
                 }
@@ -826,7 +828,7 @@ export async function POST(req: Request, res: Response) {
               }
               if (ImageFromDb) {
                 if (ImageFromDb.includes(":image:")) {
-                  content = ImageFromDb.replace(":image:", image);
+                  Image = ImageFromDb.replace(":image:", image);
                 } else {
                   Image = image;
                 }
@@ -923,7 +925,7 @@ export async function POST(req: Request, res: Response) {
               }
               if (ImageFromDb) {
                 if (ImageFromDb.includes(":image:")) {
-                  content = ImageFromDb.replace(":image:", image);
+                  Image = ImageFromDb.replace(":image:", image);
                 } else {
                   Image = image;
                 }
@@ -1170,7 +1172,186 @@ export async function POST(req: Request, res: Response) {
             } finally {
             }
           }
+          chatHistory.history.push(latestOutputs[idNode]);
+          const nextNodeType = flowPath[current + 3];
           flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "autoCaption") {
+          const falAutoCaptionTemplate = JSON.parse(
+            workflow.autoCaptionTemplate!
+          );
+          if (falAutoCaptionTemplate[idNode]) {
+            console.log("autoCaption Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            if (node.type === "Trigger") {
+              console.log("Trigger Node", node.id);
+              let prmpt = falAutoCaptionTemplate[idNode].prompt;
+              if (prmpt) {
+                if (prmpt.includes(":video:")) {
+                  content = prmpt.replace(":video:", prompt).trim();
+                } else {
+                  content = prmpt.trim();
+                }
+                chatHistory.user = content;
+              }
+            } else {
+              let prmpt = falAutoCaptionTemplate[idNode].prompt;
+              console.log("Prompt:", prmpt);
+              if (prmpt) {
+                if (prmpt.includes(":video:")) {
+                  content = prmpt
+                    .replace(":video:", latestOutputs[node.id])
+                } else {
+                  content = prmpt.trim();
+                }
+              } else {
+                content = latestOutputs[node.id]
+              }
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/replicate/autocaption`,
+                {
+                  userid: userid,
+                  font: falAutoCaptionTemplate[idNode]?.font,
+                  color: falAutoCaptionTemplate[idNode]?.color,
+                  kerning: falAutoCaptionTemplate[idNode]?.kerning,
+                  opacity: falAutoCaptionTemplate[idNode].opacity,
+                  MaxChars: falAutoCaptionTemplate[idNode].MaxChars,
+                  fontsize: falAutoCaptionTemplate[idNode].fontsize,
+                  translate: falAutoCaptionTemplate[idNode].translate,
+                  output_video: falAutoCaptionTemplate[idNode].output_video,
+                  stroke_color: falAutoCaptionTemplate[idNode].stroke_color,
+                  stroke_width: falAutoCaptionTemplate[idNode].stroke_width,
+                  right_to_left: falAutoCaptionTemplate[idNode].right_to_left,
+                  subs_position: falAutoCaptionTemplate[idNode].subs_position,
+                  highlight_color:
+                    falAutoCaptionTemplate[idNode].highlight_color,
+                  video_file_input: content,
+                  output_transcript:
+                    falAutoCaptionTemplate[idNode].output_transcript,
+                }
+              );
+              latestOutputs[idNode] = output.data ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          chatHistory.history.push(latestOutputs[idNode]);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
+        }
+        if (nodeType == "sadTalker") {
+          const falSadTalkerTemplate = JSON.parse(workflow.sadTalkerTemplate!);
+          if (falSadTalkerTemplate[idNode]) {
+            console.log("sadTalker Node:", idNode);
+            const edgesArray = JSON.parse(workflow.edges || "[]");
+            const nodeArray = JSON.parse(workflow.nodes || "[]");
+            const edge = edgesArray.find((e: any) => e.target === idNode);
+            const node = nodeArray.find((n: any) => n.id === edge.source);
+            let content;
+            let Image;
+            let prompt = falSadTalkerTemplate[idNode]?.source_image_url;
+            let ImageFromDb = falSadTalkerTemplate[idNode]?.driven_audio_url;
+            if (node.type === "Trigger") {
+              const prmpt = prompt;
+              content = prmpt;
+              Image = image;
+              console.log("Prompt:", content, Image);
+
+              if (prompt) {
+                if (prompt.includes(":input:")) {
+                  content = prompt.replace(":input:", prmpt);
+                } else {
+                  console.log("Prompt:", prmpt);
+                  content = prmpt;
+                }
+              }
+              if (ImageFromDb) {
+                if (ImageFromDb.includes(":image:")) {
+                  Image = ImageFromDb.replace(":image:", image);
+                } else {
+                  Image = image;
+                }
+              }
+
+              chatHistory.user = prmpt + " - " + Image;
+            } else {
+              if (prompt && ImageFromDb) {
+                if (ImageFromDb.includes(":image:") && image) {
+                  Image = ImageFromDb.replace(":image:", image);
+                } else {
+                  Image = latestOutputs[node.id];
+                }
+                if (prompt.includes(":input:") && image) {
+                  content = prompt.replace(":input:", latestOutputs[node.id]);
+                } else {
+                  content = prompt;
+                }
+              } else if (!ImageFromDb && !image) {
+                Image = latestOutputs[node.id];
+                content = prompt || "";
+              } else {
+                Image = image || latestOutputs[node.id];
+                content = prompt || "";
+              }
+            }
+            try {
+              const output = await axios.post(
+                `${process.env.NEXT_PUBLIC_URL}/api/ai/fal/sadtalker`,
+                {
+                  source_image_url: content,
+                  driven_audio_url: Image,
+                  userid: userid,
+                  face_model_resolution:
+                    falSadTalkerTemplate[idNode].face_model_resolution,
+                  expression_scale:
+                    falSadTalkerTemplate[idNode].expression_scale,
+                  face_enhancer: falSadTalkerTemplate[idNode].face_enhancer,
+                  preprocess: falSadTalkerTemplate[idNode].preprocess,
+                }
+              );
+              latestOutputs[idNode] = output.data[0] ?? content;
+            } catch (error) {
+              console.error("Error during fal API call:", error);
+            } finally {
+            }
+          }
+          chatHistory.history.push(latestOutputs[idNode]);
+          const nextNodeType = flowPath[current + 3];
+          flowPath.splice(current, 2);
+          const isNextNotAI =
+            nextNodeType == "Slack" ||
+            nextNodeType == "Notion" ||
+            nextNodeType == "Chat" ||
+            nextNodeType == "Discord";
+          if (isNextNotAI) {
+            chatHistory.bot = latestOutputs[idNode];
+            console.log("chatHistory", chatHistory);
+          }
         }
         if (nodeType == "Slack") {
           console.log(workflow.slackChannels);

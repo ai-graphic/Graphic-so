@@ -733,6 +733,84 @@ const ActionButton = ({
     },
     []
   );
+
+  const onSadTalker = useCallback(async (id: string, nodeConnection: any) => {
+    try {
+      if (Number(credits) < 1) {
+        toast.error("Insufficient credits");
+        return;
+      }
+      setIsLoading(id, true);
+      const response = await axios.post("/api/ai/fal/sadtalker", {
+        source_image_url: nodeConnection.sadTalkerNode[id].source_image_url,
+        driven_audio_url: nodeConnection.sadTalkerNode[id].driven_audio_url,
+        userid: user?.id,
+        face_model_resolution:
+          nodeConnection.sadTalkerNode[id].face_model_resolution,
+        expression_scale: nodeConnection.sadTalkerNode[id].expression_scale,
+        face_enhancer: nodeConnection.sadTalkerNode[id].face_enhancer,
+        preprocess: nodeConnection.sadTalkerNode[id].preprocess,
+      });
+      nodeConnection.setOutput((prev: any) => ({
+        ...prev,
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || [])],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || []), response.data],
+        },
+      }));
+      setCredits((prev) => (Number(prev) - 1).toString());
+    } catch (error) {
+      console.error("Error during Sad Talker API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
+
+  const onAutoCaption = useCallback(async (id: string, nodeConnection: any) => {
+    try {
+      if (Number(credits) < 1) {
+        toast.error("Insufficient credits");
+        return;
+      }
+      setIsLoading(id, true);
+      const response = await axios.post("/api/ai/replicate/autocaption", {
+        userid: user?.id,
+        font: nodeConnection.autocaptionNode[id]?.font,
+        color: nodeConnection.autocaptionNode[id]?.color,
+        kerning: nodeConnection.autocaptionNode[id]?.kerning,
+        opacity: nodeConnection.autocaptionNode[id].opacity,
+        MaxChars: nodeConnection.autocaptionNode[id].MaxChars,
+        fontsize: nodeConnection.autocaptionNode[id].fontsize,
+        translate: nodeConnection.autocaptionNode[id].translate,
+        output_video: nodeConnection.autocaptionNode[id].output_video,
+        stroke_color: nodeConnection.autocaptionNode[id].stroke_color,
+        stroke_width: nodeConnection.autocaptionNode[id].stroke_width,
+        right_to_left: nodeConnection.autocaptionNode[id].right_to_left,
+        subs_position: nodeConnection.autocaptionNode[id].subs_position,
+        highlight_color: nodeConnection.autocaptionNode[id].highlight_color,
+        video_file_input: nodeConnection.autocaptionNode[id].video_file_input,
+        transcript_file_input:
+          nodeConnection.autocaptionNode[id].transcript_file_input,
+        output_transcript: nodeConnection.autocaptionNode[id].output_transcript,
+      });
+      nodeConnection.setOutput((prev: any) => ({
+        ...prev,
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || [])],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || []), response.data],
+        },
+      }));
+      setCredits((prev) => (Number(prev) - 1).toString());
+    } catch (error) {
+      console.error("Error during Auto Caption API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
   // ...
   const onCreateLocalNodeTempate = useCallback(
     async (currentService: any) => {
@@ -915,6 +993,32 @@ const ActionButton = ({
         const aiNodeAsString = JSON.stringify(
           nodeConnection.lunalabsImageToVideoNode
         );
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
+
+        if (response) {
+          toast.message(response);
+        }
+      }
+
+      if (currentService === "sadTalker") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.sadTalkerNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
+
+        if (response) {
+          toast.message(response);
+        }
+      }
+
+      if (currentService === "autoCaption") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.autocaptionNode);
         const response = await onCreateNodeTemplate(
           aiNodeAsString,
           currentService,
@@ -1517,6 +1621,74 @@ const ActionButton = ({
               onClick={() =>
                 onLunaLabsImageToVideo(selectedNode.id, nodeConnection)
               }
+            >
+              Test
+            </Button>
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
+              Save {currentService} Template
+            </Button>
+          </>
+        );
+      case "autoCaption":
+        return (
+          <>
+            {nodeConnection.autocaptionNode[selectedNode.id] &&
+              aiOutput.video.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.video.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <video
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                        controls
+                        width="320"
+                        height="240"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onAutoCaption(selectedNode.id, nodeConnection)}
+            >
+              Test
+            </Button>
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
+              Save {currentService} Template
+            </Button>
+          </>
+        );
+      case "sadTalker":
+        return (
+          <>
+            {nodeConnection.sadTalkerNode[selectedNode.id] &&
+              aiOutput.video.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.video.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <video
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                        controls
+                        width="320"
+                        height="240"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onSadTalker(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>

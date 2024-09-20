@@ -472,6 +472,84 @@ const Page = (props: Props) => {
             }
           });
         }
+        if (workflow?.autoCaptionTemplate) {
+          const autoCaption = workflow.autoCaptionTemplate
+            ? JSON.parse(workflow.autoCaptionTemplate)
+            : {};
+          Object.keys(autoCaption).forEach((nodeId) => {
+            const nodeData = autoCaption[nodeId];
+            if (!autoCaption[nodeId]) {
+              nodeConnection.autocaptionNode[nodeId] = {
+                id: nodeId,
+                font: "Poppins/Poppins-ExtraBold.ttf",
+                color: "white",
+                kerning: -5,
+                opacity: 0,
+                MaxChars: 20,
+                fontsize: 7,
+                translate: false,
+                output_video: false,
+                stroke_color: "black",
+                stroke_width: 2.6,
+                right_to_left: false,
+                subs_position: "bottom75",
+                highlight_color: "yellow",
+                video_file_input: "",
+                transcript_file_input: "",
+                output_transcript: true,
+              };
+            } else {
+              nodeConnection.autocaptionNode[nodeId] = {
+                ...nodeConnection.autocaptionNode[nodeId],
+                font: nodeData.font,
+                color: nodeData.color,
+                kerning: nodeData.kerning,
+                opacity: nodeData.opacity,
+                MaxChars: nodeData.MaxChars,
+                fontsize: nodeData.fontsize,
+                translate: nodeData.translate,
+                output_video: nodeData.output_video,
+                stroke_color: nodeData.stroke_color,
+                stroke_width: nodeData.stroke_width,
+                right_to_left: nodeData.right_to_left,
+                subs_position: nodeData.subs_position,
+                highlight_color: nodeData.highlight_color,
+                video_file_input: nodeData.video_file_input,
+                transcript_file_input: nodeData.transcript_file_input,
+                output_transcript: nodeData.output_transcript,
+              };
+            }
+          });
+        }
+        if (workflow?.sadTalkerTemplate) {
+          const sadTalker = workflow.sadTalkerTemplate
+            ? JSON.parse(workflow.sadTalkerTemplate)
+            : {};
+          Object.keys(sadTalker).forEach((nodeId) => {
+            const nodeData = sadTalker[nodeId];
+            if (!sadTalker[nodeId]) {
+              nodeConnection.sadTalkerNode[nodeId] = {
+                id: nodeId,
+                source_image_url: "",
+                driven_audio_url: "",
+                face_model_resolution: "256",
+                expression_scale: 1,
+                face_enhancer: null,
+                preprocess: "crop",
+              };
+            } else {
+              nodeConnection.sadTalkerNode[nodeId] = {
+                ...nodeConnection.sadTalkerNode[nodeId],
+                source_image_url: nodeData.source_image_url,
+                driven_audio_url: nodeData.driven_audio_url,
+                face_model_resolution: nodeData.face_model_resolution,
+                expression_scale: nodeData.expression_scale,
+                face_enhancer: nodeData.face_enhancer,
+                preprocess: nodeData.preprocess,
+              };
+            }
+          });
+        }
         if (workflow?.AiTemplate) {
           const aiTemplate = workflow.AiTemplate
             ? JSON.parse(workflow.AiTemplate)

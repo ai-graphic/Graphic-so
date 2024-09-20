@@ -335,6 +335,43 @@ export const onNotionContent = (
   }));
 };
 
+export const onAutoCaptionContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+
+  const [id, key] = finalcontent.split(".");
+  nodeConnection.setAutocaptionNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+}
+export const onSadTalkerContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+
+  const [id, key] = finalcontent.split(".");
+  nodeConnection.setTalkerNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+}
+
 export const onContentChange = (
   state: EditorState,
   nodeConnection: ConnectionProviderProps,
@@ -378,6 +415,11 @@ export const onContentChange = (
     onTextToVideoContent(state, nodeConnection, event, content);
   } else if (nodeType === "lumalabs-ImageToVideo") {
     onImageToVideoContent(state, nodeConnection, event, content);
+  } else if (nodeType === "autoCaption") {
+    onAutoCaptionContent(state, nodeConnection, event, content);
+  }
+  else if (nodeType === "sadTalker") {
+    onSadTalkerContent(state, nodeConnection, event, content);
   }
 };
 

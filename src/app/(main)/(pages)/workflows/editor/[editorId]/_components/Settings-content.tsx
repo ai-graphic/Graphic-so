@@ -34,6 +34,8 @@ import VideoToVideo from "./nodes/videoToVideo";
 import TextToVideo from "./nodes/lumalabs-text-video";
 import ImageToVideo from "./nodes/lumalabs-img-video";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import AutoCaption from "./nodes/autocaption";
+import SadTalker from "./nodes/SadTalker";
 
 export interface Option {
   value: string;
@@ -118,7 +120,7 @@ const SettingsContent = ({
   //@ts-ignore
   const nodeConnectionType: any = nodeConnection[nodeMapper[title]];
   const [triggerValue, setTriggerValue] = useState(
-    nodeConnectionType.triggerValue
+    nodeConnectionType?.triggerValue ?? ""
   );
 
   useEffect(() => {
@@ -143,11 +145,11 @@ const SettingsContent = ({
   //   setShowSuperAgent(isSuperAgent);
   // }, [selectedNode.id, nodeConnectionType]);
 
-  const [ishistoryChecked, setHistory] = useState(
-    nodeConnectionType[selectedNode.id]?.model &&
-      nodeConnectionType[selectedNode.id]?.history
-  );
-
+  // const [ishistoryChecked, setHistory] = useState(
+  //   nodeConnectionType[selectedNode.id]?.model &&
+  //     nodeConnectionType[selectedNode.id]?.history
+  // );
+console.log(nodeConnectionType)
   // useEffect(() => {
   //   const modelKey = nodeConnectionType[selectedNode.id]?.model;
   //   if (modelKey) {
@@ -345,26 +347,27 @@ const SettingsContent = ({
                   </div>
                 </div>
               )}
-     <div className="flex justify-between items-center gap-2">
-        <p className="whitespace-nowrap">Additional Settings</p>
-        <hr className=" w-full mx-1 border-gray-300" />
-        <Button
-          variant="outline"
-          onClick={() => setShowOptions((prev) => !prev)}
-          className=" whitespace-nowrap  font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          {showOptions ? (
-            <p className="flex gap-1 justify-center items-center">
-              Show less <ChevronUp />
-            </p>
-          ) : (
-            <p className="flex gap-1 justify-center items-center">
-              Show more <ChevronDown />
-            </p>
-          )}
-        </Button>
-      </div>
-      {showOptions && nodeConnectionType[selectedNode.id]?.model &&
+              <div className="flex justify-between items-center gap-2">
+                <p className="whitespace-nowrap">Additional Settings</p>
+                <hr className=" w-full mx-1 border-gray-300" />
+                <Button
+                  variant="outline"
+                  onClick={() => setShowOptions((prev) => !prev)}
+                  className=" whitespace-nowrap  font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                >
+                  {showOptions ? (
+                    <p className="flex gap-1 justify-center items-center">
+                      Show less <ChevronUp />
+                    </p>
+                  ) : (
+                    <p className="flex gap-1 justify-center items-center">
+                      Show more <ChevronDown />
+                    </p>
+                  )}
+                </Button>
+              </div>
+              {showOptions &&
+                nodeConnectionType[selectedNode.id]?.model &&
                 modelOptionsMap[nodeConnectionType[selectedNode.id].model]?.map(
                   (optionObj) => {
                     const optionKey = Object.keys(optionObj)[0];
@@ -508,6 +511,18 @@ const SettingsContent = ({
               )}
               {title === "stable-video" && (
                 <StableVideo
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "autoCaption" && (
+                <AutoCaption
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "sadTalker" && (
+                <SadTalker
                   nodeConnectionType={nodeConnectionType}
                   title={title}
                 />

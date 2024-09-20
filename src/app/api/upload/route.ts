@@ -20,9 +20,11 @@ export async function POST(req: Request, res: Response) {
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
 
+    console.log(image)
     const uploadResult = await cloudinary.uploader
       .upload(image, {
         public_id: `uploaded${Date.now()}-${userId}`,
+        resource_type: "auto",
       })
       .catch((error) => {
         console.log(error);

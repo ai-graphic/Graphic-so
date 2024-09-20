@@ -170,7 +170,34 @@ export const onCreateNodeTemplate = async (
       return "stable-video template saved";
     }
   }
+  if (type === "sadTalker") {
+    const response = await db.workflows.update({
+      where: {
+        id: workflowId,
+      },
+      data: {
+        sadTalkerTemplate: content,
+      },
+    });
 
+    if (response) {
+      return "sadTalker template saved";
+    }
+  }
+  if (type === "autoCaption") {
+    const response = await db.workflows.update({
+      where: {
+        id: workflowId,
+      },
+      data: {
+        autoCaptionTemplate: content,
+      },
+    });
+
+    if (response) {
+      return "autoCaption template saved";
+    }
+  }
   if (type === "train-flux") {
     const response = await db.workflows.update({
       where: {
@@ -430,6 +457,8 @@ export const ondublicateWorkflow = async (
         videoToVideoTemplate: existingWorkflow.videoToVideoTemplate,
         lunalabsImageToVideoTemplate: existingWorkflow.lunalabsImageToVideoTemplate,
         lunalabsTextToVideoTemplate: existingWorkflow.lunalabsTextToVideoTemplate,
+        autoCaptionTemplate: existingWorkflow.autoCaptionTemplate,
+        sadTalkerTemplate: existingWorkflow.sadTalkerTemplate,
         publish: false,
       },
     });

@@ -211,10 +211,28 @@ const Chat = () => {
                   <div key={index} className="flex flex-col gap-2">
                     {item.user && (
                       <div className="flex justify-end">
-                        <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 bg-gray-700   max-w-xs">
+                        <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 bg-gray-700 max-w-xs">
+                        {item.user.match(/https?:\/\/[^\s]+/g) ? (
+                          item.user.split(' ').map((part, index) => {
+                            if (/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(part)) {
+                              return <img key={index} src={part} alt="user" className="rounded-lg mb-2" />;
+                            } else if (/https?:\/\/.*\.(?:mp3)/.test(part)) {
+                              return <audio key={index} src={part} controls className="w-full mb-2" />;
+                            } else if (/https?:\/\/.*\.(?:mp4|webm|ogg)/.test(part)) {
+                              return <video key={index} src={part} controls className="w-full mb-2" />;
+                            } else {
+                              return (
+                                <div key={index} className="flex">
+                                  <p>{part}</p>
+                                </div>
+                              );
+                            }
+                          })
+                        ) : (
                           <p>{item.user}</p>
-                        </div>
+                        )}
                       </div>
+                    </div>
                     )}
 
                     {item.bot && (
@@ -363,7 +381,7 @@ const Chat = () => {
                     type="file"
                     className="hidden"
                     onChange={handleFileChange}
-                    accept="image/*"
+                    accept="*"
                   />
                 </label>
                 <Button
