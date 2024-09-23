@@ -79,7 +79,7 @@ export async function POST(req: Request) {
 
   const generateTextParams: any = {
     model: selectedModel,
-    system: system || "",
+    system: system || "you are a helpful assistant",
     prompt: prompt,
     temperature: temp || 0.7,
     maxTokens: max_tokens || 100,

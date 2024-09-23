@@ -28,7 +28,10 @@ export function LandingPage({
       <FadeIn>
         <ResourceCardGrid
           sortedData={currentData}
-          filteredFeaturedData={filteredFeaturedData}
+          filteredFeaturedData={filteredFeaturedData} 
+          setCurrentData={setCurrentData}
+          publishedData={publishedData}
+          sharedData={sharedData}
         >
           <div className="grid grid-cols-1 xl:grid-cols-6 lg:gap-16 pb-8 pt-8 custom-grid">
             <div className="col-span-1 md:col-span-2 z-10">
@@ -40,8 +43,8 @@ export function LandingPage({
                   filteredFeaturedData={filteredFeaturedData}
                 />
               </Hero>
+              
             </div>
-
             <div className="col-span-1 md:col-span-4 mt-6 md:mt-0">
               {filteredFeaturedData.length >= 1 ? (
                 <Suspense fallback={<div>Loading...</div>}>

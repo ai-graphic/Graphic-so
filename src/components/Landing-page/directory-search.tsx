@@ -19,15 +19,16 @@ export function DirectorySearch({
   const [activeButton, setActiveButton] = useState<string>("UserFeed");
 
   return (
-    <div className="relative max-w-[90%] gap-3 md:min-w-[4rem] w-full md:max-w-[42ch] md:mr-auto flex justify-center items-center">
+    <div className="relative max-w-[90%] gap-3 md:min-w-[4rem] sm:min-w-[2rem] w-full md:max-w-[42ch]  flex justify-center items-center">
       <Button
         variant="secondary"
         onClick={() => {
           setCurrentData(publishedData);
           setActiveButton("UserFeed");
         }}
-        className={`font-bold py-2 px-8 ${
-          activeButton === "UserFeed" && "bg-gray-300 text-black "
+        className={`font-bold py-2 px-2 sm:px-3 ${
+          activeButton === "UserFeed" &&
+          "bg-gray-300 text-black hover:bg-gray-300"
         }`}
       >
         User Feed
@@ -38,8 +39,9 @@ export function DirectorySearch({
           setCurrentData(filteredFeaturedData);
           setActiveButton("Featured");
         }}
-        className={`font-bold py-2 px-8 ${
-          activeButton === "Featured" && "bg-gray-300 text-black "
+        className={`font-bold py-2 px-2 sm:px-3 ${
+          activeButton === "Featured" &&
+          "bg-gray-300 text-black hover:bg-gray-300"
         }`}
       >
         Featured
@@ -50,8 +52,9 @@ export function DirectorySearch({
           setCurrentData(sharedData);
           setActiveButton("Shared");
         }}
-        className={`font-bold py-2 px-8 ${
-          activeButton === "Shared" && "bg-gray-300 text-black "
+        className={`font-bold py-2 px-2 sm:px-3 ${
+          activeButton === "Shared" &&
+          "bg-gray-300 text-black hover:bg-gray-300"
         }`}
       >
         Latest

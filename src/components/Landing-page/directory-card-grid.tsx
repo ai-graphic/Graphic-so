@@ -1,26 +1,34 @@
-"use client"
+"use client";
 
-import React, { Suspense } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import React, { Suspense } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-import { ResourceCard } from "./directory-product-card"
-import { Product } from "@/lib/types"
-
+import { ResourceCard } from "./directory-product-card";
+import { Product } from "@/lib/types";
+import { DirectorySearch } from "./directory-search";
 
 export interface SEOCardGridProps {
-  sortedData: Product[]
-  filteredFeaturedData: Product[] | null
-  children?: React.ReactNode
+  sortedData: Product[];
+  filteredFeaturedData: Product[];
+  setCurrentData?: (data: Product[]) => void;
+  publishedData?: Product[];
+  sharedData?: Product[];
+  children?: React.ReactNode;
 }
 
 export const ResourceCardGrid: React.FC<SEOCardGridProps> = ({
   sortedData,
+  filteredFeaturedData,
+  setCurrentData,
+  publishedData,
+  sharedData,
   children,
 }) => {
-  const pathname = usePathname()
+  const pathname = usePathname();
+
   return (
     <div className="flex flex-col md:items-start gap-4 overflow-hidden pb-4 md:mx-4 mx-0 relative">
       <div
@@ -49,16 +57,26 @@ export const ResourceCardGrid: React.FC<SEOCardGridProps> = ({
       >
         <Suspense fallback={<div>Loading...</div>}>
           <div className="relative">
+            {setCurrentData && publishedData && sharedData && (
+              <div className="my-2 mb-5 hidden max-sm:flex">
+                <DirectorySearch
+                  setCurrentData={setCurrentData}
+                  publishedData={publishedData}
+                  sharedData={sharedData}
+                  filteredFeaturedData={filteredFeaturedData}
+                />
+              </div>
+            )}
             <TailwindMasonryGrid filteredData={sortedData} />
           </div>
         </Suspense>
       </div>
     </div>
-  )
-}
+  );
+};
 
 interface TailwindMasonryGridProps {
-  filteredData: Product[]
+  filteredData: Product[];
 }
 
 const TailwindMasonryGrid: React.FC<TailwindMasonryGridProps> = ({
@@ -77,8 +95,8 @@ const TailwindMasonryGrid: React.FC<TailwindMasonryGridProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const FeaturedGrid: React.FC<{ featuredData: Product[] }> = ({
   featuredData,
@@ -91,8 +109,8 @@ export const FeaturedGrid: React.FC<{ featuredData: Product[] }> = ({
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const EmptyFeaturedGrid = () => {
   const emptyData = [
@@ -110,8 +128,7 @@ export const EmptyFeaturedGrid = () => {
       codename: "Get Started",
       product_website: "https://yourapp.com/get-started",
       punchline: "Begin your journey with our platform",
-      description:
-        "Follow our guide to get started quickly and efficiently.",
+      description: "Follow our guide to get started quickly and efficiently.",
       logo_src: "/images/get-started-placeholder.png",
       tags: ["guide"],
       labels: ["guide-ad"],
@@ -126,7 +143,7 @@ export const EmptyFeaturedGrid = () => {
       tags: ["community"],
       labels: ["community-ad"],
     },
-  ]
+  ];
 
   return (
     <div className="w-full mx-auto max-w-7xl  bg-black/20 dark:bg-neutral-950/40 border border-dashed border-black/10 py-3 px-3 rounded-[1.9rem]">
@@ -145,5 +162,5 @@ export const EmptyFeaturedGrid = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};

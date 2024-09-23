@@ -18,7 +18,7 @@ export function Feed({
   const [currentData, setCurrentData] = useState(publishedData);
 
   return (
-    <div className="w-full px-2 md:px-4 flex">
+    <div className="w-full mt-2 flex">
       <FadeIn>
         <ResourceCardGrid
           sortedData={currentData}
