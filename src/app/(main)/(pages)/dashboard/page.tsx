@@ -1,25 +1,6 @@
-import { FadeIn } from "@/components/Landing-page/cult/fade-in";
-import { ResourceCardGrid } from "@/components/Landing-page/directory-card-grid";
-import { getAllWorkflows } from "@/app/actions";
 
-interface Product {
-  id: string
-  created_at: string
-  full_name: string
-  email: string
-  twitter_handle: string
-  product_website: string
-  codename: string
-  punchline: string
-  description: string
-  logo_src: string
-  user_id: string
-  tags: string[]
-  view_count: number
-  approved: boolean
-  labels: string[]
-  categories: string
-}
+import { getAllWorkflows } from "@/app/actions";
+import { Feed } from "@/components/global/feed";
 
 const DashboardPage = async () => {
   const isValidImageUrl = (url: string) => {
@@ -40,7 +21,7 @@ const DashboardPage = async () => {
       id: workflow.id,
       created_at: workflow.createdAt,
       full_name: workflow.name,
-      email: "",
+      email: "rohit9804singh@gmail.com",
       twitter_handle: "",
       product_website: "",
       codename: workflow.name,
@@ -49,32 +30,39 @@ const DashboardPage = async () => {
       user_id: workflow.userId,
       view_count: 0,
       approved: false,
-      featured: workflow.publish,
-      logo_src: logo_src && isValidImageUrl(logo_src) && logo_src,
-      tags: [], 
-      labels: [], 
+      featured: workflow.featured,
+      logo_src:
+        workflow.thumbnail ??
+        (logo_src && isValidImageUrl(logo_src) && logo_src),
+      tags: [],
+      labels: [],
       categories: "",
+      publish: workflow.publish || false,
+      created: workflow.createdAt,
+      shared: workflow.shared,
     };
   });
 
-  const filteredFeaturedData: Product[] = data.filter(
-    (product) => product.featured
+  const filteredFeaturedData = data
+    .filter((product) => product.featured)
+    .sort(
+      (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
+    );
+  const PublishedData = data
+    .filter((product) => product.publish === true)
+    .sort(
+      (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
+    );
+  const sharedData = PublishedData.filter((product) => product.shared).sort(
+    (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
   );
 
   return (
-    <div className="flex flex-col gap-4 relative">
-      <h1 className="text-4xl sticky-top-0 z-[10] p-6 flex items-center border-b">
-        Dashboard
-      </h1>
-      <div className="w-full px-2 md:px-4 flex flex-col">
-        <FadeIn>
-          <ResourceCardGrid
-            sortedData={data}
-            filteredFeaturedData={filteredFeaturedData}
-          ></ResourceCardGrid>
-        </FadeIn>
-      </div>
-    </div>
+    <Feed
+    filteredFeaturedData={filteredFeaturedData}
+    publishedData={PublishedData}
+    sharedData={sharedData}
+  />
   );
 };
 
