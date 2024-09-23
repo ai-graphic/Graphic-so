@@ -2,10 +2,8 @@
 
 import React, { useState } from "react";
 import { FadeIn } from "@/components/Landing-page/cult/fade-in";
-import {
-  ResourceCardGrid,
-} from "@/components/Landing-page/directory-card-grid";
-import { DirectorySearch } from "@/components/Landing-page/directory-search";";
+import { ResourceCardGrid } from "@/components/Landing-page/directory-card-grid";
+import { DirectorySearch } from "@/components/Landing-page/directory-search";
 import { Product } from "@/lib/types";
 
 export function Feed({

@@ -2,7 +2,7 @@
 
 ## Overview 🔭
 
-**graphic.so** is a cutting-edge no-code automation tool designed to streamline and simplify complex workflows through seamless AI integration. It empowers users to create sophisticated automation systems with ease, merging AI technologies like GPT and Gemini to enhance efficiency and productivity across various applications.
+**graphic.so** is an advanced no-code automation platform that simplifies complex workflows through seamless AI integration. It enables users to effortlessly build sophisticated automation systems by combining AI models like OpenAI, Claude, and Flux, thereby boosting efficiency and productivity in diverse applications.
 
 ## Table of Contents
 
@@ -25,7 +25,6 @@
 
 ![Demo Image 4](https://res.cloudinary.com/dqougmpti/image/upload/v1727086071/ewvjl0dty0dga1sreh6j.png)
 
-
 ### key-features ⚡
 
 - **No-Code Tool**: Easily create complex automations without writing a single line of code.
@@ -35,9 +34,9 @@
 
 ### How It Works ✅
 
-graphic.so leverages a chat interface and input triggers to initiate workflows that integrate seamlessly with other applications like Discord, Slack, and Notion. 
-When a specified input is received or a chat interaction occurs, 
-graphic.so activates the designated actions in the connected services to facilitate real-time responses and automate tasks efficiently.
+graphic.so leverages a chat interface and input triggers to initiate workflows that integrate seamlessly with other applications like Discord, Slack, and Notion.
+When a specified input is received or a chat interaction occurs,
+graphic.so activates the designated actions in the connected services to facilitate real-time responses and automate tasks efficiently. Additionally, it employs advanced AI models such as Flux, LumaLabs, and Stable Diffusion to generate generative images and videos, automating creative processes across various media applications.
 
 ### Setting Up Your First Workflow ⭕
 
@@ -54,36 +53,36 @@ graphic.so activates the designated actions in the connected services to facilit
 
 <div align="center">
 
-| Integration          | Type        | Status           | Description                                                  |
-|----------------------|-------------|------------------|--------------------------------------------------------------|
-| AI                   | Action/Trigger | Active         | Use the power of AI to summarize, respond, create and much more. |
-| Chat                 | Action      | Active           | Sharable Chat interface to interact with the workflow.       |
-| Slack                | Action      | Active           | Send a notification to Slack.                                |
-| Notion               | Action      | Active           | Create entries directly in Notion.                           |
-| Discord              | Action      | Active           | Post messages to your Discord server.                        |
-| Flux Development     | Action      | Active           | Development tools for creating and testing flux models.      |
-| Image-to-Image       | Action      | Active           | Convert one image to another using AI models.                |
-| Flux LoRA            | Action      | Active           | Low-rank adaptation for fine-tuning flux models.             |
-| Train Flux           | Action      | Active           | Train flux models with custom datasets.                      |
-| Stable Video         | Action      | Active           | Generate stable videos using AI techniques.                  |
-| Auto Caption         | Action      | Active           | Generate captions for videos using AI models.                |
-| Sad Talker           | Action      | Active           | Generate video with images and audio files using AI models.  |
-| Music Generation     | Action      | Active           | Generate music using Meta Music-Gen models.                  |
-| CogVideoX-5B         | Action      | Active           | Generate videos using open source CogVideoX-5B models.       |
-| Video-to-Video       | Action      | Active           | Convert one video to another using AI models.                |
-| Luma Labs ImageToVideo| Action     | Active           | Convert images to videos using Luma Labs models.             |
-| Luma Labs TextToVideo | Action     | Active           | Convert text to videos using Luma Labs models.               |
-| Consistent Character | Action      | Active           | Create images of a given character in different poses.       |
-| DreamShaper          | Action      | Active           | Generate a new image from an input image with DreamShaper V6.|
-| Flux General         | Action      | Active           | Generate stable images with FLUX.1 [dev], next generation text-to-image model. |
-| Flux Dev LoRA        | Action      | Active           | FLUX.1-Dev Multi LoRA Explorer.                              |
-| Google Calendar      | Action      | Active           | Create a calendar invite.                                    |
-| Custom Webhook       | Action      | Active           | Connect any app that has an API key and send data to your application. |
-| Trigger              | Trigger     | Active           | An event that starts the workflow.                           |
-| Email                | Action      | Active           | Send an email to a user.                                     |
-| Wait                 | Action      | Active           | Delay the next action step by using the wait timer.          |
-| Condition            | Action      | Active           | Boolean operator that creates different conditions lanes.    |
-| Google Drive         | Action      | Active           | Connect with Google Drive to trigger actions or to create files and folders. |
+| Integration            | Type           | Status | Description                                                                    |
+| ---------------------- | -------------- | ------ | ------------------------------------------------------------------------------ |
+| AI                     | Action/Trigger | Active | Use the power of AI to summarize, respond, create and much more.               |
+| Chat                   | Action         | Active | Sharable Chat interface to interact with the workflow.                         |
+| Slack                  | Action         | Active | Send a notification to Slack.                                                  |
+| Notion                 | Action         | Active | Create entries directly in Notion.                                             |
+| Discord                | Action         | Active | Post messages to your Discord server.                                          |
+| Flux Development       | Action         | Active | Development tools for creating and testing flux models.                        |
+| Image-to-Image         | Action         | Active | Convert one image to another using AI models.                                  |
+| Flux LoRA              | Action         | Active | Low-rank adaptation for fine-tuning flux models.                               |
+| Train Flux             | Action         | Active | Train flux models with custom datasets.                                        |
+| Stable Video           | Action         | Active | Generate stable videos using AI techniques.                                    |
+| Auto Caption           | Action         | Active | Generate captions for videos using AI models.                                  |
+| Sad Talker             | Action         | Active | Generate video with images and audio files using AI models.                    |
+| Music Generation       | Action         | Active | Generate music using Meta Music-Gen models.                                    |
+| CogVideoX-5B           | Action         | Active | Generate videos using open source CogVideoX-5B models.                         |
+| Video-to-Video         | Action         | Active | Convert one video to another using AI models.                                  |
+| Luma Labs ImageToVideo | Action         | Active | Convert images to videos using Luma Labs models.                               |
+| Luma Labs TextToVideo  | Action         | Active | Convert text to videos using Luma Labs models.                                 |
+| Consistent Character   | Action         | Active | Create images of a given character in different poses.                         |
+| DreamShaper            | Action         | Active | Generate a new image from an input image with DreamShaper V6.                  |
+| Flux General           | Action         | Active | Generate stable images with FLUX.1 [dev], next generation text-to-image model. |
+| Flux Dev LoRA          | Action         | Active | FLUX.1-Dev Multi LoRA Explorer.                                                |
+| Google Calendar        | Action         | Active | Create a calendar invite.                                                      |
+| Custom Webhook         | Action         | Active | Connect any app that has an API key and send data to your application.         |
+| Trigger                | Trigger        | Active | An event that starts the workflow.                                             |
+| Email                  | Action         | Active | Send an email to a user.                                                       |
+| Wait                   | Action         | Active | Delay the next action step by using the wait timer.                            |
+| Condition              | Action         | Active | Boolean operator that creates different conditions lanes.                      |
+| Google Drive           | Action         | Active | Connect with Google Drive to trigger actions or to create files and folders.   |
 
 </div>
 
@@ -92,6 +91,7 @@ graphic.so activates the designated actions in the connected services to facilit
 This project utilizes a range of technologies including Next.js, React, Tailwind CSS, and various AI and automation libraries such as:
 
 - **AI & Automation Libraries**
+
   - `@agentic/ai-sdk`
   - `@agentic/bing`
   - `@agentic/firecrawl`
@@ -106,11 +106,13 @@ This project utilizes a range of technologies including Next.js, React, Tailwind
   - `replicate`
 
 - **UI & Components**
+
   - `@radix-ui` (Multiple components like React-Accordion, React-Dialog, etc.)
   - `@xyflow/react`
   - `@uploadcare/react-uploader`
 
 - **Miscellaneous**
+
   - `axios`
   - `clsx`
   - `googleapis`
@@ -118,6 +120,7 @@ This project utilizes a range of technologies including Next.js, React, Tailwind
   - `zustand`
 
 - **Styling**
+
   - `tailwindcss-animate` (Animation extension for Tailwind CSS)
 
 - **Utilities**
@@ -126,18 +129,21 @@ This project utilizes a range of technologies including Next.js, React, Tailwind
 
 This extensive tech stack ensures a robust, responsive, and scalable application, enhancing user engagement through efficient use of modern web technologies and integrations.
 
-
 ## How to Run
+
 To set up and run graphic.so locally, follow these detailed steps:
 
 1. **Install Dependencies**:
+
    - Run `npm install` to install all necessary dependencies from the `package.json` file.
 
 2. **Environment Setup**:
+
    - Copy the example environment file to create your own: `cp .env.example .env`.
    - Modify the `.env` file with your specific configurations (API keys, database URL, etc.).
 
 3. **Database Setup**:
+
    - Initialize your database schema: `npx prisma generate`.
    - Push the schema to your database: `npx prisma db push`.
 
@@ -146,7 +152,6 @@ To set up and run graphic.so locally, follow these detailed steps:
    - Open your web browser and visit `http://localhost:3000` to see the application in action.
 
 For any issues or detailed customization of your setup, please [open an issue](https://github.com/ai-graphic/graphic.so/issues) on our GitHub repository, and we will provide assistance tailored to your environment.
-
 
 ## Contributing
 
@@ -178,7 +183,8 @@ We're thrilled that you're interested in contributing to our project! This is a 
 
 5. **Commit Messages**: Write clear, concise commit messages describing the changes you've made.
 
-6. **Pull Request Process**: 
+6. **Pull Request Process**:
+
    - Create a new branch for your feature or bug fix
    - Make your changes and commit them with clear messages
    - Push your branch and submit a pull request
@@ -191,7 +197,6 @@ We're thrilled that you're interested in contributing to our project! This is a 
 If you're new to contributing to open source, check out [GitHub's guide on how to contribute to open source](https://opensource.guide/how-to-contribute/).
 
 For more detailed information on how to contribute to this specific project, please see our [CONTRIBUTING.md](contributing.md) file.
-
 
 ## Development Status 🧑‍💻
 
