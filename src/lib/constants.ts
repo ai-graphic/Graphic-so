@@ -279,11 +279,6 @@ export const menuOptions = [
 ];
 
 export const EditorCanvasDefaultCardTypes = {
-  "Google Drive": {
-    description:
-      "Connect with Google drive to trigger actions or to create files and folders.",
-    type: "Trigger",
-  },
   AI: {
     description:
       "Use the power of AI to summarize, respond, create and much more.",
@@ -383,6 +378,11 @@ export const EditorCanvasDefaultCardTypes = {
   },
   Condition: {
     description: "Boolean operator that creates different conditions lanes.",
+    type: "Action",
+  },
+  "Google Drive": {
+    description:
+      "Connect with Google drive to trigger actions or to create files and folders.",
     type: "Action",
   },
 };

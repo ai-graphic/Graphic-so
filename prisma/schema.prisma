@@ -98,6 +98,7 @@ model Workflows {
   nodes                 String?
   edges                 String?
   name                  String
+  createdAt             String?
   discordTemplate       String?
   notionTemplate        String?
   slackTemplate         String?
@@ -109,6 +110,8 @@ model Workflows {
   flowPath              String?
   cronPath              String?
   publish               Boolean? @default(false)
+  shared                Boolean? @default(false)
+  featured              Boolean? @default(false)
   description           String
   userId                String
   User                  User     @relation(fields: [userId], references: [clerkId])
@@ -123,7 +126,6 @@ model Workflows {
   CharacterTemplate              String?
   DreamShaperTemplate            String?
   fluxDevLora                    String?
-  featured                       Boolean?
   cogVideo5BTemplate             String?
   musicGenTemplate               String?
   videoToVideoTemplate           String?

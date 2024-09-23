@@ -188,7 +188,7 @@ const Chat = () => {
                 <div key={index} className="flex flex-col gap-2">
                   {item.user && (
                     <div className="flex justify-end">
-                      <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 bg-gray-700   max-w-xs">
+                      <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 dark:bg-gray-700 bg-gray-200   max-w-xs">
                         <p>{item.user}</p>
                       </div>
                     </div>
@@ -216,7 +216,7 @@ const Chat = () => {
                         )}
                         {item.user && (
                           <Dialog>
-                            <DialogTrigger className="bg-[#0A0A0A] dark:text-gray-600 dark:hover:text-blue-400 p-2 m-1 rounded-l-xl rounded-b-none absolute bottom-0 right-0">
+                            <DialogTrigger className="dark:bg-[#0A0A0A] bg-gray-200 dark:text-gray-600 dark:hover:text-blue-400 p-2 m-1 rounded-l-xl rounded-b-none absolute bottom-0 right-0">
                               <HistoryIcon size={20} />
                             </DialogTrigger>
                             <DialogContent>

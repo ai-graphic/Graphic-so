@@ -12,7 +12,7 @@ import MinimalCard, {
   MinimalCardFooter,
   MinimalCardImage,
   MinimalCardTitle,
-} from "@/components/cult/minimal-card"
+} from "@/components/Landing-page/cult/minimal-card"
 
 
 interface Product {

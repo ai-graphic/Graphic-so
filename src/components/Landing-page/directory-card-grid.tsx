@@ -7,25 +7,8 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 import { ResourceCard } from "./directory-product-card"
+import { Product } from "@/lib/types"
 
-interface Product {
-  id: string
-  created_at: string
-  full_name: string
-  email: string
-  twitter_handle: string
-  product_website: string
-  codename: string
-  punchline: string
-  description: string
-  logo_src: string
-  user_id: string
-  tags: string[]
-  view_count: number
-  approved: boolean
-  labels: string[]
-  categories: string
-}
 
 export interface SEOCardGridProps {
   sortedData: Product[]

@@ -11,23 +11,6 @@
 *::-webkit-scrollbar {
   display: none !important;
 }
-.bg-radial-gradient {
-  background-image: radial-gradient(
-          circle at 10% 20%,
-          rgba(4, 159, 108, 1) 0%,
-          rgba(194, 254, 113, 1) 90.1%
-  );
-}
-
-.react-flow__edge-path {
-  stroke: #333;
-  stroke-width: 2;
-}
-
-.temp .react-flow__edge-path {
-  stroke: #bbb;
-  stroke-dasharray: 5 5;
-}
 
 
 @layer base {

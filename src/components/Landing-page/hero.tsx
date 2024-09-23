@@ -3,7 +3,7 @@ import Link from "next/link"
 import { PlusIcon, Twitter, } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "./ui/button"
+import { Button } from "../ui/button"
 import { NextIcon, SupabaseIcon } from "@/components/ui/icons"
 
 export function Hero({ children }: { children?: React.ReactNode }) {
@@ -34,6 +34,8 @@ export function Hero({ children }: { children?: React.ReactNode }) {
           Streamline complex workflows in marketing, sales, operations, and IT with a powerful, no-code platform. 
           Leverage AI technologies to make automation more accessible and cost-effective.
         </p>
+      </div><div>
+      {children}
       </div>
       <div className="flex mt-4 mb-4 space-x-4">
         <Button variant="secondary" asChild>
@@ -52,7 +54,7 @@ export function Hero({ children }: { children?: React.ReactNode }) {
           updates
         </a>
       </div>
-      {children}
+      
     </div>
   )
 }

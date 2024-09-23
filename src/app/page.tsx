@@ -1,20 +1,13 @@
 import Navbar from "@/components/global/navbar";
-import { FadeIn } from "@/components/cult/fade-in";
-import {
-  EmptyFeaturedGrid,
-  FeaturedGrid,
-  ResourceCardGrid,
-} from "@/components/directory-card-grid";
-import { DirectorySearch } from "@/components/directory-search";
-import { Hero } from "@/components/hero";
-import { Suspense } from "react";
 import { getAllWorkflows } from "./actions";
+import { publicDecrypt } from "crypto";
+import { LandingPage } from "@/components/Landing-page/landing-page";
+
+const isValidImageUrl = (url: string) => {
+  return /\.(jpeg|jpg|gif|png|webp)$/.test(url);
+};
 
 export default async function Home() {
-  const isValidImageUrl = (url: string) => {
-    return /\.(jpeg|jpg|gif|png|webp)$/.test(url);
-  };
-
   const workflows = await getAllWorkflows();
 
   const data = workflows.map((workflow: any) => {
@@ -45,45 +38,36 @@ export default async function Home() {
       tags: [],
       labels: [],
       categories: "",
+      publish: workflow.publish || false,
+      created: workflow.createdAt,
+      shared: workflow.shared,
     };
   });
 
-  const filteredFeaturedData = data.filter((product) => product.featured);
+  const filteredFeaturedData = data
+    .filter((product) => product.featured)
+    .sort(
+      (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
+    );
+  const PublishedData = data
+    .filter((product) => (product.publish === true))
+    .sort(
+      (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
+    );
+  const sharedData = PublishedData.filter((product) => product.shared).sort(
+    (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
+  );
 
+  console.log("data", filteredFeaturedData, PublishedData, sharedData);
   return (
     <main>
       <Navbar />
 
-      <div className="w-full px-2 md:px-4 flex mt-40 max-sm:mt-10">
-        <FadeIn>
-          <ResourceCardGrid
-            sortedData={data}
-            filteredFeaturedData={filteredFeaturedData}
-          >
-            <div className="grid grid-cols-1 xl:grid-cols-6 lg:gap-16 pb-8 pt-8 custom-grid">
-              <div className="col-span-1 md:col-span-2 z-10">
-                <Hero>
-                  <DirectorySearch />
-                </Hero>
-              </div>
-
-              <div className="col-span-1 md:col-span-4 mt-6 md:mt-0">
-                {filteredFeaturedData.length >= 1 ? (
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <div className="relative">
-                      <FeaturedGrid featuredData={filteredFeaturedData} />
-                    </div>
-                  </Suspense>
-                ) : (
-                  <div className="relative">
-                    <EmptyFeaturedGrid />
-                  </div>
-                )}
-              </div>
-            </div>
-          </ResourceCardGrid>
-        </FadeIn>
-      </div>
+      <LandingPage
+        filteredFeaturedData={filteredFeaturedData}
+        publishedData={PublishedData}
+        sharedData={sharedData}
+      />
     </main>
   );
 }

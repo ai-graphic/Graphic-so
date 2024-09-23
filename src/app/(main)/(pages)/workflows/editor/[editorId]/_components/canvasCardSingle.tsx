@@ -88,9 +88,10 @@ const CanvasCardSingle = ({ data }: { data: EditorCanvasCardType }) => {
           boxShadow: isLoading[nodeId ?? ""]
             ? "0 10px 15px rgba(234, 179, 8, 0.5)"
             : "",
+
         }}
         className={clsx(
-          "react-flow__node-turbo border-2  dark:border-gray-700",
+          "react-flow__node-turbo border-2 !bg-white !text-black  dark:!border-gray-700 dark:!bg-[#111111] dark:!text-white ",
           {
             selected: isSelected && !isLoading[nodeId ?? ""], // Add this line
           }

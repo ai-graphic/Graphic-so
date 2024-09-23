@@ -364,6 +364,7 @@ export const onCreateWorkflow = async (name: string, description: string) => {
         userId: user.id,
         name,
         description,
+        createdAt: new Date().toISOString(),
       },
     });
 
@@ -416,7 +417,9 @@ export const onUpdateChatHistory = async (
 export const ondublicateWorkflow = async (
   name: string,
   description: string,
-  id: string
+  id: string,
+  share?: boolean,
+  url?: string
 ) => {
   const user = await currentUser();
 
@@ -431,7 +434,7 @@ export const ondublicateWorkflow = async (
     if (!existingWorkflow) {
       return { message: "Workflow not found" };
     }
-
+    console.log("ondublicateWorkflow", name, description, id, share, url);
     // Create a new workflow with the same data
     const workflow = await db.workflows.create({
       data: {
@@ -455,16 +458,22 @@ export const ondublicateWorkflow = async (
         cogVideo5BTemplate: existingWorkflow.cogVideo5BTemplate,
         musicGenTemplate: existingWorkflow.musicGenTemplate,
         videoToVideoTemplate: existingWorkflow.videoToVideoTemplate,
-        lunalabsImageToVideoTemplate: existingWorkflow.lunalabsImageToVideoTemplate,
-        lunalabsTextToVideoTemplate: existingWorkflow.lunalabsTextToVideoTemplate,
+        lunalabsImageToVideoTemplate:
+          existingWorkflow.lunalabsImageToVideoTemplate,
+        lunalabsTextToVideoTemplate:
+          existingWorkflow.lunalabsTextToVideoTemplate,
         autoCaptionTemplate: existingWorkflow.autoCaptionTemplate,
         sadTalkerTemplate: existingWorkflow.sadTalkerTemplate,
-        publish: false,
+        publish: existingWorkflow.publish,
+        createdAt: new Date().toISOString(),
+        shared: share || false,
+        thumbnail: url ?? existingWorkflow.thumbnail,
       },
     });
+    const message = share ? "Workflow shared" : "Workflow duplicated";
 
     if (workflow)
-      return { message: "Workflow duplicated", workflowid: workflow.id };
+      return { message: message, workflowid: workflow.id };
     return { message: "Oops! try again" };
   }
 };

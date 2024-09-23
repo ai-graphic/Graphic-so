@@ -1,5 +1,5 @@
-import { FadeIn } from "@/components/cult/fade-in";
-import { ResourceCardGrid } from "@/components/directory-card-grid";
+import { FadeIn } from "@/components/Landing-page/cult/fade-in";
+import { ResourceCardGrid } from "@/components/Landing-page/directory-card-grid";
 import { getAllWorkflows } from "@/app/actions";
 
 interface Product {

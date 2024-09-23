@@ -1,17 +1,11 @@
 .react-flow {
-  --bg-color: rgb(17, 17, 17);
-  --text-color: rgb(243, 244, 246);
   --node-border-radius: 20px;
   --node-box-shadow: 10px 0 15px rgba(42, 138, 246, 0.3),
     -10px 0 15px rgba(233, 42, 103, 0.3);
 }
 
+
 .react-flow__node-turbo {
-  --bg-color: rgb(17, 17, 17);
-  --text-color: rgb(243, 244, 246);
-  --node-border-radius: 10px;
-  --node-box-shadow: 10px 0 15px rgba(42, 138, 246, 0.3),
-    -10px 0 15px rgba(233, 42, 103, 0.3);
   background-color: var(--bg-color);
   color: var(--text-color);
   border-radius: var(--node-border-radius);

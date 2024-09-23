@@ -54,13 +54,13 @@ const MenuOptions = (props: Props) => {
   return (
     <div
       className={
-        pathName.includes("chat") ? "absolute top-0 left-0 z-10" : "relative"
+        pathName.includes("chat") ? "absolute top-0 left-0 z-10 border-2" : "relative"
       }
     >
       {!isVisible && isControllable ? (
         <Button
           variant="outline"
-          className="absolute z-10 top-0 left-0 m-2 p-2 text-white"
+          className="absolute z-10 top-0 left-0 m-2 p-2 dark:text-white text-black"
           onClick={() => setIsVisible(true)} // Show the menu
         >
           <ChevronsRight />

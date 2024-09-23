@@ -6,7 +6,14 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { getworkflow } from "../_actions/workflow-connections";
 import { Button } from "@/components/ui/button";
-import { BotIcon, HistoryIcon, SendIcon, UploadIcon } from "lucide-react";
+import {
+  BotIcon,
+  ExternalLink,
+  Forward,
+  HistoryIcon,
+  SendIcon,
+  UploadIcon,
+} from "lucide-react";
 import { useNodeConnections } from "@/hooks/connections-providers";
 import { onContentChange } from "@/lib/editor-utils";
 import { toast } from "sonner";
@@ -30,6 +37,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { UserButton } from "@clerk/nextjs";
+import ShareWorkflow from "@/components/forms/Share-Workflow";
 
 interface ChatHistoryItem {
   user?: string;
@@ -47,10 +55,13 @@ const Chat = () => {
   const [history, setHistory] = useState<ChatHistoryItem[]>([]);
   const [load, setLoad] = useState(false);
   const cardContentRef = useRef<HTMLDivElement>(null);
-  const [flowPath, setflowPath] = useState<any>([]);
+  const [requiredCredits, setrequiredCredits] = useState<any>(0);
   const { credits, setCredits } = useBilling();
   const [loading, setLoading] = useState(false);
   const [selectedurl, setSelectedurl] = useState<string | null>();
+  const [showHistoryDialog, setShowHistoryDialog] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [selectedUrl, setSelectedUrl] = useState<string | null>("");
 
   const { user } = useUser();
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,7 +109,39 @@ const Chat = () => {
       const flowpathtemp = workflow?.flowPath
         ? JSON.parse(workflow.flowPath)
         : [];
-      setflowPath(flowpathtemp);
+      let requiredCredits = 0;
+      flowpathtemp.forEach((nodeType: string) => {
+        if (
+          [
+            "flux-dev",
+            "flux-lora",
+            "fluxGeneral",
+            "fluxDevLora",
+            "AI",
+            "image-to-image",
+            "consistent-character",
+            "dreamShaper",
+            "musicGen",
+            "sadTalker",
+            "autoCaption",
+          ].includes(nodeType)
+        ) {
+          requiredCredits += 1;
+        } else if (
+          [
+            "stable-video",
+            "CogVideoX-5B",
+            "lumalabs-TextToVideo",
+            "lumalabs-ImageToVideo",
+            "video-to-video",
+          ].includes(nodeType)
+        ) {
+          requiredCredits += 10;
+        } else if (["train-flux"].includes(nodeType)) {
+          requiredCredits += 60;
+        }
+      });
+      setrequiredCredits(requiredCredits);
       if (workflow?.chatHistory) {
         if (workflow?.chatHistory) {
           const history = workflow.chatHistory.map((item: string) =>
@@ -117,6 +160,10 @@ const Chat = () => {
 
   const onsubmit = async () => {
     try {
+      if (credits < requiredCredits) {
+        toast.error("You have insufficient credits");
+        return;
+      }
       setLoad(true);
       setMessage("");
       history.push({
@@ -183,7 +230,8 @@ const Chat = () => {
         <SheetHeader>
           <SheetTitle>REMIX this Workflow?</SheetTitle>
           <SheetDescription className="flex flex-col gap-2 w-full">
-            You can export this workflow and use it by clicking the button below.
+            You can export this workflow and use it by clicking the button
+            below.
             <DublicateWorkflow id={pathname.split("/").slice(-2, -1)[0]} />
           </SheetDescription>
         </SheetHeader>
@@ -211,32 +259,57 @@ const Chat = () => {
                   <div key={index} className="flex flex-col gap-2">
                     {item.user && (
                       <div className="flex justify-end">
-                        <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 bg-gray-700 max-w-xs">
-                        {item.user.match(/https?:\/\/[^\s]+/g) ? (
-                          item.user.split(' ').map((part, index) => {
-                            if (/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(part)) {
-                              return <img key={index} src={part} alt="user" className="rounded-lg mb-2" />;
-                            } else if (/https?:\/\/.*\.(?:mp3)/.test(part)) {
-                              return <audio key={index} src={part} controls className="w-full mb-2" />;
-                            } else if (/https?:\/\/.*\.(?:mp4|webm|ogg)/.test(part)) {
-                              return <video key={index} src={part} controls className="w-full mb-2" />;
-                            } else {
-                              return (
-                                <div key={index} className="flex">
-                                  <p>{part}</p>
-                                </div>
-                              );
-                            }
-                          })
-                        ) : (
-                          <p>{item.user}</p>
-                        )}
+                        <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 dark:bg-gray-700 bg-gray-200 max-w-xs">
+                          {item.user.match(/https?:\/\/[^\s]+/g) ? (
+                            item.user.split(" ").map((part, index) => {
+                              if (
+                                /https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(part)
+                              ) {
+                                return (
+                                  <img
+                                    key={index}
+                                    src={part}
+                                    alt="user"
+                                    className="rounded-lg mb-2"
+                                  />
+                                );
+                              } else if (/https?:\/\/.*\.(?:mp3)/.test(part)) {
+                                return (
+                                  <audio
+                                    key={index}
+                                    src={part}
+                                    controls
+                                    className="w-full mb-2"
+                                  />
+                                );
+                              } else if (
+                                /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(part)
+                              ) {
+                                return (
+                                  <video
+                                    key={index}
+                                    src={part}
+                                    controls
+                                    className="w-full mb-2"
+                                  />
+                                );
+                              } else {
+                                return (
+                                  <div key={index} className="flex">
+                                    <p>{part}</p>
+                                  </div>
+                                );
+                              }
+                            })
+                          ) : (
+                            <p>{item.user}</p>
+                          )}
+                        </div>
                       </div>
-                    </div>
                     )}
 
                     {item.bot && (
-                      <div className="flex justify-start">
+                      <div className="flex justify-start flex-col gap-2">
                         <div className="relative p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
                           {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(
                             item.bot
@@ -256,71 +329,110 @@ const Chat = () => {
                           ) : (
                             <p>{item.bot}</p>
                           )}
-
-                          <Dialog>
-                            <DialogTrigger className="bg-[#0A0A0A] dark:text-gray-600 dark:hover:text-blue-400 p-2 m-1 rounded-l-xl rounded-b-none absolute bottom-0 right-0">
+                          <div className="dark:bg-[#0A0A0A] bg-white p-2 m-1 rounded-l-xl rounded-b-none absolute bottom-0 right-0 flex">
+                            <button
+                              onClick={() => setShowHistoryDialog(true)}
+                              className="dark:text-gray-600 dark:hover:text-blue-400"
+                            >
                               <HistoryIcon size={20} />
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Workflow History</DialogTitle>
-                                <DialogDescription>
-                                  <div className="mt-2 p-2 h-[80vh] overflow-scroll border-t border-gray-300">
-                                    <div className="flex gap-2">
-                                      <strong>
-                                        <BotIcon />
-                                      </strong>
-                                      <div>
-                                        {item.history?.map(
-                                          (historyItem, historyIndex) => (
-                                            <div
-                                              key={historyIndex}
-                                              className="flex justify-start mb-2"
-                                            >
-                                              <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
-                                                {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(
-                                                  historyItem
-                                                ) ? (
-                                                  <img
-                                                    src={historyItem}
-                                                    width={200}
-                                                    alt="bot"
-                                                    className="rounded-lg"
-                                                  />
-                                                ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(
+                            </button>
+
+                            <button
+                              className="dark:text-gray-600 dark:hover:text-blue-400 ml-2"
+                              onClick={() => {
+                                setShowShareDialog(true);
+                                setSelectedUrl(item.bot ?? null);
+                              }}
+                            >
+                              <ExternalLink size={20} />
+                            </button>
+                          </div>
+                          {showHistoryDialog && (
+                            <Dialog
+                              open={showHistoryDialog}
+                              onOpenChange={setShowHistoryDialog}
+                            >
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Workflow History</DialogTitle>
+                                  <DialogDescription>
+                                    <div className="mt-2 p-2 h-[80vh] overflow-scroll border-t border-gray-300">
+                                      <div className="flex gap-2">
+                                        <strong>
+                                          <BotIcon />
+                                        </strong>
+                                        <div>
+                                          {item.history?.map(
+                                            (historyItem, historyIndex) => (
+                                              <div
+                                                key={historyIndex}
+                                                className="flex justify-start mb-2"
+                                              >
+                                                <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
+                                                  {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(
                                                     historyItem
                                                   ) ? (
-                                                  <video
-                                                    src={historyItem}
-                                                    controls
-                                                    width="320"
-                                                    height="240"
-                                                    autoPlay
-                                                    className="rounded-lg"
-                                                  />
-                                                ) : /https?:\/\/.*\.(?:mp3)/.test(
-                                                    historyItem
-                                                  ) ? (
-                                                  <audio
-                                                    src={historyItem}
-                                                    controls
-                                                    className="w-full"
-                                                  />
-                                                ) : (
-                                                  <p>{historyItem}</p>
-                                                )}
+                                                    <img
+                                                      src={historyItem}
+                                                      width={200}
+                                                      alt="bot"
+                                                      className="rounded-lg"
+                                                    />
+                                                  ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(
+                                                      historyItem
+                                                    ) ? (
+                                                    <video
+                                                      src={historyItem}
+                                                      controls
+                                                      width="320"
+                                                      height="240"
+                                                      autoPlay
+                                                      className="rounded-lg"
+                                                    />
+                                                  ) : /https?:\/\/.*\.(?:mp3)/.test(
+                                                      historyItem
+                                                    ) ? (
+                                                    <audio
+                                                      src={historyItem}
+                                                      controls
+                                                      className="w-full"
+                                                    />
+                                                  ) : (
+                                                    <p>{historyItem}</p>
+                                                  )}
+                                                </div>
                                               </div>
-                                            </div>
-                                          )
-                                        )}
+                                            )
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                </DialogDescription>
-                              </DialogHeader>
-                            </DialogContent>
-                          </Dialog>
+                                  </DialogDescription>
+                                </DialogHeader>
+                              </DialogContent>
+                            </Dialog>
+                          )}
+                          {showShareDialog && (
+                            <Dialog
+                              open={showShareDialog}
+                              onOpenChange={setShowShareDialog}
+                            >
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Share Workflow</DialogTitle>
+                                  <DialogDescription>
+                                    <p>Share this workflow with others!</p>
+                                    <ShareWorkflow
+                                      id={pathname.split("/").slice(-2, -1)[0]}
+                                      url={selectedUrl}
+                                    />
+                                  </DialogDescription>
+                                </DialogHeader>
+                              </DialogContent>
+                            </Dialog>
+                          )}
                         </div>
+                        <p className="text-gray-600 text-sm">{requiredCredits} Credits used</p>
                       </div>
                     )}
                   </div>
