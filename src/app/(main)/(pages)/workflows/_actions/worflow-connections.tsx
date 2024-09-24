@@ -448,8 +448,7 @@ export const ondublicateWorkflow = async (
     if (!existingWorkflow) {
       return { message: "Workflow not found" };
     }
-    console.log("ondublicateWorkflow", name, description, id, share, url);
-    // Create a new workflow with the same data
+        // Create a new workflow with the same data
     const workflow = await db.workflows.create({
       data: {
         userId: user.id,

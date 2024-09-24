@@ -68,7 +68,7 @@ export async function POST(req: Request, res: Response) {
       },
     })) as FalResult;
 
-    console.log("Flux output :", result);
+
     await db.user.update({
       where: {
         clerkId: userid,
@@ -85,9 +85,7 @@ export async function POST(req: Request, res: Response) {
       secure: true,
     });
 
-    console.log("result", result);
     const uploadurl = result.video.url;
-    console.log("uploadurl", uploadurl);
     const uploadResult = await cloudinary.uploader
       .upload(uploadurl, {
         public_id: `fluxaisssdd_${Date.now()}`,

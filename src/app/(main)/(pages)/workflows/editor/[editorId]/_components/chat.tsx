@@ -55,7 +55,6 @@ const Chat = () => {
   const { credits, setCredits } = useBilling();
   const [loading, setLoading] = useState(false);
   const [selectedurl, setSelectedurl] = useState<string | null>();
-  console.log(selectedurl);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const cardContentRef = useRef<HTMLDivElement>(null);
@@ -138,7 +137,6 @@ const Chat = () => {
     nodeConnection.triggerNode.triggerValue = "";
     setLoad(false);
   };
-  console.log(nodeConnection);
   useEffect(() => {
     if (isUpdated) {
       onsubmit();

@@ -124,7 +124,6 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
           const idNode = flowPath[current];
           const nodeType = flowPath[current + 1];
 
-          console.log(`Processing node: ${idNode} of type: ${nodeType}`);
 
           if (nodeType == "Discord") {
             setIsLoading(idNode, true);

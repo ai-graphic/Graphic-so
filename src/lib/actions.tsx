@@ -90,7 +90,6 @@ async function submitUserMessage(
           });
         } else if (type === "tool-call") {
           const { toolName } = delta;
-          console.log(toolName);
   
           if (toolName === "workflowRun") {
             const response = await axios.post(
@@ -103,7 +102,6 @@ async function submitUserMessage(
             );
   
             textContent = response.data;
-            console.log("data", textContent);
   
             if (textContent.startsWith("http")) {
               textStream.update(<ImageContentDisplay url={textContent} />);
@@ -161,7 +159,6 @@ async function submitUserMessage(
       if (!uiStream.closed) uiStream.done();
       if (!textStream.closed) textStream.done();
       if (!messageStream.closed) messageStream.done();
-      console.log(aiState.get().messages);
     } catch (e) {
       console.error(e);
       if (!uiStream.closed) uiStream.error(error);

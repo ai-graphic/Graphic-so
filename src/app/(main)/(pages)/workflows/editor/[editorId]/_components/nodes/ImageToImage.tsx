@@ -42,8 +42,6 @@ const ImageToImage = (nodeConnectionType: any, title: string) => {
     sync_mode: null,
     strength: null,
   });
-  console.log(params);
-  console.log(nodeConnectionType);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
@@ -89,9 +87,7 @@ const ImageToImage = (nodeConnectionType: any, title: string) => {
       prev.map((bool, index) => (index === id ? !bool : bool))
     );
   };
-  console.log(loading);
-  console.log(nodeConnectionType);
-  console.log(nodeConnection);
+
   return (
     <div className="flex flex-col gap-2">
       <div>

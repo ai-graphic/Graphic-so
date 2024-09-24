@@ -44,7 +44,7 @@ const ShareWorkflow = ({ id, title, subTitle, url }: Props) => {
       description: "",
     },
   });
-  console.log("ShareWorkflow", id, title, subTitle, url);
+
   const isLoading = form.formState.isSubmitting;
   const router = useRouter();
 

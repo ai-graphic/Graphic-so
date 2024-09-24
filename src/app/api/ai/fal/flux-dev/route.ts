@@ -68,7 +68,6 @@ export async function POST(req: Request, res: Response) {
       },
     }) as FalResult;
 
-    console.log("Flux output :", result);
     await db.user.update({
       where: {
         clerkId: userid,

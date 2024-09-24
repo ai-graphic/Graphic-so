@@ -58,7 +58,6 @@ export default async function Home() {
     (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
   );
 
-  console.log("data", filteredFeaturedData, PublishedData, sharedData);
   return (
     <main>
       <Navbar />

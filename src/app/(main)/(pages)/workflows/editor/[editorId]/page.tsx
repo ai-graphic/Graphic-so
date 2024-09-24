@@ -39,9 +39,7 @@ const Page = (props: Props) => {
             ? JSON.parse(workflow.DreamShaperTemplate)
             : {};
           Object.keys(dreamshaper).forEach((nodeId) => {
-            console.log(nodeId);
             const nodeData = dreamshaper[nodeId];
-            console.log(nodeData);
             if (!dreamshaper[nodeId]) {
               nodeConnection.dreamShaperNode[nodeId] = {
                 id: nodeId,
@@ -77,7 +75,7 @@ const Page = (props: Props) => {
             : {};
           Object.keys(consistentChar).forEach((nodeId) => {
             const nodeData = consistentChar[nodeId];
-            console.log(nodeData);
+            
             if (!consistentChar[nodeId]) {
               nodeConnection.consistentCharacterNode[nodeId] = {
                 id: nodeId,
@@ -639,12 +637,10 @@ const Page = (props: Props) => {
                 num_inference_steps: nodeData.num_inference_steps,
                 model_name: nodeData.model_name,
                 hf_token: nodeData.hf_token,
-                // Add other parameters as needed
               };
             }
           });
         }
-        console.log(nodeConnection);
         setShow(true);
         setLoading(false);
       }

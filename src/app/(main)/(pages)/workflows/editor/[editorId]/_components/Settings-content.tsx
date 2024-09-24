@@ -150,7 +150,6 @@ const SettingsContent = ({
   //   nodeConnectionType[selectedNode.id]?.model &&
   //     nodeConnectionType[selectedNode.id]?.history
   // );
-console.log(nodeConnectionType)
   // useEffect(() => {
   //   const modelKey = nodeConnectionType[selectedNode.id]?.model;
   //   if (modelKey) {

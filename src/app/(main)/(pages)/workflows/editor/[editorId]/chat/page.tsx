@@ -158,7 +158,6 @@ const Chat = () => {
         userid: user?.id,
         image: selectedurl,
       });
-      console.log("response", response);
 
       history.push({
         bot: response.data.bot,
@@ -167,10 +166,10 @@ const Chat = () => {
 
       nodeConnection.triggerNode.triggerValue = "";
       const Creditresponse = await onPaymentDetails();
-      console.log("Creditresponse", Creditresponse);
+
       if (Creditresponse) {
         setCredits(Creditresponse.credits!);
-        console.log("Credits", Creditresponse.credits);
+
       }
     } catch (error) {
       toast.error("Error sending message");

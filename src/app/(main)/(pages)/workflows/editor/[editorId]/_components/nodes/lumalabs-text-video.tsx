@@ -33,9 +33,7 @@ const TextToVideo = (nodeConnectionType: any, title: string) => {
       prev.map((bool, index) => (index === id ? !bool : bool))
     );
   };
-  console.log(loading);
-  console.log(nodeConnectionType);
-  console.log(nodeConnection);
+
   return (
     <div className="flex flex-col gap-2">
       <div>

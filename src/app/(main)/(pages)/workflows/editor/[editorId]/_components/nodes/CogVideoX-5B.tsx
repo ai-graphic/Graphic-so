@@ -19,7 +19,7 @@ const CogVideoX = (nodeConnectionType: any, title: string) => {
   const { selectedNode } = useEditor().state.editor;
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
-  console.log(nodeConnection);
+  
   const [showButtons, setShowButtons] = React.useState<boolean[]>([
     false,
     false,
@@ -40,9 +40,8 @@ const CogVideoX = (nodeConnectionType: any, title: string) => {
       prev.map((bool, index) => (index === id ? !bool : bool))
     );
   };
-  console.log(loading);
-  console.log(nodeConnectionType);
-  console.log(nodeConnection);
+  
+  
   return (
     <div className="flex flex-col gap-2">
       <div>
@@ -64,7 +63,7 @@ const CogVideoX = (nodeConnectionType: any, title: string) => {
             onChange={(event) => {
               const newValue = event.target.value;
               setselectedPrompt(newValue);
-              console.log(newValue);
+              
               if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
                 nodeConnectionType.nodeConnectionType[selectedNode.id].prompt =
                   newValue;

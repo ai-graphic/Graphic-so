@@ -19,7 +19,6 @@ export async function POST(req: Request) {
       headers: { "Content-Type": "application/json" },
     });
   }
-  console.log("prompt", prompt, "system", system, "userid", userid, "model", model, "maxTokens", maxTokens, "temperature", temperature, "tools", tools);
 
   const dbUser = await db.user.findFirst({
     where: {
@@ -47,10 +46,11 @@ export async function POST(req: Request) {
     "bing Search": createAISDKTools(bing),
     firecrawl: {
       firecrawl: tool({
-        description:
-          "scrape/get the data for a website with the url.",
+        description: "scrape/get the data for a website with the url.",
         parameters: z.object({
-          url: z.string().describe("The url to get the data for. / the url to scrape from."),
+          url: z
+            .string()
+            .describe("The url to get the data for. / the url to scrape from."),
         }),
         execute: async ({ url }) => {
           console.log("URL received by firecrawl tool:", url); // Log the URL

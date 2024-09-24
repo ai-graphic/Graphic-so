@@ -19,8 +19,6 @@ export async function POST(req: Request, res: Response) {
   try {
     const { workflowId, prompt, userid, image } = await req.json();
     let workflow = await getworkflow(workflowId);
-    console.log("workflow", workflowId, workflow);
-
     if (workflow) {
       const flowPath = JSON.parse(workflow.flowPath!);
       console.log(flowPath);
@@ -106,8 +104,7 @@ export async function POST(req: Request, res: Response) {
 
         if (nodeType == "AI") {
           const aiTemplate = JSON.parse(workflow.AiTemplate!);
-          if (aiTemplate && aiTemplate[idNode]) {
-            console.log("AI Node:", idNode);
+          if (aiTemplate[idNode]) {
             const edgesArray = JSON.parse(workflow.edges || "[]");
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
@@ -123,13 +120,16 @@ export async function POST(req: Request, res: Response) {
                   content = prmpt;
                 }
                 chatHistory.user = content;
-              }
+              } else {
+                content = prompt;
+              }  
             } else {
               let prmpt = aiTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
               if (prmpt) {
                 if (prmpt.includes(":input:")) {
                   content = prmpt.replace(":input:", latestOutputs[node.id]);
+                  console.log("Content:", content);
                 } else {
                   content = prmpt;
                 }
@@ -138,11 +138,8 @@ export async function POST(req: Request, res: Response) {
               }
             }
             if (aiTemplate[idNode].model === "vercel") {
+              console.log("Vercel Node:", idNode, content);
               try {
-                const edgesArray = JSON.parse(workflow.edges || "[]");
-                const nodeArray = JSON.parse(workflow.nodes || "[]");
-                const edge = edgesArray.find((e: any) => e.target === idNode);
-                const node = nodeArray.find((n: any) => n.id === edge.source);
                 const response = await axios.post(
                   `${process.env.NEXT_PUBLIC_URL}/api/ai/vercel`,
                   {
@@ -158,38 +155,9 @@ export async function POST(req: Request, res: Response) {
                 console.log("AI Response:", response.data);
                 const aiResponseContent = response.data;
                 latestOutputs[idNode] = aiResponseContent;
+                console.log("AI Response:", latestOutputs[idNode]);
               } catch (error) {
                 console.error("Error during vercel API call:", error);
-              } finally {
-              }
-            } else if (aiTemplate[idNode].model === "FLUX-image") {
-              try {
-                const output = await axios.post(
-                  `${process.env.NEXT_PUBLIC_URL}/api/ai/FLUX-image`,
-                  {
-                    prompt: content,
-                    userid: userid,
-                  }
-                );
-                latestOutputs[idNode] = output.data[0];
-              } catch (error) {
-                console.error("Error during Replicate API call:", error);
-              } finally {
-              }
-            } else if (aiTemplate[idNode].model === "SuperAgent") {
-              try {
-                const response = await axios.post(
-                  `${process.env.NEXT_PUBLIC_URL}/api/ai/superagent/getoutput`,
-                  {
-                    prompt: content,
-                    workflowId: aiTemplate[idNode].id,
-                    userid: userid,
-                  }
-                );
-                latestOutputs[idNode] = response.data.output;
-              } catch (error) {
-                console.error("Error during SuperAgent API call:", error);
-              } finally {
               }
             }
           }
@@ -201,7 +169,6 @@ export async function POST(req: Request, res: Response) {
             chatHistory.bot = latestOutputs[idNode];
             console.log("chatHistory", chatHistory);
           }
-          continue;
         }
         if (nodeType == "flux-dev") {
           const fluxDevTemplate = JSON.parse(workflow.fluxDevTemplate!);
@@ -222,7 +189,9 @@ export async function POST(req: Request, res: Response) {
                   content = prmpt;
                 }
                 chatHistory.user = content;
-              }
+              } else {
+                content = prompt;
+              } 
             } else {
               let prmpt = fluxDevTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -292,7 +261,9 @@ export async function POST(req: Request, res: Response) {
                   content = prmpt;
                 }
                 chatHistory.user = content;
-              }
+              } else {
+                content = prompt;
+              } 
             } else {
               let prmpt = fluxLoraTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -367,6 +338,8 @@ export async function POST(req: Request, res: Response) {
                 } else {
                   content = prmpt;
                 }
+              } else {
+                content = prompt;
               }
               if (ImageFromDb) {
                 if (ImageFromDb.includes(":image:")) {
@@ -374,6 +347,8 @@ export async function POST(req: Request, res: Response) {
                 } else {
                   Image = image;
                 }
+              } else {
+                Image = image;
               }
 
               chatHistory.user = prmpt + " - " + Image;
@@ -502,7 +477,9 @@ export async function POST(req: Request, res: Response) {
                   content = prmpt;
                 }
                 chatHistory.user = content;
-              }
+              } else {
+                content = prompt;
+              } 
             } else {
               let prmpt = falMusicTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -579,7 +556,9 @@ export async function POST(req: Request, res: Response) {
                   content = prmpt;
                 }
                 chatHistory.user = content;
-              }
+              } else {
+                content = prompt;
+              } 
             } else {
               let prmpt = TextToVoiceNode[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -699,6 +678,8 @@ export async function POST(req: Request, res: Response) {
                 } else {
                   content = prmpt;
                 }
+              } else {
+                content = prompt;
               }
               if (ImageFromDb) {
                 if (ImageFromDb.includes(":image:")) {
@@ -706,6 +687,8 @@ export async function POST(req: Request, res: Response) {
                 } else {
                   Image = image;
                 }
+              } else {
+                Image = image;
               }
 
               chatHistory.user = prmpt + " - " + Image;
@@ -781,7 +764,9 @@ export async function POST(req: Request, res: Response) {
                   content = prmpt;
                 }
                 chatHistory.user = content;
-              }
+              } else {
+                content = prompt;
+              } 
             } else {
               let prmpt = falTextToVideoTemplate[idNode]?.prompt;
               console.log("Prompt:", prmpt);
@@ -907,6 +892,8 @@ export async function POST(req: Request, res: Response) {
                 } else {
                   content = prmpt;
                 }
+              } else {
+                content = prompt;
               }
               if (ImageFromDb) {
                 if (ImageFromDb.includes(":image:")) {
@@ -914,6 +901,8 @@ export async function POST(req: Request, res: Response) {
                 } else {
                   Image = image;
                 }
+              } else {
+                Image = image;
               }
 
               chatHistory.user = prmpt + " - " + Image;
@@ -1004,6 +993,8 @@ export async function POST(req: Request, res: Response) {
                 } else {
                   content = prmpt;
                 }
+              } else {
+                content = prompt;
               }
               if (ImageFromDb) {
                 if (ImageFromDb.includes(":image:")) {
@@ -1011,6 +1002,8 @@ export async function POST(req: Request, res: Response) {
                 } else {
                   Image = image;
                 }
+              } else {
+                Image = image;
               }
 
               chatHistory.user = prmpt + " - " + Image;
@@ -1088,7 +1081,9 @@ export async function POST(req: Request, res: Response) {
                   content = prmpt;
                 }
                 chatHistory.user = content;
-              }
+              } else {
+                content = prompt;
+              } 
             } else {
               let prmpt = falGeneralTemplate[idNode]?.prompt;
               console.log("Prompt:", prmpt);
@@ -1156,7 +1151,9 @@ export async function POST(req: Request, res: Response) {
                   content = prmpt;
                 }
                 chatHistory.user = content;
-              }
+              } else {
+                content = prompt;
+              } 
             } else {
               let prmpt = falDevLoraTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -1224,7 +1221,9 @@ export async function POST(req: Request, res: Response) {
                   content = prmpt;
                 }
                 chatHistory.user = content;
-              }
+              } else {
+                content = prompt;
+              } 
             } else {
               let prmpt = falTrainTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -1288,7 +1287,9 @@ export async function POST(req: Request, res: Response) {
                   content = prmpt.trim();
                 }
                 chatHistory.user = content;
-              }
+              } else {
+                content = prompt;
+              } 
             } else {
               let prmpt = falAutoCaptionTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -1370,6 +1371,8 @@ export async function POST(req: Request, res: Response) {
                   console.log("Prompt:", prmpt);
                   content = prmpt;
                 }
+              } else {
+                content = prompt;
               }
               if (ImageFromDb) {
                 if (ImageFromDb.includes(":image:")) {
@@ -1377,6 +1380,8 @@ export async function POST(req: Request, res: Response) {
                 } else {
                   Image = image;
                 }
+              } else {
+                Image = image;
               }
 
               chatHistory.user = prmpt + " - " + Image;

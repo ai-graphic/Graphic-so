@@ -89,9 +89,6 @@ const AutoCaption = (nodeConnectionType: any, title: string) => {
       prev.map((bool, index) => (index === id ? !bool : bool))
     );
   };
-  console.log(loading);
-  console.log(nodeConnectionType);
-  console.log(nodeConnection);
   return (
     <div className="flex flex-col gap-2">
       <div>
@@ -113,7 +110,6 @@ const AutoCaption = (nodeConnectionType: any, title: string) => {
             onChange={(event) => {
               const newValue = event.target.value;
               setSelectedurl(newValue);
-              console.log(newValue);
               if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
                 nodeConnectionType.nodeConnectionType[
                   selectedNode.id

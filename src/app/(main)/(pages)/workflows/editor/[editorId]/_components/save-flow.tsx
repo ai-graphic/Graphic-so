@@ -25,7 +25,7 @@ const SaveFlow = ({ edges, nodes, setNodes, setEdges }: Props) => {
 
   const onFlowAutomation = useCallback(async () => {
     await onAutomateFlow();
-    console.log("saving flow", edges, nodes, nodeConnection.isFlow);
+    console.log("saving flow", nodeConnection.isFlow);
     const flow = await onCreateNodesEdges(
       pathname.split("/").pop()!,
       JSON.stringify(nodes),

@@ -377,7 +377,7 @@ const ActionButton = ({
         return;
       }
       setIsLoading(id, true);
-      console.log("from api", nodeConnection.dreamShaperNode[id]);
+  
       const response = await axios.post("/api/ai/replicate/dreamshaper", {
         prompt: nodeConnection.dreamShaperNode[id]?.prompt,
         userid: user?.id,
@@ -1137,7 +1137,6 @@ const ActionButton = ({
     }
   }, [nodeConnection.output, selectedNode.id]);
 
-  console.log("aiOutput", aiOutput);
   const renderActionButton = () => {
     switch (currentService) {
       case "Discord":
