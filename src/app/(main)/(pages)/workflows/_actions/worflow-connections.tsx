@@ -482,6 +482,7 @@ export const ondublicateWorkflow = async (
         createdAt: new Date().toISOString(),
         shared: share || false,
         thumbnail: url ?? existingWorkflow.thumbnail,
+        textToVoiceTemplate: existingWorkflow.textToVoiceTemplate,
       },
     });
     const message = share ? "Workflow shared" : "Workflow duplicated";
