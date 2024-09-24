@@ -36,6 +36,8 @@ const EditorCanvasIconHelper = ({ type }: Props) => {
       return <Image className="flex-shrink-0" size={30} />;
     case "stable-video":
       return <Video className="flex-shrink-0" size={30} />;
+      case "text-to-voice":
+      return <Music className="flex-shrink-0" size={30} />;
     case "sadTalker":
       return <Video className="flex-shrink-0" size={30} />;
     case "autoCaption":

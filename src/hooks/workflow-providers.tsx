@@ -93,6 +93,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               "musicGen",
               "autoCaption",
               "sadTalker",
+              "text-to-voice",
             ].includes(nodeType)
           ) {
             requiredCredits += 1;
@@ -231,17 +232,116 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
+              }
             }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+          }
+          if (nodeType == "text-to-voice") {
+            const TextToVoiceTemplate = JSON.parse(
+              workflow.textToVoiceTemplate!
+            );
+            if (TextToVoiceTemplate[idNode]) {
+              console.log("text-to-voice Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              let prompt = nodeConnection.textToVoiceNode[idNode]?.prompt;
+              console.log("Prompt:", prompt);
+              if (node.type === "Trigger") {
+                const output = nodeConnection.output;
+                const contentarr = output[node.id];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
+                content = prmpt;
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", prmpt);
+                  } else {
+                    content = prmpt;
+                  }
+                }
+                chatHistory.user = prmpt;
+              } else {
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", latestOutputs[node.id]);
+                  } else {
+                    content = prompt;
+                  }
+                } else {
+                  content = latestOutputs[node.id];
+                }
+              }
+              try {
+                setIsLoading(idNode, true);
+                const output = await axios.post(
+                  "/api/ai/elevenlabs/text-to-voice",
+                  {
+                    prompt: content,
+                    voice: TextToVoiceTemplate[idNode]?.voice,
+                    userid: workflow.userId,
+                    stability: TextToVoiceTemplate[idNode]?.stability,
+                    similarity_boost:
+                      TextToVoiceTemplate[idNode]?.similarity_boost,
+                    style: TextToVoiceTemplate[idNode]?.style,
+                  }
+                );
+                nodeConnection.setOutput((prev: any) => ({
+                  ...prev,
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    image: [...(prev.output?.[idNode]?.image || [])],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                    video: [
+                      ...(prev.output?.[idNode]?.video || []),
+                      output.data,
+                    ],
+                  },
+                }));
+                latestOutputs[idNode] = output.data;
+              } catch (error) {
+                console.error("Error during Elevenlabs API call:", error);
+              } finally {
+                setIsLoading(idNode, false);
+              }
+            }
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
+            const nextNodeType = flowPath[current + 3];
+            flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -331,17 +431,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -455,17 +555,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -505,7 +605,10 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                     content = prompt?.trim();
                   }
                 } else {
-                  content = typeof latestOutputs[node.id] === 'string' ? latestOutputs[node.id].trim() : latestOutputs[node.id];
+                  content =
+                    typeof latestOutputs[node.id] === "string"
+                      ? latestOutputs[node.id].trim()
+                      : latestOutputs[node.id];
                 }
               }
               try {
@@ -567,17 +670,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -617,7 +720,7 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
                 }
                 if (ImageFromDb) {
                   if (ImageFromDb.includes(":image:")) {
-                    Image =  ImageFromDb.replace(":image:", image);
+                    Image = ImageFromDb.replace(":image:", image);
                   } else {
                     Image = image;
                   }
@@ -696,17 +799,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -772,17 +875,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -904,17 +1007,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -1001,17 +1104,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -1202,17 +1305,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -1327,17 +1430,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -1452,17 +1555,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -1535,17 +1638,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }
@@ -1619,17 +1722,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
             if (isNextNotAI) {
               chatHistory.bot = latestOutputs[idNode];
               console.log("chatHistory", chatHistory);
-            }
-            if (chatHistory.user && chatHistory.bot) {
-              const published = await onUpdateChatHistory(
-                workflowId,
-                chatHistory
-              );
-              const history = published?.map((item: string) =>
-                JSON.parse(item)
-              );
-              if (setHistory) {
-                setHistory(history);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
               }
             }
           }

@@ -264,6 +264,18 @@ export type ConnectionProviderProps = {
       output_transcript: boolean;
     };
   };
+  textToVoiceNode: {
+    [id: string]: {
+      id: string;
+      prompt: string;
+      voice: string;
+      model_id: string;
+      stability: number;
+      similarity_boost  : number;
+      style : number;
+    };
+  };
+  setTextToVoiceNode: React.Dispatch<React.SetStateAction<any>>;
   setTalkerNode: React.Dispatch<React.SetStateAction<any>>;
   setAutocaptionNode: React.Dispatch<React.SetStateAction<any>>;
   setvideoToVideoNode: React.Dispatch<React.SetStateAction<any>>;
@@ -400,6 +412,8 @@ const InitialValues: ConnectionProviderProps = {
   lunalabsTextToVideoNode: {},
   sadTalkerNode: {},
   autocaptionNode: {},
+  textToVoiceNode: {},
+  setTextToVoiceNode: () => undefined,
   setTalkerNode: () => undefined,
   setAutocaptionNode: () => undefined,
   setvideoToVideoNode: () => undefined,
@@ -516,6 +530,11 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [autocaptionNode, setAutocaptionNode] = useState(
     InitialValues.autocaptionNode
   );
+  const [textToVoiceNode, setTextToVoiceNode] = useState(
+    InitialValues.textToVoiceNode
+  );
+
+
   const addAINode = (id: string, type: string) => {
     if (type === "AI") {
       setAINode((prev) => ({
@@ -764,8 +783,21 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           output_transcript: true,
         },
       }));
-    }
+    } else if (type === "text-to-voice") {
+      setTextToVoiceNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          prompt: "",
+          voice: "Rachel",
+          model_id: "eleven_multilingual_v2",
+          stability: 0.1,
+          similarity_boost: 0.2,
+          style: 0.3,
+        },
+      }));
   };
+}
 
   const values = {
     discordNode,
@@ -824,6 +856,8 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     setTalkerNode,
     autocaptionNode,
     setAutocaptionNode,
+    textToVoiceNode,
+    setTextToVoiceNode,
   };
 
   return <Provider value={values}>{children}</Provider>;

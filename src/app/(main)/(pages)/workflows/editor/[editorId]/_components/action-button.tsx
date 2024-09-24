@@ -811,6 +811,38 @@ const ActionButton = ({
       setIsLoading(id, false);
     }
   }, []);
+
+  const onTextToVideo = useCallback(async (id: string, nodeConnection: any) => {
+    try {
+      if (Number(credits) < 1) {
+        toast.error("Insufficient credits");
+        return;
+      }
+      setIsLoading(id, true);
+      const response = await axios.post("/api/ai/elevenlabs/text-to-voice", {
+        prompt: nodeConnection.textToVoiceNode[id]?.prompt,
+        voice: nodeConnection.textToVoiceNode[id]?.voice,
+        userid: user?.id,
+        stability: nodeConnection.textToVoiceNode[id]?.stability,
+        similarity_boost: nodeConnection.textToVoiceNode[id]?.similarity_boost,
+        style: nodeConnection.textToVoiceNode[id]?.style,
+      });
+      nodeConnection.setOutput((prev: any) => ({
+        ...prev,
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || [])],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || []), response.data],
+        },
+      }));
+      setCredits((prev) => (Number(prev) - 1).toString());
+    } catch (error) {
+      console.error("Error during Text to Video API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, []);
   // ...
   const onCreateLocalNodeTempate = useCallback(
     async (currentService: any) => {
@@ -1019,6 +1051,19 @@ const ActionButton = ({
 
       if (currentService === "autoCaption") {
         const aiNodeAsString = JSON.stringify(nodeConnection.autocaptionNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
+
+        if (response) {
+          toast.message(response);
+        }
+      }
+
+      if (currentService === "text-to-voice") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.textToVoiceNode);
         const response = await onCreateNodeTemplate(
           aiNodeAsString,
           currentService,
@@ -1689,6 +1734,38 @@ const ActionButton = ({
             <Button
               variant="outline"
               onClick={() => onSadTalker(selectedNode.id, nodeConnection)}
+            >
+              Test
+            </Button>
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
+              Save {currentService} Template
+            </Button>
+          </>
+        );
+      case "text-to-voice":
+        return (
+          <>
+            {nodeConnection.textToVoiceNode[selectedNode.id] &&
+              aiOutput.video.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.video.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <audio
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                        controls
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onTextToVideo(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>

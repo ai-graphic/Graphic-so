@@ -372,6 +372,25 @@ export const onSadTalkerContent = (
   }));
 }
 
+export const onTextToVoiceContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+
+  const [id, key] = finalcontent.split(".");
+  nodeConnection.setTextToVoiceNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+}
+
 export const onContentChange = (
   state: EditorState,
   nodeConnection: ConnectionProviderProps,
@@ -420,6 +439,8 @@ export const onContentChange = (
   }
   else if (nodeType === "sadTalker") {
     onSadTalkerContent(state, nodeConnection, event, content);
+  } else if (nodeType === "text-to-voice") {
+    onTextToVoiceContent(state, nodeConnection, event, content);
   }
 };
 

@@ -241,6 +241,7 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
       "image-to-image": CanvasCardSingle,
       "flux-lora": CanvasCardSingle,
       "stable-video": CanvasCardSingle,
+      "text-to-voice": CanvasCardSingle,
       "CogVideoX-5B": CanvasCardSingle,
       "autoCaption": CanvasCardSingle,
       "sadTalker" : CanvasCardSingle,

@@ -550,6 +550,36 @@ const Page = (props: Props) => {
             }
           });
         }
+        if (workflow?.textToVoiceTemplate) {
+          const textToVoice = workflow.textToVoiceTemplate
+            ? JSON.parse(workflow.textToVoiceTemplate)
+            : {};
+          Object.keys(textToVoice).forEach((nodeId) => {
+            const nodeData = textToVoice[nodeId];
+            if (!textToVoice[nodeId]) {
+              nodeConnection.textToVoiceNode[nodeId] = {
+                id: nodeId,
+                prompt: "",
+                model_id: "eleven_multilingual_v2",
+                voice: "Rachel",
+                stability: 0.1,
+                similarity_boost: 0.3,
+                style: 0.2,
+              };
+            } else {
+              nodeConnection.textToVoiceNode[nodeId] = {
+                ...nodeConnection.textToVoiceNode[nodeId],
+                prompt: nodeData.prompt,
+                model_id: nodeData.model_id,
+                voice: nodeData.voice,
+                stability: nodeData.stability,
+                similarity_boost: nodeData.similarity_boost,
+                style: nodeData.style,
+              };
+            }
+          });
+        }
+
         if (workflow?.AiTemplate) {
           const aiTemplate = workflow.AiTemplate
             ? JSON.parse(workflow.AiTemplate)

@@ -170,6 +170,20 @@ export const onCreateNodeTemplate = async (
       return "stable-video template saved";
     }
   }
+  if (type === "text-to-voice") {
+    const response = await db.workflows.update({
+      where: {
+        id: workflowId,
+      },
+      data: {
+        textToVoiceTemplate: content,
+      },
+    });
+
+    if (response) {
+      return "text-to-voice template saved";
+    }
+  }
   if (type === "sadTalker") {
     const response = await db.workflows.update({
       where: {

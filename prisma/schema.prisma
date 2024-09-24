@@ -132,6 +132,7 @@ model Workflows {
   lunalabsImageToVideoTemplate   String?
   lunalabsTextToVideoTemplate    String?
   sadTalkerTemplate              String?
+  textToVoiceTemplate            String?
   autoCaptionTemplate            String?
   PublicChatHistory              String[]
 }

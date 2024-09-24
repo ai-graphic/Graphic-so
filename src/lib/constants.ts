@@ -314,6 +314,10 @@ export const EditorCanvasDefaultCardTypes = {
     description: "Generate stable videos using AI techniques.",
     type: "Action",
   },
+  "text-to-voice": {
+    description: "Convert text to voice using elevenLabs AI models.",
+    type: "Action",
+  },
   "autoCaption" : {
     description: "Generate captions for videos using AI models.",
     type: "Action",

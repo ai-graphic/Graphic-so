@@ -124,6 +124,7 @@ const Chat = () => {
             "musicGen",
             "sadTalker",
             "autoCaption",
+            "text-to-voice",
           ].includes(nodeType)
         ) {
           requiredCredits += 1;

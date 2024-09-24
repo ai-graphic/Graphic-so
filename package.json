@@ -44,6 +44,7 @@
     "cloudinary": "^2.4.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "elevenlabs": "^0.16.0",
     "framer-motion": "^11.2.6",
     "googleapis": "^137.1.0",
     "lucide-react": "^0.379.0",

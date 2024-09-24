@@ -55,7 +55,8 @@ export type EditorCanvasTypes =
   | "lumalabs-ImageToVideo"
   | "lumalabs-TextToVideo"
   | "autoCaption"
-  | "sadTalker";
+  | "sadTalker"
+  | "text-to-voice";
 
 export type EditorCanvasCardType = {
   title: string;
@@ -129,6 +130,7 @@ export const nodeMapper: Record<string, string> = {
   "lumalabs-TextToVideo": "lunalabsTextToVideoNode",
   autoCaption: "autocaptionNode",
   sadTalker: "sadTalkerNode",
+  "text-to-voice": "textToVoiceNode",
 };
 
 export type Option = {

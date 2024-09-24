@@ -36,6 +36,7 @@ import ImageToVideo from "./nodes/lumalabs-img-video";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import AutoCaption from "./nodes/autocaption";
 import SadTalker from "./nodes/SadTalker";
+import TextToVoice from "./nodes/text-to-voice";
 
 export interface Option {
   value: string;
@@ -511,6 +512,12 @@ console.log(nodeConnectionType)
               )}
               {title === "stable-video" && (
                 <StableVideo
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+              {title === "text-to-voice" && (
+                <TextToVoice
                   nodeConnectionType={nodeConnectionType}
                   title={title}
                 />

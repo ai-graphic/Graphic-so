@@ -76,6 +76,7 @@ graphic.so activates the designated actions in the connected services to facilit
 | DreamShaper            | Action         | Active | Generate a new image from an input image with DreamShaper V6.                  |
 | Flux General           | Action         | Active | Generate stable images with FLUX.1 [dev], next generation text-to-image model. |
 | Flux Dev LoRA          | Action         | Active | FLUX.1-Dev Multi LoRA Explorer.                                                |
+| Text-to-Voice          | Action         | Active | Text to video model by elevenlabs which can convert text to audio.             |
 | Google Calendar        | Action         | Active | Create a calendar invite.                                                      |
 | Custom Webhook         | Action         | Active | Connect any app that has an API key and send data to your application.         |
 | Trigger                | Trigger        | Active | An event that starts the workflow.                                             |
@@ -104,6 +105,7 @@ This project utilizes a range of technologies including Next.js, React, Tailwind
   - `@notionhq/client`
   - `lumaai`
   - `replicate`
+  - `elevenlabs`
 
 - **UI & Components**
 
