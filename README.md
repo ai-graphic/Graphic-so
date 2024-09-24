@@ -149,7 +149,13 @@ To set up and run graphic.so locally, follow these detailed steps:
    - Initialize your database schema: `npx prisma generate`.
    - Push the schema to your database: `npx prisma db push`.
 
-4. **Start the Development Server**:
+4. **Setup ngrok**:
+
+   - Run ngrok to expose your local development server: `ngrok http http://localhost:3000`.
+   - Copy the HTTPS URL provided by ngrok. This URL will be used as the webhook URL in Clerk.
+   - Configure the webhook URL in your Clerk settings to the ngrok HTTPS URL while turning `user.created` and `user.updated` options on.
+
+5. **Start the Development Server**:
    - Launch the development server with `npm run dev`.
    - Open your web browser and visit `http://localhost:3000` to see the application in action.
 
