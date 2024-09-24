@@ -10,3 +10,8 @@ export const nanoid = customAlphabet(
   '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
   7
 ) // 7-character random string
+
+export const isValidUrl = (url: string | null): boolean =>  {
+  return !!url && /^(https?:\/\/)/.test(url);
+}
+

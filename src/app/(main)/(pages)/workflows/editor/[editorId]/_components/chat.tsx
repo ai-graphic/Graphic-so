@@ -32,6 +32,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { UserButton } from "@clerk/nextjs";
+import ContentOptions from "./ContentOptions";
+import ContentViewer from "./ContentViewer";
 
 interface ChatHistoryItem {
   user: string;
@@ -197,95 +199,12 @@ const Chat = () => {
                   {item.bot && (
                     <div className="flex justify-start items-end">
                       <div className="relative p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
-                        {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(
-                          item.bot
-                        ) ? (
-                          <img src={item.bot} width={200} alt="bot" />
-                        ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(item.bot) ? (
-                          <video
-                            src={item.bot}
-                            controls
-                            width="320"
-                            height="240"
-                            autoPlay
-                          />
-                        ) : /https?:\/\/.*\.(?:mp3)/.test(item.bot) ? (
-                          <audio src={item.bot} controls />
-                        ) : (
-                          <p>{item.bot}</p>
-                        )}
+                        <ContentViewer url={item.bot} />
                         {item.user && (
-                          <Dialog>
-                            <DialogTrigger className="dark:bg-[#0A0A0A] bg-gray-200 dark:text-gray-600 dark:hover:text-blue-400 p-2 m-1 rounded-l-xl rounded-b-none absolute bottom-0 right-0">
-                              <HistoryIcon size={20} />
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Workflow History</DialogTitle>
-                                <DialogDescription>
-                                  <div className="mt-2 p-2 h-[80vh] overflow-scroll border-t border-gray-300">
-                                    <div className="mb-4 flex gap-2 ">
-                                      <strong>
-                                        <UserButton />
-                                      </strong>{" "}
-                                      <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 ">
-                                        {item.user}
-                                      </div>
-                                    </div>
-                                    <div className="flex gap-2">
-                                      <strong>
-                                        <BotIcon />
-                                      </strong>
-                                      <div>
-                                        {item.history?.map(
-                                          (historyItem, historyIndex) => (
-                                            <div
-                                              key={historyIndex}
-                                              className="flex justify-start mb-2"
-                                            >
-                                              <div className="p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs  ">
-                                                {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(
-                                                  historyItem
-                                                ) ? (
-                                                  <img
-                                                    src={historyItem}
-                                                    width={200}
-                                                    alt="bot"
-                                                    className="rounded-lg"
-                                                  />
-                                                ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(
-                                                    historyItem
-                                                  ) ? (
-                                                  <video
-                                                    src={historyItem}
-                                                    controls
-                                                    width="320"
-                                                    height="240"
-                                                    autoPlay
-                                                    className="rounded-lg"
-                                                  />
-                                                ) : /https?:\/\/.*\.(?:mp3)/.test(
-                                                    historyItem
-                                                  ) ? (
-                                                  <audio
-                                                    src={historyItem}
-                                                    controls
-                                                    className="w-full"
-                                                  />
-                                                ) : (
-                                                  <p>{historyItem}</p>
-                                                )}
-                                              </div>
-                                            </div>
-                                          )
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </DialogDescription>
-                              </DialogHeader>
-                            </DialogContent>
-                          </Dialog>
+                          <ContentOptions
+                            bot={item.bot}
+                            history={item.history}
+                          />
                         )}
                       </div>
                     </div>
