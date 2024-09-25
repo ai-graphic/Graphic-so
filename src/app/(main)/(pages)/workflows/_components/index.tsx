@@ -10,7 +10,13 @@ const Workflows = async (props: Props) => {
       <section className="flex flex-col m-2">
         <MoreCredits />
         {workflows?.length ? (
-          workflows.map((flow) => <Workflow key={flow.id} {...flow} />)
+          workflows
+          .sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return dateB - dateA;
+          })
+            .map((flow) => <Workflow key={flow.id} {...flow} />)
         ) : (
           <div className="mt-28 text-muted-foreground flex items-center justify-center">
             No workflows yet? Start orchestrating your business automation by
