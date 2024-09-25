@@ -2,7 +2,9 @@
 
 ## Overview 🔭
 
-**graphic.so** is a no-code automation platform that enables users to effortlessly build multi-media workflows by combining AI nodes like OpenAI, Claude, and Flux, lumalabs, stabel-diffusion, etc.
+**graphic.so** is a no-code automation platform that enables users to effortlessly chain text, image, video and audio ai workflows by combining nodes like OpenAI, Claude, and Flux, lumalabs, stabel-diffusion, etc.
+
+
 
 ### key-features ⚡
 
