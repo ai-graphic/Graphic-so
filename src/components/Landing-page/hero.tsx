@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { PlusIcon, Twitter } from "lucide-react";
+import { Github, PlusIcon, Twitter } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "../ui/button";
@@ -38,6 +38,7 @@ export function Hero({ children }: { children?: React.ReactNode }) {
       <div className="flex mt-4 mb-4 space-x-4">
         <Button variant="secondary" asChild>
           <Link
+          target="_blank"
             href="https://discord.gg/WyMzrAAjvU"
             className="flex items-center text-black"
           >
@@ -45,15 +46,24 @@ export function Hero({ children }: { children?: React.ReactNode }) {
             Join Discord
           </Link>
         </Button>
-        <a
+        <Link
           href="https://x.com/seshubon"
           target="_blank"
           rel="noreferrer"
-          className="flex items-center"
+          className="flex items-center dark:hover:text-gray-400"
         >
           <Twitter className="size-4 mr-1" />
           updates
-        </a>
+        </Link>
+        <Link
+          href="https://github.com/ai-graphic/Graphic-so"
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center dark:hover:text-gray-400"
+        >
+          <Github className="size-4 mr-1" />
+          Github
+        </Link>
       </div>
       <div className="w-fit max-sm:hidden">{children}</div>
     </div>
