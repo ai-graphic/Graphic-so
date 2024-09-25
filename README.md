@@ -12,19 +12,6 @@
 - **User-Friendly Interface**: A clean, intuitive interface that makes automation accessible to everyone.
 
 
-## Table of Contents
-
-- [Demo Pictures](#demo-pics)
-- [Key Features](#key-features-)
-- [How It Works](#how-it-works-)
-- [Setting Up Your First Workflow](#setting-up-your-first-workflow-)
-- [Current Integrations & Planned](#current-integrations--planned-)
-- [Technologies Used](#technologies-used)
-- [How to Run](#how-to-run)
-- [Contributing](#contributing)
-- [Development Status](#development-status-)
-- [License](#license)
-
 ## demo-pics
 
 ![Demo Image 2](https://res.cloudinary.com/dqougmpti/image/upload/v1727086072/g03lcy6oxbzpjnwv42zm.png)
@@ -33,7 +20,16 @@
 
 ![Demo Image 4](https://res.cloudinary.com/dqougmpti/image/upload/v1727086071/ewvjl0dty0dga1sreh6j.png)
 
+## Table of Contents
 
+- [How It Works](#how-it-works-)
+- [Setting Up Your First Workflow](#setting-up-your-first-workflow-)
+- [Current Integrations & Planned](#current-integrations--planned-)
+- [Technologies Used](#technologies-used)
+- [How to Run](#how-to-run)
+- [Contributing](#contributing)
+- [Development Status](#development-status-)
+- [License](#license)
 
 ### How It Works ✅
 
