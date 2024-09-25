@@ -31,9 +31,7 @@ export function Hero({ children }: { children?: React.ReactNode }) {
           <SupabaseIcon className="hidden md:block size-4" />
         </div>
         <p className="mt-2 text-center md:text-left text-muted-foreground text-sm md:text-base px-2">
-          Streamline complex workflows in marketing, sales, operations, and IT
-          with a powerful, no-code platform. Leverage AI technologies to make
-          automation more accessible and cost-effective.
+          Graphic.so is a Multi Modal Ai Playground ​to build your AI apps and automations 10x faster with Natural Language interface
         </p>
       </div>
      
