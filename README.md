@@ -2,7 +2,15 @@
 
 ## Overview 🔭
 
-**graphic.so** is an advanced no-code automation platform that simplifies complex workflows through seamless AI integration. It enables users to effortlessly build sophisticated automation systems by combining AI models like OpenAI, Claude, and Flux, thereby boosting efficiency and productivity in diverse applications.
+**graphic.so** is a no-code automation platform that enables users to effortlessly build multi-media workflows by combining AI nodes like OpenAI, Claude, and Flux, lumalabs, stabel-diffusion, etc.
+
+### key-features ⚡
+
+- **No-Code Tool**: Easily create complex automations without writing a single line of code.
+- **AI Integration**: Seamlessly integrate with many AI models to enhance functionality.
+- **Customizable Workflows**: Tailor workflows to meet the specific needs of your processes.
+- **User-Friendly Interface**: A clean, intuitive interface that makes automation accessible to everyone.
+
 
 ## Table of Contents
 
@@ -25,12 +33,7 @@
 
 ![Demo Image 4](https://res.cloudinary.com/dqougmpti/image/upload/v1727086071/ewvjl0dty0dga1sreh6j.png)
 
-### key-features ⚡
 
-- **No-Code Tool**: Easily create complex automations without writing a single line of code.
-- **AI Integration**: Seamlessly integrate with AI technologies to enhance functionality.
-- **Customizable Workflows**: Tailor workflows to meet the specific needs of your processes.
-- **User-Friendly Interface**: A clean, intuitive interface that makes automation accessible to everyone.
 
 ### How It Works ✅
 
