@@ -208,6 +208,7 @@ const Chat = () => {
                           <ContentOptions
                             bot={item.bot}
                             history={item.history ?? []}
+                            pathname={pathname.split("/").pop()!}
                           />
                         )}
                       </div>

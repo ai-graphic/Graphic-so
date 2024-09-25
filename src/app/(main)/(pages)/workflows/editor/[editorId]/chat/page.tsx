@@ -341,6 +341,7 @@ const Chat = () => {
                           <ContentOptions
                             bot={item.bot}
                             history={item.history ?? []}
+                            pathname={pathname.split("/").slice(-2, -1)[0]}
                           />
                         </div>
                         <p className="text-gray-600 text-sm">

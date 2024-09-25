@@ -47,12 +47,12 @@ export default async function Home() {
   const filteredFeaturedData = data
     .filter((product) => product.featured)
     .sort(
-      (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
+      (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
     );
   const PublishedData = data
     .filter((product) => (product.publish === true))
     .sort(
-      (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime()
+      (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
     );
   const sharedData = PublishedData.filter((product) => product.shared).sort(
     (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()

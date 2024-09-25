@@ -16,10 +16,10 @@ import { usePathname } from "next/navigation";
 type Props = {
   bot: string;
   history: string[];
+  pathname: string
 };
 
-const ContentOptions = ({ bot, history }: Props) => {
-  const pathname = usePathname();
+const ContentOptions = ({ bot, history, pathname }: Props) => {
   const [showDialog, setShowDialog] = useState<string | null>(null);
   const [selectedUrl, setSelectedUrl] = useState<string | null>("");
 
@@ -96,7 +96,7 @@ const ContentOptions = ({ bot, history }: Props) => {
               <DialogDescription>
                 <p>Share this workflow with others!</p>
                 <ShareWorkflow
-                  id={pathname.split("/").slice(-2, -1)[0]}
+                  id={pathname}
                   url={selectedUrl}
                 />
               </DialogDescription>
