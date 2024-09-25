@@ -15,7 +15,7 @@ export async function POST(req: Request, res: Response) {
       loop,
     } = await req.json();
 
-    if (!userid || !prompt) {
+    if (!userid || !prompt || !start_frame_url) {
       return new Response("API key and prompt is required", {
         status: 400,
         headers: { "Content-Type": "application/json" },
@@ -38,23 +38,36 @@ export async function POST(req: Request, res: Response) {
       authToken: process.env.LUMAAI_API_KEY,
     });
 
+    console.log("Flux input :", {
+      prompt,
+      start_frame_url,
+      end_frame_url,
+      aspect_ratio,
+      loop,
+    });
+    const loopValue = loop === "on" ? true : false;
+    const data: any = {
+      aspect_ratio: aspect_ratio || "16:9",
+      prompt: prompt,
+      keyframes: {
+        frame0: {
+          type: "image",
+          url: start_frame_url,
+        },
+      },
+      loop: loopValue || false,
+    };
+
+    if (end_frame_url) {
+      data.keyframes.frame1 = {
+        type: "image",
+        url: end_frame_url,
+      };
+    }
+
     let generation = await client.generations
       .create({
-        aspect_ratio: aspect_ratio || "16:9",
-        prompt: prompt,
-        keyframes: {
-          frame0: {
-            type: "image",
-            url: start_frame_url,
-          },
-          ...(end_frame_url && end_frame_url != "" && {
-            frame1: {
-              type: "image",
-              url: end_frame_url,
-            },
-          }),
-        },
-        loop: loop || false,
+        ...data,
       })
       .catch(async (err) => {
         if (err instanceof LumaAI.APIError) {
@@ -65,7 +78,7 @@ export async function POST(req: Request, res: Response) {
           throw err;
         }
       });
-      console.log("Flux output :", generation);
+    console.log("Flux output :", generation);
 
     while (
       generation &&
@@ -80,7 +93,8 @@ export async function POST(req: Request, res: Response) {
       console.log("Polling generation state:", generation.state);
 
       if (generation.state === "failed") {
-        return new Response("Generation failed", {
+        console.error("Generation failed:", generation.failure_reason);
+        return new Response(generation.failure_reason, {
           status: 500,
           headers: { "Content-Type": "application/json" },
         });
@@ -107,7 +121,7 @@ export async function POST(req: Request, res: Response) {
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET,
-      secure: true, 
+      secure: true,
     });
 
     console.log("result", generation);

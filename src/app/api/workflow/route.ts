@@ -712,13 +712,14 @@ export async function POST(req: Request, res: Response) {
                 content = Prompt || "";
               }
             }
+            console.log("Content:", content, Image);
             try {
               const output = await axios.post(
                 `${process.env.NEXT_PUBLIC_URL}/api/ai/lunalabs/image-video`,
                 {
                   prompt: content,
                   userid: userid,
-                  start_frame_url: image,
+                  start_frame_url: Image,
                   end_frame_url: falImageToVideoTemplate[idNode].end_frame_url,
                   aspect_ratio: falImageToVideoTemplate[idNode].aspect_ratio,
                   loop: falImageToVideoTemplate[idNode].loop,
