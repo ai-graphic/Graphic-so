@@ -204,7 +204,7 @@ const Chat = () => {
                       <div className="relative p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
                         <ContentViewer url={item.bot} />
                         <ContentOptions
-                          bot={item.bot[0]}
+                          bot={item.bot}
                           history={item.history ?? []}
                           pathname={pathname.split("/").pop()!}
                         />
