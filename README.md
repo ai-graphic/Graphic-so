@@ -9,7 +9,7 @@
 ### key-features ⚡
 
 - **No-Code Tool**: Easily create complex automations without writing a single line of code.
-- **AI Integration**: Seamlessly integrate with many AI models to enhance functionality.
+- **AI Integration**: Seamlessly integrate with multi modal AI to enhance functionality.
 - **Customizable Workflows**: Tailor workflows to meet the specific needs of your processes.
 - **User-Friendly Interface**: A clean, intuitive interface that makes automation accessible to everyone.
 
