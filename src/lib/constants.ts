@@ -1,6 +1,11 @@
-
 import { Connection } from "@/lib/types";
-import { CreditCard, HomeIcon, SettingsIcon, SparkleIcon, Workflow } from "lucide-react";
+import {
+  CreditCard,
+  HomeIcon,
+  SettingsIcon,
+  SparkleIcon,
+  Workflow,
+} from "lucide-react";
 
 export const clients = [...new Array(10)].map((client, index) => ({
   href: `/${index + 1}.png`,
@@ -21,173 +26,173 @@ export const LLMS = [
 ];
 
 export const ToolType = [
-    {
-      value: "ALGOLIA",
-      title: "Algolia Index",
-      metadata: [
-        {
-          key: "index",
-          type: "input",
-          label: "Algolia Index",
+  {
+    value: "ALGOLIA",
+    title: "Algolia Index",
+    metadata: [
+      {
+        key: "index",
+        type: "input",
+        label: "Algolia Index",
+      },
+      {
+        key: "appId",
+        type: "input",
+        label: "Algolia App ID",
+      },
+      {
+        key: "apiKey",
+        type: "password",
+        label: "Algolia API Key",
+      },
+    ],
+  },
+  {
+    value: "BING_SEARCH",
+    title: "Bing Search",
+    metadata: [
+      {
+        key: "bingSearchUrl",
+        type: "input",
+        label: "Bing Search URL",
+      },
+      {
+        key: "bingSubscriptionKey",
+        type: "input",
+        label: "Bing Subscription Key",
+      },
+    ],
+  },
+  {
+    value: "METAPHOR",
+    title: "Metaphor Search",
+    metadata: [
+      {
+        key: "metaphorApiKey",
+        type: "input",
+        label: "Metaphor API Key",
+      },
+    ],
+  },
+  {
+    value: "CHATGPT_PLUGIN",
+    title: "ChatGPT plugin",
+    metadata: [
+      {
+        key: "chatgptPluginURL",
+        type: "input",
+        label: "Plugin manifest url",
+      },
+    ],
+  },
+  {
+    value: "REPLICATE",
+    title: "Replicate",
+    metadata: [
+      {
+        key: "model",
+        type: "input",
+        label: "Model",
+      },
+      {
+        key: "apiKey",
+        type: "input",
+        label: "Replicate API key",
+      },
+      {
+        key: "arguments",
+        type: "json",
+        label: "Other arguments",
+      },
+    ],
+  },
+  {
+    value: "SCRAPER",
+    title: "Web extractor",
+    metadata: [
+      {
+        key: "apiKey",
+        type: "input",
+        label: "Replicate API key",
+      },
+    ],
+  },
+  {
+    value: "ADVANCED_SCRAPER",
+    title: "Advanced Web extractor",
+    metadata: [
+      {
+        key: "apiKey",
+        type: "input",
+        label: "Replicate API key",
+      },
+    ],
+  },
+  {
+    value: "GOOGLE_SEARCH",
+    title: "Google search",
+    metadata: [
+      {
+        key: "apiKey",
+        type: "input",
+        label: "Google search api key",
+      },
+    ],
+  },
+  {
+    value: "HTTP",
+    title: "API Request",
+    metadata: [
+      {
+        key: "headers",
+        type: "json",
+        label: "Headers",
+      },
+    ],
+  },
+  {
+    value: "PUBMED",
+    title: "PubMed",
+    metadata: [],
+  },
+  {
+    value: "CODE_EXECUTOR",
+    title: "Code interpreter (alpha)",
+    metadata: [],
+  },
+  {
+    value: "BROWSER",
+    title: "Browser",
+    metadata: [],
+  },
+  {
+    value: "HAND_OFF",
+    title: "Human hand-off (Alpha)",
+    metadata: [],
+  },
+  {
+    value: "FUNCTION",
+    title: "Function",
+    metadata: [
+      {
+        key: "functionName",
+        type: "input",
+        label: "Function name",
+        helpText: "Use lowercase letters, ex: get_article",
+      },
+      {
+        key: "args",
+        type: "json",
+        label: "Arguments",
+        helpText: "Add function arguments in the following format",
+        json: {
+          title: { type: "string", description: "Article title" },
+          url: { type: "string", description: "The url of the article" },
         },
-        {
-          key: "appId",
-          type: "input",
-          label: "Algolia App ID",
-        },
-        {
-          key: "apiKey",
-          type: "password",
-          label: "Algolia API Key",
-        },
-      ],
-    },
-    {
-      value: "BING_SEARCH",
-      title: "Bing Search",
-      metadata: [
-        {
-          key: "bingSearchUrl",
-          type: "input",
-          label: "Bing Search URL",
-        },
-        {
-          key: "bingSubscriptionKey",
-          type: "input",
-          label: "Bing Subscription Key",
-        },
-      ],
-    },
-    {
-      value: "METAPHOR",
-      title: "Metaphor Search",
-      metadata: [
-        {
-          key: "metaphorApiKey",
-          type: "input",
-          label: "Metaphor API Key",
-        },
-      ],
-    },
-    {
-      value: "CHATGPT_PLUGIN",
-      title: "ChatGPT plugin",
-      metadata: [
-        {
-          key: "chatgptPluginURL",
-          type: "input",
-          label: "Plugin manifest url",
-        },
-      ],
-    },
-    {
-      value: "REPLICATE",
-      title: "Replicate",
-      metadata: [
-        {
-          key: "model",
-          type: "input",
-          label: "Model",
-        },
-        {
-          key: "apiKey",
-          type: "input",
-          label: "Replicate API key",
-        },
-        {
-          key: "arguments",
-          type: "json",
-          label: "Other arguments",
-        },
-      ],
-    },
-    {
-      value: "SCRAPER",
-      title: "Web extractor",
-      metadata: [
-        {
-          key: "apiKey",
-          type: "input",
-          label: "Replicate API key",
-        },
-      ],
-    },
-    {
-      value: "ADVANCED_SCRAPER",
-      title: "Advanced Web extractor",
-      metadata: [
-        {
-          key: "apiKey",
-          type: "input",
-          label: "Replicate API key",
-        },
-      ],
-    },
-    {
-      value: "GOOGLE_SEARCH",
-      title: "Google search",
-      metadata: [
-        {
-          key: "apiKey",
-          type: "input",
-          label: "Google search api key",
-        },
-      ],
-    },
-    {
-      value: "HTTP",
-      title: "API Request",
-      metadata: [
-        {
-          key: "headers",
-          type: "json",
-          label: "Headers",
-        },
-      ],
-    },
-    {
-      value: "PUBMED",
-      title: "PubMed",
-      metadata: [],
-    },
-    {
-      value: "CODE_EXECUTOR",
-      title: "Code interpreter (alpha)",
-      metadata: [],
-    },
-    {
-      value: "BROWSER",
-      title: "Browser",
-      metadata: [],
-    },
-    {
-      value: "HAND_OFF",
-      title: "Human hand-off (Alpha)",
-      metadata: [],
-    },
-    {
-      value: "FUNCTION",
-      title: "Function",
-      metadata: [
-        {
-          key: "functionName",
-          type: "input",
-          label: "Function name",
-          helpText: "Use lowercase letters, ex: get_article",
-        },
-        {
-          key: "args",
-          type: "json",
-          label: "Arguments",
-          helpText: "Add function arguments in the following format",
-          json: {
-            title: { type: "string", description: "Article title" },
-            url: { type: "string", description: "The url of the article" },
-          },
-        },
-        ],
-    },
-]
+      },
+    ],
+  },
+];
 
 export const products = [
   {
@@ -318,15 +323,15 @@ export const EditorCanvasDefaultCardTypes = {
     description: "Convert text to voice using elevenLabs AI models.",
     type: "Action",
   },
-  "autoCaption" : {
+  autoCaption: {
     description: "Generate captions for videos using AI models.",
     type: "Action",
   },
-  "sadTalker" : {
+  sadTalker: {
     description: "Generate Video with images and audio files using AI models.",
     type: "Action",
   },
-  "musicGen": {
+  musicGen: {
     description: "Generate music using Meta Music-Gen models.",
     type: "Action",
   },
@@ -350,15 +355,17 @@ export const EditorCanvasDefaultCardTypes = {
     description: "Create images of a given character in different poses.",
     type: "Action",
   },
-  "dreamShaper": {
-    description: "Generate a new image from an input image with DreamShaper V6.",
+  dreamShaper: {
+    description:
+      "Generate a new image from an input image with DreamShaper V6.",
     type: "Action",
   },
-  "fluxGeneral": {
-    description: "Generate stable images with FLUX.1 [dev], next generation text-to-image model.",
+  fluxGeneral: {
+    description:
+      "Generate stable images with FLUX.1 [dev], next generation text-to-image model.",
     type: "Action",
   },
-  "fluxDevLora": {
+  fluxDevLora: {
     description: "FLUX.1-Dev Multi LoRA Explorer.",
     type: "Action",
   },
@@ -423,3 +430,28 @@ export const CONNECTIONS: Connection[] = [
     slackSpecial: true,
   },
 ];
+
+export const creditsRequired = {
+  "text-to-voice": 1,
+  "image-to-video": 10,
+  "text-to-video": 10,
+  "video-to-video": 10,
+  "lumalabs-ImageToVideo": 10,
+  "lumalabs-TextToVideo": 10,
+  "consistent-character": 1,
+  dreamShaper: 1,
+  fluxGeneral: 1,
+  fluxDevLora: 1,
+  "Google Calendar": 1,
+  "Custom Webhook": 1,
+  autoCaption: 1,
+  sadTalker: 1,
+  musicGen: 1,
+  "CogVideoX-5B": 10,
+  "flux-dev": 1,
+  "flux-lora": 1,
+  AI: 1,
+  "image-to-image": 1,
+  "stable-video": 10,
+  "train-flux": 60,
+};

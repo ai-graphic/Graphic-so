@@ -23,6 +23,7 @@ import {
 import DublicateWorkflow from "@/components/forms/dublicate-forms";
 import ContentViewer from "../_components/ContentViewer";
 import ContentOptions from "../_components/ContentOptions";
+import { creditsRequired } from "@/lib/constants";
 
 interface ChatHistoryItem {
   user?: string;
@@ -91,37 +92,17 @@ const Chat = () => {
       const flowpathtemp = workflow?.flowPath
         ? JSON.parse(workflow.flowPath)
         : [];
-      let requiredCredits = 0;
+      let requiredCredits = 1;
       flowpathtemp.forEach((nodeType: string) => {
         if (
-          [
-            "flux-dev",
-            "flux-lora",
-            "fluxGeneral",
-            "fluxDevLora",
-            "AI",
-            "image-to-image",
-            "consistent-character",
-            "dreamShaper",
-            "musicGen",
-            "sadTalker",
-            "autoCaption",
-            "text-to-voice",
-          ].includes(nodeType)
+          creditsRequired[nodeType as keyof typeof creditsRequired] !==
+          undefined
         ) {
-          requiredCredits += 1;
-        } else if (
-          [
-            "stable-video",
-            "CogVideoX-5B",
-            "lumalabs-TextToVideo",
-            "lumalabs-ImageToVideo",
-            "video-to-video",
-          ].includes(nodeType)
-        ) {
-          requiredCredits += 10;
-        } else if (["train-flux"].includes(nodeType)) {
-          requiredCredits += 60;
+          requiredCredits +=
+            creditsRequired[nodeType as keyof typeof creditsRequired];
+        } else {
+          // Handle the case where nodeType is not defined in creditsRequired
+          console.warn(`Credits not defined for nodeType: ${nodeType}`);
         }
       });
       setrequiredCredits(requiredCredits);
@@ -169,7 +150,6 @@ const Chat = () => {
 
       if (Creditresponse) {
         setCredits(Creditresponse.credits!);
-
       }
     } catch (error) {
       toast.error("Error sending message");

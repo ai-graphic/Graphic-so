@@ -6,6 +6,7 @@ import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_act
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
 import { onUpdateChatHistory } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
 import { getworkflow } from "@/app/(main)/(pages)/workflows/editor/[editorId]/_actions/workflow-connections";
+import { creditsRequired } from "@/lib/constants";
 import { db } from "@/lib/db";
 import axios from "axios";
 
@@ -27,37 +28,17 @@ export async function POST(req: Request, res: Response) {
           clerkId: userid,
         },
       });
-      let requiredCredits = 0;
+      let requiredCredits = 1;
       flowPath.forEach((nodeType: string) => {
         if (
-          [
-            "flux-dev",
-            "flux-lora",
-            "fluxGeneral",
-            "fluxDevLora",
-            "AI",
-            "image-to-image",
-            "consistent-character",
-            "dreamShaper",
-            "musicGen",
-            "sadTalker",
-            "autoCaption",
-            "text-to-voice",
-          ].includes(nodeType)
+          creditsRequired[nodeType as keyof typeof creditsRequired] !==
+          undefined
         ) {
-          requiredCredits += 1;
-        } else if (
-          [
-            "stable-video",
-            "CogVideoX-5B",
-            "lumalabs-TextToVideo",
-            "lumalabs-ImageToVideo",
-            "video-to-video",
-          ].includes(nodeType)
-        ) {
-          requiredCredits += 10;
-        } else if (["train-flux"].includes(nodeType)) {
-          requiredCredits += 60;
+          requiredCredits +=
+            creditsRequired[nodeType as keyof typeof creditsRequired];
+        } else {
+          // Handle the case where nodeType is not defined in creditsRequired
+          console.warn(`Credits not defined for nodeType: ${nodeType}`);
         }
       });
 
@@ -122,7 +103,7 @@ export async function POST(req: Request, res: Response) {
                 chatHistory.user = content;
               } else {
                 content = prompt;
-              }  
+              }
             } else {
               let prmpt = aiTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -191,7 +172,7 @@ export async function POST(req: Request, res: Response) {
                 chatHistory.user = content;
               } else {
                 content = prompt;
-              } 
+              }
             } else {
               let prmpt = fluxDevTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -263,7 +244,7 @@ export async function POST(req: Request, res: Response) {
                 chatHistory.user = content;
               } else {
                 content = prompt;
-              } 
+              }
             } else {
               let prmpt = fluxLoraTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -479,7 +460,7 @@ export async function POST(req: Request, res: Response) {
                 chatHistory.user = content;
               } else {
                 content = prompt;
-              } 
+              }
             } else {
               let prmpt = falMusicTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -558,7 +539,7 @@ export async function POST(req: Request, res: Response) {
                 chatHistory.user = content;
               } else {
                 content = prompt;
-              } 
+              }
             } else {
               let prmpt = TextToVoiceNode[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -767,7 +748,7 @@ export async function POST(req: Request, res: Response) {
                 chatHistory.user = content;
               } else {
                 content = prompt;
-              } 
+              }
             } else {
               let prmpt = falTextToVideoTemplate[idNode]?.prompt;
               console.log("Prompt:", prmpt);
@@ -1084,7 +1065,7 @@ export async function POST(req: Request, res: Response) {
                 chatHistory.user = content;
               } else {
                 content = prompt;
-              } 
+              }
             } else {
               let prmpt = falGeneralTemplate[idNode]?.prompt;
               console.log("Prompt:", prmpt);
@@ -1154,7 +1135,7 @@ export async function POST(req: Request, res: Response) {
                 chatHistory.user = content;
               } else {
                 content = prompt;
-              } 
+              }
             } else {
               let prmpt = falDevLoraTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -1224,7 +1205,7 @@ export async function POST(req: Request, res: Response) {
                 chatHistory.user = content;
               } else {
                 content = prompt;
-              } 
+              }
             } else {
               let prmpt = falTrainTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);
@@ -1290,7 +1271,7 @@ export async function POST(req: Request, res: Response) {
                 chatHistory.user = content;
               } else {
                 content = prompt;
-              } 
+              }
             } else {
               let prmpt = falAutoCaptionTemplate[idNode].prompt;
               console.log("Prompt:", prmpt);

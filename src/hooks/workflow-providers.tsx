@@ -14,6 +14,7 @@ import axios from "axios";
 import { onUpdateChatHistory } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
 import { updateCredits } from "@/app/(main)/(pages)/billing/_actions/payment-connections";
 import { toast } from "sonner";
+import { creditsRequired } from "@/lib/constants";
 
 type WorkflowContextType = {
   runWorkFlow: (
@@ -78,37 +79,17 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
       let workflow = await getworkflow(workflowId);
       if (workflow) {
         const flowPath = JSON.parse(workflow.flowPath!);
-        let requiredCredits = 0;
+        let requiredCredits = 1;
         flowPath.forEach((nodeType: string) => {
           if (
-            [
-              "flux-dev",
-              "flux-lora",
-              "fluxGeneral",
-              "fluxDevLora",
-              "AI",
-              "image-to-image",
-              "consistent-character",
-              "dreamShaper",
-              "musicGen",
-              "autoCaption",
-              "sadTalker",
-              "text-to-voice",
-            ].includes(nodeType)
+            creditsRequired[nodeType as keyof typeof creditsRequired] !==
+            undefined
           ) {
-            requiredCredits += 1;
-          } else if (
-            [
-              "stable-video",
-              "CogVideoX-5B",
-              "lumalabs-TextToVideo",
-              "lumalabs-ImageToVideo",
-              "video-to-video",
-            ].includes(nodeType)
-          ) {
-            requiredCredits += 10;
-          } else if (["train-flux"].includes(nodeType)) {
-            requiredCredits += 60;
+            requiredCredits +=
+              creditsRequired[nodeType as keyof typeof creditsRequired];
+          } else {
+            // Handle the case where nodeType is not defined in creditsRequired
+            console.warn(`Credits not defined for nodeType: ${nodeType}`);
           }
         });
 
@@ -123,7 +104,6 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
         while (current < flowPath.length) {
           const idNode = flowPath[current];
           const nodeType = flowPath[current + 1];
-
 
           if (nodeType == "Discord") {
             setIsLoading(idNode, true);
