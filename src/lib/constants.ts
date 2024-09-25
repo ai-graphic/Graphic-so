@@ -454,4 +454,5 @@ export const creditsRequired = {
   "image-to-image": 1,
   "stable-video": 10,
   "train-flux": 60,
+  "Chat": 0,
 };

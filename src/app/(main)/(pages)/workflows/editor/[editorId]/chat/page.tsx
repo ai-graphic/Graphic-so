@@ -47,6 +47,7 @@ const Chat = () => {
   const [selectedurl, setSelectedurl] = useState<string | null>();
 
   const { user } = useUser();
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
     const file = event.target.files?.[0];
@@ -79,11 +80,14 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    if (cardContentRef.current) {
-      const scrollHeight = cardContentRef.current.scrollHeight;
-      cardContentRef.current.scrollTo(0, scrollHeight);
-    }
-  }, [history]);
+    setTimeout(() => {
+      if (cardContentRef.current) {
+        const scrollHeight = cardContentRef.current.scrollHeight;
+        cardContentRef.current.scrollTo(0, scrollHeight);
+      }
+    }, 100);
+  }, [history.length]);
+
 
   useEffect(() => {
     const workflowfunction = async () => {
@@ -208,9 +212,8 @@ const Chat = () => {
               <p className="text-sm">{workflow.description}</p>
             </CardHeader>
             <CardContent
-              ref={cardContentRef}
-              className="flex flex-col w-full h-full p-4 gap-2 overflow-scroll"
-            >
+            ref={cardContentRef}
+            className="flex flex-col w-full h-full p-4 gap-2 overflow-scroll">
               {history.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full">
                   <BotIcon size={30} />

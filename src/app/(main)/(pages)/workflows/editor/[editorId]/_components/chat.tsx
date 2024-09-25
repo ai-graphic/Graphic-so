@@ -36,9 +36,9 @@ import ContentOptions from "./ContentOptions";
 import ContentViewer from "./ContentViewer";
 
 interface ChatHistoryItem {
-  user: string;
-  bot: string;
-  history: string[];
+  user?: string;
+  bot?: string;
+  history?: string[];
 }
 
 const Chat = () => {
@@ -60,11 +60,14 @@ const Chat = () => {
   const cardContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (cardContentRef.current) {
-      const scrollHeight = cardContentRef.current.scrollHeight;
-      cardContentRef.current.scrollTo(0, scrollHeight);
-    }
-  }, [history]);
+    setTimeout(() => {
+      if (cardContentRef.current) {
+        const scrollHeight = cardContentRef.current.scrollHeight;
+        cardContentRef.current.scrollTo(0, scrollHeight);
+      }
+    }, 100);
+  }, [history.length]);
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
@@ -124,6 +127,9 @@ const Chat = () => {
 
   const onsubmit = async () => {
     setLoad(true);
+    history.push({
+      user: message,
+    });
     await runWorkFlow(
       workflow.id,
       nodeConnection,
@@ -201,7 +207,7 @@ const Chat = () => {
                         {item.user && (
                           <ContentOptions
                             bot={item.bot}
-                            history={item.history}
+                            history={item.history ?? []}
                           />
                         )}
                       </div>
