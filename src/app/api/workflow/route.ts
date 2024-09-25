@@ -6,19 +6,48 @@ import { onCreateNewPageInDatabase } from "@/app/(main)/(pages)/connections/_act
 import { postMessageToSlack } from "@/app/(main)/(pages)/connections/_actions/slack-connection";
 import { onUpdateChatHistory } from "@/app/(main)/(pages)/workflows/_actions/worflow-connections";
 import { getworkflow } from "@/app/(main)/(pages)/workflows/editor/[editorId]/_actions/workflow-connections";
-import { creditsRequired } from "@/lib/constants";
 import { db } from "@/lib/db";
 import axios from "axios";
 
+function iteratorToStream(iterator: any) {
+  return new ReadableStream({
+    async pull(controller) {
+      const { value, done } = await iterator.next();
+
+      if (done) {
+        controller.close();
+      } else {
+        controller.enqueue(value);
+      }
+    },
+  });
+}
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function POST(req: Request, res: Response) {
+  const { workflowId, prompt, userid, image } = await req.json();
+  const iterator = makeIterator(workflowId, prompt, userid, image);
+  const stream = iteratorToStream(iterator);
+
+  return new Response(stream);
+}
+
+async function* makeIterator(
+  workflowId: string,
+  prompt: string,
+  userid: string,
+  image: string
+) {
   type LatestOutputsType = {
     [key: string]: string;
   };
-  let chatHistory: any = { user: "", bot: "", history: [] };
+  let chatHistory: any = { user: "", bot: "", history: [], node: "" };
   let latestOutputs: LatestOutputsType = {};
 
   try {
-    const { workflowId, prompt, userid, image } = await req.json();
     let workflow = await getworkflow(workflowId);
     if (workflow) {
       const flowPath = JSON.parse(workflow.flowPath!);
@@ -28,17 +57,37 @@ export async function POST(req: Request, res: Response) {
           clerkId: userid,
         },
       });
-      let requiredCredits = 1;
+      let requiredCredits = 0;
       flowPath.forEach((nodeType: string) => {
         if (
-          creditsRequired[nodeType as keyof typeof creditsRequired] !==
-          undefined
+          [
+            "flux-dev",
+            "flux-lora",
+            "fluxGeneral",
+            "fluxDevLora",
+            "AI",
+            "image-to-image",
+            "consistent-character",
+            "dreamShaper",
+            "musicGen",
+            "sadTalker",
+            "autoCaption",
+            "text-to-voice",
+          ].includes(nodeType)
         ) {
-          requiredCredits +=
-            creditsRequired[nodeType as keyof typeof creditsRequired];
-        } else {
-          // Handle the case where nodeType is not defined in creditsRequired
-          console.warn(`Credits not defined for nodeType: ${nodeType}`);
+          requiredCredits += 1;
+        } else if (
+          [
+            "stable-video",
+            "CogVideoX-5B",
+            "lumalabs-TextToVideo",
+            "lumalabs-ImageToVideo",
+            "video-to-video",
+          ].includes(nodeType)
+        ) {
+          requiredCredits += 10;
+        } else if (["train-flux"].includes(nodeType)) {
+          requiredCredits += 60;
         }
       });
 
@@ -68,6 +117,7 @@ export async function POST(req: Request, res: Response) {
           const nodeArray = JSON.parse(workflow.nodes || "[]");
           const edge = edgesArray.find((e: any) => e.target === idNode);
           const node = nodeArray.find((n: any) => n.id === edge.source);
+          chatHistory.node = flowPath[current + 3];
           const content = latestOutputs[node.id] || prompt;
           const discordMessage = await db.discordWebhook.findFirst({
             where: {
@@ -90,6 +140,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               console.log("Trigger Node", node.id);
@@ -143,13 +194,13 @@ export async function POST(req: Request, res: Response) {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI = nextNodeType !== "AI";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "flux-dev") {
           const fluxDevTemplate = JSON.parse(workflow.fluxDevTemplate!);
@@ -159,6 +210,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               console.log("Trigger Node", node.id);
@@ -204,24 +256,20 @@ export async function POST(req: Request, res: Response) {
                 }
               );
 
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "flux-lora") {
           const fluxLoraTemplate = JSON.parse(workflow.fluxloraTemplate!);
@@ -231,6 +279,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               console.log("Trigger Node", node.id);
@@ -277,24 +326,20 @@ export async function POST(req: Request, res: Response) {
                   output_format: fluxLoraTemplate[idNode].output_format,
                 }
               );
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "image-to-image") {
           const falImageTemplate = JSON.parse(workflow.ImageToImageTemplate!);
@@ -304,6 +349,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             let Image;
             let prompt = falImageTemplate[idNode]?.prompt;
@@ -374,24 +420,20 @@ export async function POST(req: Request, res: Response) {
                 }
               );
 
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "stable-video") {
           const falVideoTemplate = JSON.parse(workflow.videoTemplate!);
@@ -401,6 +443,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               const prmpt = prompt;
@@ -420,24 +463,20 @@ export async function POST(req: Request, res: Response) {
                   cond_aug: falVideoTemplate[idNode].cond_aug,
                 }
               );
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "musicGen") {
           const falMusicTemplate = JSON.parse(workflow.musicGenTemplate!);
@@ -447,6 +486,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               console.log("Trigger Node", node.id);
@@ -499,24 +539,20 @@ export async function POST(req: Request, res: Response) {
                     falMusicTemplate[idNode]?.classifier_free_guidance,
                 }
               );
-              latestOutputs[idNode] = output.data ?? content;
+              latestOutputs[idNode] = output.data;
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "text-to-voice") {
           const TextToVoiceNode = JSON.parse(workflow.textToVoiceTemplate!);
@@ -526,6 +562,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               console.log("Trigger Node", node.id);
@@ -565,24 +602,20 @@ export async function POST(req: Request, res: Response) {
                   style: TextToVoiceNode[idNode]?.style,
                 }
               );
-              latestOutputs[idNode] = output.data ?? content;
+              latestOutputs[idNode] = output.data;
             } catch (error) {
               console.error("Error during elevenlabs API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "video-to-video") {
           const falVideoTemplate = JSON.parse(workflow.videoToVideoTemplate!);
@@ -592,6 +625,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               const prmpt = prompt;
@@ -614,24 +648,20 @@ export async function POST(req: Request, res: Response) {
                   strength: falVideoTemplate[idNode]?.strength,
                 }
               );
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "lumalabs-ImageToVideo") {
           const falImageToVideoTemplate = JSON.parse(
@@ -643,6 +673,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             let Image;
             const Prompt = falImageToVideoTemplate[idNode]?.prompt;
@@ -706,24 +737,20 @@ export async function POST(req: Request, res: Response) {
                   loop: falImageToVideoTemplate[idNode].loop,
                 }
               );
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "lumalabs-TextToVideo") {
           const falTextToVideoTemplate = JSON.parse(
@@ -735,6 +762,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               console.log("Trigger Node", node.id);
@@ -772,24 +800,20 @@ export async function POST(req: Request, res: Response) {
                   loop: falTextToVideoTemplate[idNode].loop,
                 }
               );
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "CogVideoX-5B") {
           const falCogVideoTemplate = JSON.parse(workflow.cogVideo5BTemplate!);
@@ -799,6 +823,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               const prmpt = prompt;
@@ -832,24 +857,20 @@ export async function POST(req: Request, res: Response) {
                     falCogVideoTemplate[idNode]?.classifier_free_guidance,
                 }
               );
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "consistent-character") {
           const falCharacterTemplate = JSON.parse(workflow.CharacterTemplate!);
@@ -859,6 +880,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             let Image;
             let prompt = falCharacterTemplate[idNode]?.prompt;
@@ -931,24 +953,20 @@ export async function POST(req: Request, res: Response) {
                 }
               );
 
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during Replicate API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "dreamShaper") {
           const falDreamShaperTemplate = JSON.parse(
@@ -960,6 +978,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             let Image;
             let prompt = falDreamShaperTemplate[idNode]?.prompt;
@@ -1025,24 +1044,20 @@ export async function POST(req: Request, res: Response) {
                   upscale: falDreamShaperTemplate[idNode]?.upscale,
                 }
               );
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during Replicate API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "fluxGeneral") {
           const falGeneralTemplate = JSON.parse(workflow.fluxGeneralTemplate!);
@@ -1052,6 +1067,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               console.log("Trigger Node", node.id);
@@ -1095,24 +1111,20 @@ export async function POST(req: Request, res: Response) {
                     falGeneralTemplate[idNode]?.enable_safety_checker,
                 }
               );
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "fluxDevLora") {
           const falDevLoraTemplate = JSON.parse(workflow.fluxDevLora!);
@@ -1122,6 +1134,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               console.log("Trigger Node", node.id);
@@ -1165,24 +1178,20 @@ export async function POST(req: Request, res: Response) {
                     falDevLoraTemplate[idNode].num_inference_steps,
                 }
               );
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during Replicate API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "train-flux") {
           const falTrainTemplate = JSON.parse(workflow.fluxTrainTemplate!);
@@ -1192,6 +1201,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               console.log("Trigger Node", node.id);
@@ -1229,24 +1239,20 @@ export async function POST(req: Request, res: Response) {
                   iter_multiplier: falTrainTemplate[idNode].iter_multiplier,
                 }
               );
-              latestOutputs[idNode] = output.data ?? content;
+              latestOutputs[idNode] = output.data;
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "autoCaption") {
           const falAutoCaptionTemplate = JSON.parse(
@@ -1258,6 +1264,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             if (node.type === "Trigger") {
               console.log("Trigger Node", node.id);
@@ -1309,24 +1316,20 @@ export async function POST(req: Request, res: Response) {
                     falAutoCaptionTemplate[idNode].output_transcript,
                 }
               );
-              latestOutputs[idNode] = output.data ?? content;
+              latestOutputs[idNode] = output.data;
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "sadTalker") {
           const falSadTalkerTemplate = JSON.parse(workflow.sadTalkerTemplate!);
@@ -1336,6 +1339,7 @@ export async function POST(req: Request, res: Response) {
             const nodeArray = JSON.parse(workflow.nodes || "[]");
             const edge = edgesArray.find((e: any) => e.target === idNode);
             const node = nodeArray.find((n: any) => n.id === edge.source);
+            chatHistory.node = flowPath[current + 3];
             let content;
             let Image;
             let prompt = falSadTalkerTemplate[idNode]?.source_image_url;
@@ -1402,24 +1406,20 @@ export async function POST(req: Request, res: Response) {
                   preprocess: falSadTalkerTemplate[idNode].preprocess,
                 }
               );
-              latestOutputs[idNode] = output.data[0] ?? content;
+              latestOutputs[idNode] = output.data[0];
             } catch (error) {
               console.error("Error during fal API call:", error);
             } finally {
             }
           }
           chatHistory.history.push(latestOutputs[idNode]);
-          const nextNodeType = flowPath[current + 3];
-          flowPath.splice(current, 2);
-          const isNextNotAI =
-            nextNodeType == "Slack" ||
-            nextNodeType == "Notion" ||
-            nextNodeType == "Chat" ||
-            nextNodeType == "Discord";
-          if (isNextNotAI) {
+          if (latestOutputs[idNode]) {
             chatHistory.bot = latestOutputs[idNode];
-            console.log("chatHistory", chatHistory);
+          } else {
+            chatHistory.bot = `There was a error running ${nodeType}, Try Again Later, You can still see the history of this workflow.`;
           }
+          yield JSON.stringify(chatHistory);
+          flowPath.splice(current, 2);
         }
         if (nodeType == "Slack") {
           console.log(workflow.slackChannels);
@@ -1434,6 +1434,7 @@ export async function POST(req: Request, res: Response) {
           const nodeArray = JSON.parse(workflow.nodes || "[]");
           const edge = edgesArray.find((e: any) => e.target === idNode);
           const node = nodeArray.find((n: any) => n.id === edge.source);
+          chatHistory.node = flowPath[current + 3];
           const content =
             latestOutputs[node.id] || "default content if not found";
           await postMessageToSlack(
@@ -1448,6 +1449,7 @@ export async function POST(req: Request, res: Response) {
           const nodeArray = JSON.parse(workflow.nodes || "[]");
           const edge = edgesArray.find((e: any) => e.target === idNode);
           const node = nodeArray.find((n: any) => n.id === edge.source);
+          chatHistory.node = flowPath[current + 3];
           const content =
             latestOutputs[node.id] || "default content if not found";
           await onCreateNewPageInDatabase(
@@ -1465,13 +1467,10 @@ export async function POST(req: Request, res: Response) {
 
     const final = JSON.stringify(chatHistory);
     console.log("final", final);
-    return new Response(final, {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    yield final;
   } catch (error: any) {
-    console.error("Error during Superagent API call:", error);
-    return new Response("error", {
+    console.error("Error during Workflow Run:", error);
+    return new Response(error, {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

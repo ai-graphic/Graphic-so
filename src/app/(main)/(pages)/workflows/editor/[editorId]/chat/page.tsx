@@ -39,7 +39,7 @@ const Chat = () => {
   const [message, setMessage] = useState<string>("");
   const [isUpdated, setIsUpdated] = useState(false);
   const [history, setHistory] = useState<ChatHistoryItem[]>([]);
-  const [load, setLoad] = useState(false);
+  const [load, setLoad] = useState("");
   const cardContentRef = useRef<HTMLDivElement>(null);
   const [requiredCredits, setrequiredCredits] = useState<any>(0);
   const { credits, setCredits } = useBilling();
@@ -88,7 +88,6 @@ const Chat = () => {
     }, 100);
   }, [history.length]);
 
-
   useEffect(() => {
     const workflowfunction = async () => {
       let workflow = await getworkflow(pathname.split("/").slice(-2, -1)[0]);
@@ -132,22 +131,83 @@ const Chat = () => {
         toast.error("You have insufficient credits");
         return;
       }
-      setLoad(true);
+      setLoad("Worflow ...");
       setMessage("");
       history.push({
         user: message,
       });
-      const response = await axios.post("/api/workflow", {
-        workflowId: workflow.id,
-        prompt: message,
-        userid: user?.id,
-        image: selectedurl,
+      const response = await fetch("/api/workflow", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          workflowId: workflow.id,
+          prompt: message,
+          userid: user?.id,
+          image: selectedurl,
+        }),
       });
 
-      history.push({
-        bot: response.data.bot,
-        history: response.data.history,
-      });
+      if (response.body) {
+        const reader = response.body.getReader();
+        let rawChunk = "";
+        let allUpdates: ChatHistoryItem[] = []; // Use a separate array to store updates temporarily
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+              // When done, reset history to only include the last update
+              if (allUpdates.length > 0) {
+                setHistory((currentHistory) => {
+                  // Remove the updates added in this session
+                  const historyWithoutUpdates = currentHistory.slice(
+                    0,
+                    currentHistory.length - allUpdates.length
+                  );
+                  // Add the last update from this session
+                  return [
+                    ...historyWithoutUpdates,
+                    allUpdates[allUpdates.length - 1],
+                  ];
+                });
+              }
+              break;
+            }
+            const chunkText = new TextDecoder().decode(value);
+            rawChunk = chunkText; // Accumulate chunks
+            try {
+              const jsonStrings = rawChunk.split(/(?<=})\s*(?={)/); // Split using regex to handle multiple JSON objects
+              jsonStrings.forEach((jsonStr) => {
+                const data = JSON.parse(jsonStr);
+                console.log("Parsed data:", data);
+                allUpdates.push({
+                  bot: data.bot,
+                  history: data.history,
+                });
+                setHistory((currentHistory) => [
+                  ...currentHistory,
+                  {
+                    bot: data.bot,
+                    history: data.history,
+                  },
+                ]);
+                setLoad(data.node);
+              });
+            } catch (parseError) {
+              console.error("Error parsing JSON:", parseError);
+            }
+            console.log("Raw chunk:", rawChunk);
+          }
+        } catch (error) {
+          console.error("Error reading from stream:", error);
+        }
+      }
+
+      // history.push({
+      //   bot: response.data.bot,
+      //   history: response.data.history,
+      // });
 
       nodeConnection.triggerNode.triggerValue = "";
       const Creditresponse = await onPaymentDetails();
@@ -160,7 +220,7 @@ const Chat = () => {
       toast.error("you have insufficient credits");
       console.log("error", error);
     } finally {
-      setLoad(false);
+      setLoad("");
     }
   };
 
@@ -212,8 +272,9 @@ const Chat = () => {
               <p className="text-sm">{workflow.description}</p>
             </CardHeader>
             <CardContent
-            ref={cardContentRef}
-            className="flex flex-col w-full h-full p-4 gap-2 overflow-scroll">
+              ref={cardContentRef}
+              className="flex flex-col w-full h-full p-4 gap-2 overflow-scroll"
+            >
               {history.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full">
                   <BotIcon size={30} />
@@ -283,6 +344,7 @@ const Chat = () => {
                           />
                         </div>
                         <p className="text-gray-600 text-sm">
+                          
                           {requiredCredits} Credits used
                         </p>
                       </div>
@@ -290,9 +352,10 @@ const Chat = () => {
                   </div>
                 ))
               )}
-              {load && (
-                <div className="flex items-start justify-start">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+              {load != "" && (
+                <div className="flex items-center justify-start gap-2">
+                  {load} is running{" "}
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-300"></div>
                 </div>
               )}
             </CardContent>
@@ -311,7 +374,7 @@ const Chat = () => {
                 <Input
                   className="p-4 py-6 rounded-2xl w-full pr-12"
                   type="text"
-                  disabled={load}
+                  disabled={load !== ""}
                   value={nodeConnection.triggerNode.triggerValue ?? message}
                   placeholder="Enter your message here ..."
                   onChange={(event) => {
@@ -351,7 +414,7 @@ const Chat = () => {
                 <Button
                   type="submit"
                   className="absolute right-5 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 "
-                  disabled={!message || load}
+                  disabled={!message || load !== ""}
                 >
                   <SendIcon size={15} />
                 </Button>
