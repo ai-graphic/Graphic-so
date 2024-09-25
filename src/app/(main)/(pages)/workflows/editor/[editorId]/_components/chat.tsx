@@ -68,7 +68,6 @@ const Chat = () => {
     }, 100);
   }, [history.length]);
 
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
     const file = event.target.files?.[0];
@@ -204,13 +203,11 @@ const Chat = () => {
                     <div className="flex justify-start items-end">
                       <div className="relative p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
                         <ContentViewer url={item.bot} />
-                        {item.user && (
-                          <ContentOptions
-                            bot={item.bot}
-                            history={item.history ?? []}
-                            pathname={pathname.split("/").pop()!}
-                          />
-                        )}
+                        <ContentOptions
+                          bot={item.bot[0]}
+                          history={item.history ?? []}
+                          pathname={pathname.split("/").pop()!}
+                        />
                       </div>
                     </div>
                   )}

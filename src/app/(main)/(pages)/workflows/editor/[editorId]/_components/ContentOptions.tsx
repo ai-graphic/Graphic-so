@@ -23,6 +23,7 @@ const ContentOptions = ({ bot, history, pathname }: Props) => {
   const [showDialog, setShowDialog] = useState<string | null>(null);
   const [selectedUrl, setSelectedUrl] = useState<string | null>("");
 
+  console.log("pathname", pathname, history, bot);
   return (
     <div className="flex justify-center mt-8">
       <div className="dark:bg-[#0A0A0A] bg-white p-2 m-1 rounded-l-xl rounded-b-none absolute bottom-0 right-0 flex">

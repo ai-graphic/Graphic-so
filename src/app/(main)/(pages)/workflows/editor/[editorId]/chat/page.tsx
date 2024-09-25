@@ -339,7 +339,7 @@ const Chat = () => {
                         <div className="relative p-2 rounded-r-lg rounded-t-lg border border-gray-700 max-w-xs">
                           <ContentViewer url={item.bot} />
                           <ContentOptions
-                            bot={item.bot}
+                            bot={item.bot[0]}
                             history={item.history ?? []}
                             pathname={pathname.split("/").slice(-2, -1)[0]}
                           />
