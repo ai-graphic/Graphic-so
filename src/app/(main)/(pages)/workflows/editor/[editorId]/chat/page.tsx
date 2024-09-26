@@ -3,10 +3,10 @@ import { useEditor } from "@/hooks/editor-provider";
 import { Input } from "@/components/ui/input";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getworkflow } from "../_actions/workflow-connections";
 import { Button } from "@/components/ui/button";
-import { BotIcon, SendIcon, UploadIcon } from "lucide-react";
+import { BotIcon, SendIcon, UploadIcon, ViewIcon } from "lucide-react";
 import { useNodeConnections } from "@/hooks/connections-providers";
 import { onContentChange } from "@/lib/editor-utils";
 import { toast } from "sonner";
@@ -24,6 +24,14 @@ import DublicateWorkflow from "@/components/forms/dublicate-forms";
 import ContentViewer from "../_components/ContentViewer";
 import ContentOptions from "../_components/ContentOptions";
 import { creditsRequired } from "@/lib/constants";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface ChatHistoryItem {
   user?: string;
@@ -286,50 +294,17 @@ const Chat = () => {
                     {item.user && (
                       <div className="flex justify-end">
                         <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 dark:bg-gray-700 bg-gray-200 max-w-xs">
-                          {item.user.match(/https?:\/\/[^\s]+/g) ? (
-                            item.user.split(" ").map((part, index) => {
-                              if (
-                                /https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(part)
-                              ) {
-                                return (
-                                  <img
-                                    key={index}
-                                    src={part}
-                                    alt="user"
-                                    className="rounded-lg mb-2"
-                                  />
-                                );
-                              } else if (/https?:\/\/.*\.(?:mp3)/.test(part)) {
-                                return (
-                                  <audio
-                                    key={index}
-                                    src={part}
-                                    controls
-                                    className="w-full mb-2"
-                                  />
-                                );
-                              } else if (
-                                /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(part)
-                              ) {
-                                return (
-                                  <video
-                                    key={index}
-                                    src={part}
-                                    controls
-                                    className="w-full mb-2"
-                                  />
-                                );
-                              } else {
-                                return (
-                                  <div key={index} className="flex">
-                                    <p>{part}</p>
-                                  </div>
-                                );
-                              }
-                            })
-                          ) : (
-                            <p>{item.user}</p>
-                          )}
+                          {item.user.split("https:").map((part, index) => (
+                            <React.Fragment key={index}>
+                              {index > 0 ? (
+                                <ContentViewer
+                                  url={`https:${part.split(" ")[0]}`}
+                                />
+                              ) : (
+                                part
+                              )}
+                            </React.Fragment>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -345,7 +320,6 @@ const Chat = () => {
                           />
                         </div>
                         <p className="text-gray-600 text-sm">
-                          
                           {requiredCredits} Credits used
                         </p>
                       </div>
@@ -392,25 +366,68 @@ const Chat = () => {
                   }}
                 />
                 <label className="absolute right-14 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 ">
-                  <Button
-                    className="border-2 px-2 py-1 rounded-lg"
-                    variant="outline"
-                    asChild
-                  >
-                    {loading ? (
-                      <div>
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-                      </div>
-                    ) : (
-                      <UploadIcon size={40} />
-                    )}
-                  </Button>
-                  <input
-                    type="file"
-                    className="hidden"
-                    onChange={handleFileChange}
-                    accept="*"
-                  />
+                  {selectedurl ? (
+                    <Dialog>
+                      <DialogTrigger>
+                        <Button
+                          className="border-2 px-2 py-1 rounded-lg"
+                          variant="outline"
+                          asChild
+                        >
+                          <ViewIcon size={40} />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Image Uploaded</DialogTitle>
+                          <DialogDescription className="flex flex-col justify-start p-5">
+                            <ContentViewer url={selectedurl} />
+                            <label>
+                              <Button
+                                asChild
+                                variant="outline"
+                                className="mt-5"
+                              >
+                                {loading ? (
+                                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+                                ) : (
+                                  <span>Upload some Different Content</span> // Changed from <p> to <span>
+                                )}
+                              </Button>
+                              <input
+                                type="file"
+                                className="hidden"
+                                onChange={handleFileChange}
+                                accept="*"
+                              />
+                            </label>
+                          </DialogDescription>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
+                  ) : (
+                    <div>
+                      <Button
+                        className="border-2 px-2 py-1 rounded-lg"
+                        variant="outline"
+                        asChild
+                      >
+                        {loading ? (
+                          <div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+                          </div>
+                        ) : (
+                          <UploadIcon size={40} />
+                        )}
+                      </Button>
+                      <input
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileChange}
+                        accept="*"
+                      />
+                    </div>
+                  )}
                 </label>
                 <Button
                   type="submit"

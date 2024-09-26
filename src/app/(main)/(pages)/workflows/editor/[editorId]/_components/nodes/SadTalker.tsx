@@ -8,6 +8,7 @@ import axios from "axios";
 import React from "react";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import ImageUrl from "./_components/ImageUrl";
 
 const SadTalkerOptions: Option[] = [
   { face_model_resolution: { placeholder: "512", type: "text" } },
@@ -94,178 +95,18 @@ const SadTalker = (nodeConnectionType: any, title: string) => {
   };
   return (
     <div className="flex flex-col gap-2">
-      <div>
-        <p className="block text-sm font-medium text-gray-300">
-          Enter Your source_image_url Here
-        </p>
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="A closeup headshot photo of a young woman in a grey sweater"
-            value={
-              selectedImage ??
-              nodeConnectionType.nodeConnectionType[selectedNode.id]
-                ?.source_image_url
-            }
-            onClick={() => {
-              setoptions(0);
-            }}
-            onChange={(event) => {
-              const newValue = event.target.value;
-              setselectedImage(newValue);
-              if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
-                nodeConnectionType.nodeConnectionType[
-                  selectedNode.id
-                ].source_image_url = newValue;
-              }
-              onContentChange(
-                state,
-                nodeConnection,
-                "sadTalker",
-                event,
-                "source_image_url"
-              );
-            }}
-          />
-
-          <div>
-            <label className="cursor-pointer inline-block">
-              <Button asChild>
-                {loading ? (
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-                ) : (
-                  <span>Upload</span>
-                )}
-              </Button>
-              <input
-                type="file"
-                className="hidden"
-                onChange={(event) => handleFileChange(event, "image")}
-                accept="image/*"
-              />
-            </label>
-          </div>
-
-          <Button
-            onClick={() => {
-              const updatedOutput =
-                selectedImage == null ? `:input:` : `${selectedImage}:input:`;
-              setselectedImage(updatedOutput);
-            }}
-          >
-            @tag
-          </Button>
-        </div>
-        {showButtons[0] &&
-          Object.entries(nodeConnection.output)
-            .filter(([id]) =>
-              state.editor.edges.some(
-                (edge) => edge.target === selectedNode.id && edge.source === id
-              )
-            )
-            .map(([id, outputs]) =>
-              (["text"] as (keyof OutputType)[]).map((type) =>
-                outputs[type]?.map((output, index) => (
-                  <button
-                    key={`${id}-${type}-${index}`}
-                    className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={() => {
-                      setselectedImage(String(output));
-                      setoptions(0);
-                    }}
-                  >
-                    {String(output)}
-                  </button>
-                ))
-              )
-            )}
-        <p className="block text-sm font-medium text-gray-300">
-          Enter Your Audio Url Here
-        </p>
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            className="col-span-3"
-            placeholder="Enter Your Audio Url Here"
-            value={
-              selectedAudio ??
-              nodeConnectionType.nodeConnectionType[selectedNode.id]
-                ?.driven_audio_url
-            }
-            onClick={() => {
-              setoptions(1);
-            }}
-            onChange={(event) => {
-              const newValue = event.target.value;
-              setselectedAudio(newValue);
-              console.log(newValue);
-              if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
-                nodeConnectionType.nodeConnectionType[
-                  selectedNode.id
-                ].driven_audio_url = newValue;
-              }
-              onContentChange(
-                state,
-                nodeConnection,
-                "sadTalker",
-                event,
-                "driven_audio_url"
-              );
-            }}
-          />
-
-          <div>
-            <label className="cursor-pointer inline-block">
-              <Button asChild>
-                {loading ? (
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-                ) : (
-                  <span>Upload</span>
-                )}
-              </Button>
-              <input
-                type="file"
-                className="hidden"
-                onChange={(event) => handleFileChange(event, "audio")}
-                accept="audio/*"
-              />
-            </label>
-          </div>
-
-          <Button
-            onClick={() => {
-              const updatedOutput =
-                selectedAudio == null ? `:image:` : `${selectedAudio}:image:`;
-              setselectedAudio(updatedOutput);
-            }}
-          >
-            @tag
-          </Button>
-        </div>
-        {showButtons[1] &&
-          Object.entries(nodeConnection.output)
-            .filter(([id]) =>
-              state.editor.edges.some(
-                (edge) => edge.target === selectedNode.id && edge.source === id
-              )
-            )
-            .map(([id, outputs]) =>
-              (["image"] as (keyof OutputType)[]).map((type) =>
-                outputs[type]?.map((output, index) => (
-                  <button
-                    key={`${id}-${type}-${index}`}
-                    className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={() => {
-                      setselectedAudio(String(output));
-                      setoptions(0);
-                    }}
-                  >
-                    <img src={String(output)} alt="options" />
-                  </button>
-                ))
-              )
-            )}
-      </div>
+      <ImageUrl
+        nodeConnectionType={nodeConnectionType}
+        title={nodeConnectionType.title}
+        url="source_image_url"
+        type="image"
+      />
+      <ImageUrl
+        nodeConnectionType={nodeConnectionType}
+        title={nodeConnectionType.title}
+        url="driven_audio_url"
+        type="audio"
+      />
       <div className="flex justify-between items-center gap-2">
         <p className="whitespace-nowrap">Additional Settings</p>
         <hr className=" w-full mx-1 border-gray-300" />

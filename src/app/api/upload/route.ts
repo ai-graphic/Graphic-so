@@ -31,8 +31,8 @@ export async function POST(req: Request, res: Response) {
         console.log(error);
       });
 
-    if (uploadResult && uploadResult.url) {
-      return new Response(JSON.stringify(uploadResult.url), {
+    if (uploadResult && uploadResult.secure_url) {
+      return new Response(JSON.stringify(uploadResult.secure_url), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });

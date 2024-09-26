@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { AccordionContent } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getworkflow } from "../_actions/workflow-connections";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import {
   SendIcon,
   UploadIcon,
   UserCircle,
+  ViewIcon,
 } from "lucide-react";
 import { useWorkflow } from "@/hooks/workflow-providers";
 import { useNodeConnections } from "@/hooks/connections-providers";
@@ -81,6 +82,7 @@ const Chat = () => {
                 image: reader.result,
               });
               setSelectedurl(getImage.data);
+              toast.success("Image uploaded successfully");
             } catch (error) {
               toast.error("Error uploading image");
             } finally {
@@ -194,7 +196,19 @@ const Chat = () => {
                   {item.user && (
                     <div className="flex justify-end">
                       <div className="p-2 rounded-l-lg rounded-t-lg border border-gray-700 dark:bg-gray-700 bg-gray-200   max-w-xs">
-                        <p>{item.user}</p>
+                        <p className="overflow-auto break-words">
+                          {item.user.split("https:").map((part, index) => (
+                            <React.Fragment key={index}>
+                              {index > 0 ? (
+                                <ContentViewer
+                                  url={`https:${part.split(" ")[0]}`}
+                                />
+                              ) : (
+                                part
+                              )}
+                            </React.Fragment>
+                          ))}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -251,26 +265,66 @@ const Chat = () => {
                   nodeConnection.triggerNode.triggerValue = newValue;
                 }}
               />
+
               <label className="absolute right-14 top-1/2 transform -translate-y-1/2 flex justify-center items-center rounded-2xl p-3 ">
-                <Button
-                  className="border-2 px-2 py-1 rounded-lg"
-                  variant="outline"
-                  asChild
-                >
-                  {loading ? (
-                    <div>
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-                    </div>
-                  ) : (
-                    <UploadIcon size={40} />
-                  )}
-                </Button>
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileChange}
-                  accept="*"
-                />
+                {selectedurl ? (
+                  <Dialog>
+                    <DialogTrigger>
+                      <Button
+                        className="border-2 px-2 py-1 rounded-lg"
+                        variant="outline"
+                        asChild
+                      >
+                        <ViewIcon size={40} />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Image Uploaded</DialogTitle>
+                        <DialogDescription className="flex flex-col justify-start p-5">
+                          <ContentViewer url={selectedurl} />
+                          <label>
+                            <Button asChild variant="outline" className="mt-5">
+                              {loading ? (
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+                              ) : (
+                                <span>Upload some Different Content</span> // Changed from <p> to <span>
+                              )}
+                            </Button>
+                            <input
+                              type="file"
+                              className="hidden"
+                              onChange={handleFileChange}
+                              accept="*"
+                            />
+                          </label>
+                        </DialogDescription>
+                      </DialogHeader>
+                    </DialogContent>
+                  </Dialog>
+                ) : (
+                  <div>
+                    <Button
+                      className="border-2 px-2 py-1 rounded-lg"
+                      variant="outline"
+                      asChild
+                    >
+                      {loading ? (
+                        <div>
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+                        </div>
+                      ) : (
+                        <UploadIcon size={40} />
+                      )}
+                    </Button>
+                    <input
+                      type="file"
+                      className="hidden"
+                      onChange={handleFileChange}
+                      accept="*"
+                    />
+                  </div>
+                )}
               </label>
 
               <Button

@@ -89,8 +89,8 @@ export async function POST(req: Request, res: Response) {
       })
 
 
-      if (uploadResult && uploadResult.url) {
-        const finalurl = [uploadResult.url];
+      if (uploadResult && uploadResult.secure_url) {
+        const finalurl = [uploadResult.secure_url];
         const finaloutput = JSON.stringify(finalurl);
   
         return new Response(finaloutput, {

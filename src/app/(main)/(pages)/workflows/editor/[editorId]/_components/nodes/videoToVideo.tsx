@@ -9,6 +9,8 @@ import axios from "axios";
 import React from "react";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import Prompt from "./_components/prompt";
+import ImageUrl from "./_components/ImageUrl";
 
 const VideotoVideoOptions: Option[] = [
   { num_outputs: { placeholder: 1, type: "number" } },
@@ -87,155 +89,8 @@ const VideoToVideo = (nodeConnectionType: any, title: string) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <div>
-        <p className="block text-sm font-medium text-gray-300">
-          Enter Your Prompt Here
-        </p>
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="An astronaut stands triumphantly at the peak of a towering mountain. Panorama of rugged peaks and valleys. Very futuristic vibe and animated aesthetic. Highlights of purple and golden colors in the scene. The sky is looks like an animated/cartoonish dream of galaxies, nebulae, stars, planets, moons, but the remainder of the scene is mostly realistic. "
-            value={
-              selectedPrompt ??
-              nodeConnectionType.nodeConnectionType[selectedNode.id]?.prompt
-            }
-            onClick={() => {
-              setoptions(0);
-            }}
-            onChange={(event) => {
-              const newValue = event.target.value;
-              setSelectedPrompt(newValue);
-              if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
-                nodeConnectionType.nodeConnectionType[selectedNode.id].prompt =
-                  newValue;
-              }
-              onContentChange(
-                state,
-                nodeConnection,
-                "video-to-video",
-                event,
-                "prompt"
-              );
-            }}
-          />
-          <Button
-            onClick={() => {
-              const updatedOutput =
-                selectedPrompt == null ? `:input:` : `${selectedPrompt}:input:`;
-              setSelectedPrompt(updatedOutput);
-            }}
-          >
-            @tag
-          </Button>
-        </div>
-        {showButtons[0] &&
-          Object.entries(nodeConnection.output)
-            .filter(([id]) =>
-              state.editor.edges.some(
-                (edge) => edge.target === selectedNode.id && edge.source === id
-              )
-            )
-            .map(([id, outputs]) =>
-              (["text"] as (keyof OutputType)[]).map((type) =>
-                outputs[type]?.map((output, index) => (
-                  <button
-                    key={`${id}-${type}-${index}`}
-                    className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={() => {
-                      setSelectedPrompt(String(output));
-                      setoptions(0);
-                    }}
-                  >
-                    {String(output)}
-                  </button>
-                ))
-              )
-            )}
-        <p className="block text-sm font-medium text-gray-300">
-          Enter Your video_url Url Here
-        </p>
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            className="col-span-3"
-            placeholder="Enter Your video_url Url Here"
-            value={
-              selectedurl ??
-              nodeConnectionType.nodeConnectionType[selectedNode.id]?.video_url
-            }
-            onClick={() => {
-              setoptions(1);
-            }}
-            onChange={(event) => {
-              const newValue = event.target.value;
-              setSelectedurl(newValue);
-              console.log(newValue)
-              if (nodeConnectionType.nodeConnectionType[selectedNode.id]) {
-                nodeConnectionType.nodeConnectionType[selectedNode.id].video_url =
-                  newValue;
-              }
-              onContentChange(
-                state,
-                nodeConnection,
-                "video-to-video",
-                event,
-                "video_url"
-              );
-            }}
-          />
-
-          <div>
-            <label className="cursor-pointer inline-block">
-              <Button asChild>
-                {loading ? (
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
-                ) : (
-                  <span>Upload</span>
-                )}
-              </Button>
-              <input
-                type="file"
-                className="hidden"
-                onChange={handleFileChange}
-                accept="image/*"
-              />
-            </label>
-          </div>
-
-          <Button
-            onClick={() => {
-              const updatedOutput =
-                selectedurl == null ? `:image:` : `${selectedurl}:image:`;
-              setSelectedurl(updatedOutput);
-            }}
-          >
-            @tag
-          </Button>
-        </div>
-        {showButtons[1] &&
-          Object.entries(nodeConnection.output)
-            .filter(([id]) =>
-              state.editor.edges.some(
-                (edge) => edge.target === selectedNode.id && edge.source === id
-              )
-            )
-            .map(([id, outputs]) =>
-              (["image"] as (keyof OutputType)[]).map((type) =>
-                outputs[type]?.map((output, index) => (
-                  <button
-                    key={`${id}-${type}-${index}`}
-                    className="bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={() => {
-                      setSelectedurl(String(output));
-                      setoptions(0);
-                    }}
-                  >
-                    <img src={String(output)} alt="options" />
-                  </button>
-                ))
-              )
-            )}
-      </div>
+      <Prompt nodeConnectionType={nodeConnectionType} title={nodeConnectionType.title} />
+      <ImageUrl nodeConnectionType={nodeConnectionType} title={nodeConnectionType.title} url="video_url" type="video"/>
       <div className="flex justify-between items-center gap-2">
         <p className="whitespace-nowrap">Additional Settings</p>
         <hr className=" w-full mx-1 border-gray-300" />

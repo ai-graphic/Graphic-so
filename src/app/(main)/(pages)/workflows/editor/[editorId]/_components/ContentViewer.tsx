@@ -5,7 +5,7 @@ type Props = {
 const ContentViewer = ({ url }: Props) => {
   return (
     <div className="flex justify-center">
-      {/https?:\/\/.*\.(?:png|jpg|gif|webp)/.test(url) ? (
+      {/https?:\/\/.*\.(?:png|jpg|gif|webp|ico)/.test(url) ? (
         <img src={url} alt="bot" />
       ) : /https?:\/\/.*\.(?:mp4|webm|ogg)/.test(url) ? (
         <video src={url} controls width="320" height="240" />
