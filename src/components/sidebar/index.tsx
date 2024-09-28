@@ -121,7 +121,10 @@ const MenuOptions = (props: Props) => {
             </TooltipProvider>
           </div>
           <div className="flex items-center justify-center flex-col gap-8">
-            <div className="flex text-sm text-orange-400">
+          <TooltipProvider>
+          <Tooltip delayDuration={0}>
+          <TooltipTrigger>
+                <div className="flex text-sm text-orange-400">
               {tier == "Unlimited" ? (
                 <span>Unlimited</span>
               ) : (
@@ -130,6 +133,11 @@ const MenuOptions = (props: Props) => {
                 </span>
               )}
             </div>
+            </TooltipTrigger>
+            <TooltipContent >Credits</TooltipContent>
+            </Tooltip>
+            </TooltipProvider>
+          
             <ModeToggle />
             <UserButton />
           </div>
