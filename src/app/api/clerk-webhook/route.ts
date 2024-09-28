@@ -12,16 +12,16 @@ export async function POST(req: Request) {
     const email = email_addresses[0]?.email_address;
     console.log("✅", body);
 
-    const response = await axios.post(
-      "https://api.spaceship.im/api/v1/api-users",
-      {
-        email: email,
-        firstName: first_name,
-        lastName: first_name,
-        company: "Na",
-        anonymousId: id,
-      }
-    );
+    // const response = await axios.post(
+    //   "https://api.spaceship.im/api/v1/api-users",
+    //   {
+    //     email: email,
+    //     firstName: first_name,
+    //     lastName: first_name,
+    //     company: "Na",
+    //     anonymousId: id,
+    //   }
+    // );
     await db.user.upsert({
         where: { clerkId: id },
         update: {
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
           email,
           name: first_name || "",
           profileImage: image_url || "",
-          superAgentAPI: response.data.data.token,
+          // superAgentAPI: response.data.data.token,
         },
       });
   
