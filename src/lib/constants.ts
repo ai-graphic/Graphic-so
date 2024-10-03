@@ -278,9 +278,9 @@ export const products = [
 export const menuOptions = [
   { name: "Dashboard", Component: HomeIcon, href: "/dashboard" },
   { name: "Workflows", Component: Workflow, href: "/workflows" },
-  { name: "Settings", Component: SettingsIcon, href: "/settings" },
   { name: "Connections", Component: SparkleIcon, href: "/connections" },
   { name: "Billing", Component: CreditCard, href: "/billing" },
+  { name: "Settings", Component: SettingsIcon, href: "/settings" },
 ];
 
 export const EditorCanvasDefaultCardTypes = {
