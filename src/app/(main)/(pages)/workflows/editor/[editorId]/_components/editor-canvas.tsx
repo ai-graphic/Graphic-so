@@ -237,6 +237,7 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
       Trigger: CanvasCardSingle,
       Email: CanvasCardSingle,
       Condition: CanvasCardSingle,
+      "live-portrait":CanvasCardSingle,
       "flux-dev": CanvasCardSingle,
       "image-to-image": CanvasCardSingle,
       "flux-lora": CanvasCardSingle,

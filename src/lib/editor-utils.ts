@@ -69,6 +69,26 @@ export const onfluxDevContent = (
   }));
 };
 
+// TODO: i added this 
+export const onLivePortraitContent = (
+  state: EditorState,
+  nodeConnection: ConnectionProviderProps,
+  event: React.ChangeEvent<HTMLInputElement>,
+  content: string
+) => {
+  const firstcontent = state.editor.selectedNode.id;
+  const finalcontent = firstcontent + "." + content;
+  const [id, key] = finalcontent.split(".");
+
+  nodeConnection.setLivePortraitNode((prev: any) => ({
+    ...prev,
+    [id]: {
+      ...prev[id],
+      [key]: event.target.value,
+    },
+  }));
+};
+
 export const onImageToImageContent = (
   state: EditorState,
   nodeConnection: ConnectionProviderProps,
@@ -406,7 +426,13 @@ export const onContentChange = (
     onNotionContent(nodeConnection, event);
   } else if (nodeType === "AI") {
     onAIContent(state, nodeConnection, event, content);
-  } else if (nodeType === "flux-dev") {
+  }
+  // i added this
+  else if (nodeType === "live-portrait") {
+    onLivePortraitContent(state, nodeConnection, event, content);
+  }
+  // i added this
+  else if (nodeType === "flux-dev") {
     onfluxDevContent(state, nodeConnection, event, content);
   } else if (nodeType === "image-to-image") {
     onImageToImageContent(state, nodeConnection, event, content);

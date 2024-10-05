@@ -114,6 +114,20 @@ export const onCreateNodeTemplate = async (
       return "AI template saved";
     }
   }
+  if (type === "live-portrait") {
+    const response = await db.workflows.update({
+      where: {
+        id: workflowId,
+      },
+      data: {
+        livePortraitTemplate: content,
+      },
+    });
+
+    if (response) {
+      return "live portrait template saved";
+    }
+  }
   if (type === "flux-dev") {
     const response = await db.workflows.update({
       where: {

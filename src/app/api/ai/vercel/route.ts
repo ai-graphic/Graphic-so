@@ -26,6 +26,7 @@ export async function POST(req: Request) {
     },
   });
 
+  //TODO: handle this by checking current credits and comparing with the cost of the tool
   if (Number(dbUser?.credits) < 1) {
     return new Response("Insufficient credits", {
       status: 402,
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
         parameters: z.object({
           url: z
             .string()
-            .describe("The url to get the data for. / the url to scrape from."),
+            .describe("The url tjjuo get the data for. / the url to scrape from."),
         }),
         execute: async ({ url }) => {
           console.log("URL received by firecrawl tool:", url); // Log the URL

@@ -299,6 +299,11 @@ export const EditorCanvasDefaultCardTypes = {
     description: "Post messages to your discord server",
     type: "Action",
   },
+  // TODO: i added this
+  "live-portrait":{
+    description:"Transfer expression from a video to a portrait.",
+    type:"Action",
+  },
   "flux-dev": {
     description: "Development tools for creating and testing flux models.",
     type: "Action",
@@ -448,6 +453,7 @@ export const creditsRequired = {
   sadTalker: 1,
   musicGen: 1,
   "CogVideoX-5B": 10,
+  "live-portrait":10,
   "flux-dev": 1,
   "flux-lora": 1,
   AI: 1,

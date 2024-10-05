@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 type Props = {};
 const Page = (props: Props) => {
   const router = useRouter();
+  // get logged in current user object
   const { user, isLoaded } = useUser();
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);

@@ -28,6 +28,8 @@ const EditorCanvasIconHelper = ({ type }: Props) => {
       return <Mail className="flex-shrink-0" size={30} />;
     case "Condition":
       return <GitBranch className="flex-shrink-0" size={30} />;
+    case "live-portrait":
+      return <Video className="flex-shrink-0" size={30} />;
     case "flux-dev":
       return <ImagePlayIcon className="flex-shrink-0" size={30} />;
     case "image-to-image":
