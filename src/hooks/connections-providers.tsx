@@ -476,6 +476,7 @@ const InitialValues: ConnectionProviderProps = {
   setstableVideoNode: () => undefined,
   settrainFluxNode: () => undefined,
 };
+
 const generateDefaultAINode = (id: string) => ({
   id,
   system: "",

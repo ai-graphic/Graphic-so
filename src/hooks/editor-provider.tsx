@@ -4,6 +4,7 @@ import { EditorActions, EditorNodeType } from "@/lib/types";
 import React, { createContext, Dispatch, useContext, useReducer } from "react";
 
 
+
 export type EditorNode = EditorNodeType;
 
 export type Editor = {

@@ -48,14 +48,14 @@ const LivePortrait = (nodeConnectionType: any, title: string) => {
   return (
     <div className="flex flex-col gap-2">
 
-      <ImageUrl
+       <ImageUrl
         nodeConnectionType={nodeConnectionType}
         title={nodeConnectionType.title}
         url="image_url"
         type="image"
       />
 
-      <ImageUrl nodeConnectionType={nodeConnectionType} title={nodeConnectionType.title} url="video_url" type="video"/>
+      <ImageUrl nodeConnectionType={nodeConnectionType} title={nodeConnectionType.title} url="video_url" type="video"/> 
 
       <div className="flex justify-between items-center gap-2">
         <p className="whitespace-nowrap">Additional Settings</p>

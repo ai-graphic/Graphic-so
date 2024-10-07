@@ -130,7 +130,7 @@ export const getworkflow = async (workflowId: string) => {
         },
     })
 
-    console.log(workflow)
+
 
     if (workflow) {
         return workflow

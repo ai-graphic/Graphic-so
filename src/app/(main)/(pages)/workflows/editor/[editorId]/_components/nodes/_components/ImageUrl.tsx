@@ -18,6 +18,8 @@ type prop = {
 
 const ImageUrl = ({ nodeConnectionType, title, url, type }: prop) => {
   const { selectedNode } = useEditor().state.editor;
+  console.log("selected node ", selectedNode)
+
   const { state } = useEditor();
   const { nodeConnection } = useNodeConnections();
   const [showButtons, setShowButtons] = React.useState<boolean[]>([
@@ -32,9 +34,6 @@ const ImageUrl = ({ nodeConnectionType, title, url, type }: prop) => {
       prev.map((bool, index) => (index === id ? !bool : bool))
     );
   };
-
-  console.log(nodeConnectionType);
-  console.log(url, "url", title, "title");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
@@ -166,7 +165,8 @@ const ImageUrl = ({ nodeConnectionType, title, url, type }: prop) => {
               ))
             )
           )}
-      {nodeConnectionType.nodeConnectionType[selectedNode.id][url] && (
+      {console.log("Node connection type ", nodeConnectionType)}
+      {nodeConnectionType?.nodeConnectionType[selectedNode.id][url] && (
         <div className="h-30 w-30">
           <ContentViewer
             url={nodeConnectionType.nodeConnectionType[selectedNode.id][url]}
