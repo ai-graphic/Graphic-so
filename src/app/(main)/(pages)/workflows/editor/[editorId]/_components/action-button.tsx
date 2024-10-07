@@ -91,6 +91,61 @@ const ActionButton = ({
     }
   }, [nodeConnection.slackNode, channels]);
 
+
+  // what is parameter to set dependecny array 
+
+  const onLivePortrait = useCallback(async (id: string, nodeConnection: any) => {
+    try {
+      if (Number(credits) < 10) {
+        toast.error("Insufficient credits");
+        return;
+      }
+      setIsLoading(id, true);
+      const response = await axios.post("/api/ai/fal/live-portrait", {
+        video_url: nodeConnection.livePortraitNode[id].video_url,
+        image_url: nodeConnection.livePortraitNode[id].image_url,
+        userid: user?.id,
+        blink: nodeConnection.livePortraitNode[id].blink,
+        eyebrow: nodeConnection.livePortraitNode[id].eyebrow,
+        wink: nodeConnection.livePortraitNode[id].wink,
+        pupil_x: nodeConnection.livePortraitNode[id].pupil_x,
+        pupil_y: nodeConnection.livePortraitNode[id].pupil_y,
+        aaa: nodeConnection.livePortraitNode[id].aaa,
+        eee: nodeConnection.livePortraitNode[id].eee,
+        woo: nodeConnection.livePortraitNode[id].woo,
+        smile: nodeConnection.livePortraitNode[id].smile,
+        flag_lip_zero: nodeConnection.livePortraitNode[id].flag_lip_zero,
+        flag_stitching: nodeConnection.livePortraitNode[id].flag_stitching,
+        flag_relative: nodeConnection.livePortraitNode[id].flag_relative,
+        flag_pasteback: nodeConnection.livePortraitNode[id].flag_pasteback,
+        flag_do_crop: nodeConnection.livePortraitNode[id].flag_do_crop,
+        flag_do_rot: nodeConnection.livePortraitNode[id].flag_do_rot,
+        dsize: nodeConnection.livePortraitNode[id].dsize ,
+        scale: nodeConnection.livePortraitNode[id].scale,
+        vx_ratio: nodeConnection.livePortraitNode[id].vx_ratio,
+        vy_ratio: nodeConnection.livePortraitNode[id].vy_ratio,
+        batch_size: nodeConnection.livePortraitNode[id].batch_size,
+        enable_safety_checker: nodeConnection.livePortraitNode[id].enable_safety_checker,
+      });
+      nodeConnection.setOutput((prev: any) => ({
+        ...prev,
+        ...(prev.output || {}),
+        [id]: {
+          image: [...(prev.output?.[id]?.image || [])],
+          text: [...(prev.output?.[id]?.text || [])],
+          video: [...(prev.output?.[id]?.video || []), response.data],
+        },
+      }));
+      setCredits((prev) => (Number(prev) - 10).toString());
+    } catch (error) {
+      console.error("Error during Live Portrait API call:", error);
+    } finally {
+      setIsLoading(id, false);
+    }
+  }, [])
+
+
+
   const onFluxDev = useCallback(
     async (id: string, nodeConnection: any) => {
       try {
@@ -377,7 +432,7 @@ const ActionButton = ({
         return;
       }
       setIsLoading(id, true);
-  
+
       const response = await axios.post("/api/ai/replicate/dreamshaper", {
         prompt: nodeConnection.dreamShaperNode[id]?.prompt,
         userid: user?.id,
@@ -858,6 +913,20 @@ const ActionButton = ({
           toast.message(response);
         }
       }
+
+      if (currentService === "live-portrait") {
+        const aiNodeAsString = JSON.stringify(nodeConnection.livePortraitNode);
+        const response = await onCreateNodeTemplate(
+          aiNodeAsString,
+          currentService,
+          pathname.split("/").pop()!
+        );
+
+        if (response) {
+          toast.message(response);
+        }
+      }
+
       if (currentService === "flux-dev") {
         const aiNodeAsString = JSON.stringify(nodeConnection.fluxDevNode);
         const response = await onCreateNodeTemplate(
@@ -1161,7 +1230,7 @@ const ActionButton = ({
             ) : (
               <div>
                 {nodeConnection.aiNode[selectedNode.id]?.model !==
-                "FLUX-image" ? (
+                  "FLUX-image" ? (
                   <div className="font-extralight">
                     <p className="font-bold">Outputs</p>
                     {aiOutput.text.map((output, index) => (
@@ -1334,6 +1403,40 @@ const ActionButton = ({
             <Button
               variant="outline"
               onClick={() => onTrainFlux(selectedNode.id, nodeConnection)}
+            >
+              Test
+            </Button>
+            <Button
+              onClick={() => onCreateLocalNodeTempate(currentService)}
+              variant="outline"
+            >
+              Save {currentService} Template
+            </Button>
+          </>
+        );
+      case "live-portrait":
+        return (
+          <>
+            {nodeConnection.livePortraitNode[selectedNode.id] &&
+              aiOutput.video.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {aiOutput.video.map((output, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="font-medium text-sm">{index + 1}.</span>
+                      <video
+                        src={output}
+                        className="text-blue-500 hover:text-blue-600"
+                        controls
+                        width="320"
+                        height="240"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => onLivePortrait(selectedNode.id, nodeConnection)}
             >
               Test
             </Button>

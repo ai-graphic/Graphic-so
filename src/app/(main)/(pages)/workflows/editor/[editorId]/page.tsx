@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 type Props = {};
 const Page = (props: Props) => {
   const router = useRouter();
+  // get logged in current user object
   const { user, isLoaded } = useUser();
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
@@ -22,6 +23,10 @@ const Page = (props: Props) => {
   const [workflow, setWorkflow] = useState<any>();
   const { nodeConnection } = useNodeConnections();
 
+  // this use effect is just getting workflow and if template is present then using value other wise 
+  // initialize the default values
+
+  // why initialize again ?
   useEffect(() => {
     const checkWorkflow = async () => {
       if (!isLoaded) return;
@@ -75,7 +80,7 @@ const Page = (props: Props) => {
             : {};
           Object.keys(consistentChar).forEach((nodeId) => {
             const nodeData = consistentChar[nodeId];
-            
+
             if (!consistentChar[nodeId]) {
               nodeConnection.consistentCharacterNode[nodeId] = {
                 id: nodeId,
@@ -144,27 +149,32 @@ const Page = (props: Props) => {
             }
           });
         }
-        if (workflow?.fluxGeneralTemplate) {
-          const fluxGeneral = workflow.fluxGeneralTemplate
-            ? JSON.parse(workflow.fluxGeneralTemplate)
+
+        if (workflow?.fluxDevTemplate) {
+          const fluxDev = workflow.fluxDevTemplate
+            ? JSON.parse(workflow.fluxDevTemplate)
             : {};
-          Object.keys(fluxGeneral).forEach((nodeId) => {
-            const nodeData = fluxGeneral[nodeId];
-            if (!fluxGeneral[nodeId]) {
-              nodeConnection.fluxGeneralNode[nodeId] = {
+          Object.keys(fluxDev).forEach((nodeId) => {
+            const nodeData = fluxDev[nodeId];
+            if (!fluxDev[nodeId]) {
+              nodeConnection.fluxDevNode[nodeId] = {
                 id: nodeId,
+                model: "",
+                output: "",
                 prompt: "",
-                image_size: "",
+                image_size: "landscape_4_3",
                 num_inference_steps: 28,
                 guidance_scale: 3.5,
                 num_images: 1,
                 seed: 0,
-                sync_mode: false,
                 enable_safety_checker: false,
+                sync_mode: false,
               };
             } else {
-              nodeConnection.fluxGeneralNode[nodeId] = {
-                ...nodeConnection.fluxGeneralNode[nodeId],
+              nodeConnection.fluxDevNode[nodeId] = {
+                ...nodeConnection.fluxDevNode[nodeId],
+                model: nodeData.model, // Added missing property
+                output: nodeData.output, // Added missing property
                 prompt: nodeData.prompt,
                 image_size: nodeData.image_size,
                 num_inference_steps: nodeData.num_inference_steps,
@@ -173,6 +183,69 @@ const Page = (props: Props) => {
                 seed: nodeData.seed,
                 enable_safety_checker: nodeData.enable_safety_checker,
                 sync_mode: nodeData.sync_mode,
+              };
+            }
+          });
+        }
+        if (workflow?.livePortraitTemplate) {
+          const livePortait = workflow.livePortraitTemplate
+            ? JSON.parse(workflow.livePortraitTemplate)
+            : {};
+          Object.keys(livePortait).forEach((nodeId) => {
+            const nodeData = livePortait[nodeId];
+            if (!livePortait[nodeId]) {
+              nodeConnection.livePortraitNode[nodeId] = {
+                id: nodeId,
+                video_url: "",
+                image_url: "",
+                blink: 0,
+                eyebrow: 0,
+                wink: 0,
+                pupil_x: 0,
+                pupil_y: 0,
+                aaa: 0,
+                eee: 0,
+                woo: 0,
+                smile: 0,
+                flag_lip_zero: true,
+                flag_stitching: true,
+                flag_relative: true,
+                flag_pasteback: true,
+                flag_do_crop: true,
+                flag_do_rot: true,
+                dsize: 512,
+                scale: 2.3,
+                vx_ratio: 0,
+                vy_ratio: -0.125,
+                batch_size: 32,
+                enable_safety_checker: false,
+              };
+            } else {
+              nodeConnection.livePortraitNode[nodeId] = {
+                ...nodeConnection.livePortraitNode[nodeId],
+                  video_url: nodeData.video_url,
+                  image_url: nodeData.image_url,
+                  blink: nodeData.blink,
+                  eyebrow: nodeData.eyebrow,
+                  wink: nodeData.wink,
+                  pupil_x: nodeData.pupil_x,
+                  pupil_y: nodeData.pupil_y,
+                  aaa: nodeData.aaa,
+                  eee: nodeData.eee,
+                  woo: nodeData.woo,
+                  smile: nodeData.smile,
+                  flag_lip_zero: nodeData.flag_lip_zero,
+                  flag_stitching: nodeData.flag_stitching,
+                  flag_relative: nodeData.flag_relative,
+                  flag_pasteback: nodeData.flag_pasteback,
+                  flag_do_crop: nodeData.flag_do_crop,
+                  flag_do_rot: nodeData.flag_do_rot,
+                  dsize: nodeData.dsize,
+                  scale: nodeData.scale,
+                  vx_ratio: nodeData.vx_ratio,
+                  vy_ratio: nodeData.vy_ratio,
+                  batch_size: nodeData.batch_size,
+                  enable_safety_checker: nodeData.enable_safety_checker,
               };
             }
           });

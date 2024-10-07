@@ -54,6 +54,34 @@ export type ConnectionProviderProps = {
       history: boolean;
     };
   };
+  livePortraitNode: {
+    [id: string]: {
+      id: string;
+      video_url: string;
+      image_url: string;
+      blink: number;
+      eyebrow: number;
+      wink: number;
+      pupil_x: number;
+      pupil_y: number;
+      aaa: number;
+      eee: number;
+      woo: number;
+      smile: number;
+      flag_lip_zero: boolean;
+      flag_stitching: boolean;
+      flag_relative: boolean;
+      flag_pasteback: boolean;
+      flag_do_crop: boolean;
+      flag_do_rot: boolean;
+      dsize: number;
+      scale: number;
+      vx_ratio: number;
+      vy_ratio: number;
+      batch_size: number;
+      enable_safety_checker: boolean;
+    };
+  },
   fluxDevNode: {
     [id: string]: {
       id: string;
@@ -271,8 +299,8 @@ export type ConnectionProviderProps = {
       voice: string;
       model_id: string;
       stability: number;
-      similarity_boost  : number;
-      style : number;
+      similarity_boost: number;
+      style: number;
     };
   };
   setTextToVoiceNode: React.Dispatch<React.SetStateAction<any>>;
@@ -286,6 +314,8 @@ export type ConnectionProviderProps = {
   setmusicgenNode: React.Dispatch<React.SetStateAction<any>>;
   setDreamShaperNode: React.Dispatch<React.SetStateAction<any>>;
   setFluxGeneralNode: React.Dispatch<React.SetStateAction<any>>;
+  // TODO: added this node
+  setLivePortraitNode:React.Dispatch<React.SetStateAction<any>>;
   setFluxDevLoraNode: React.Dispatch<React.SetStateAction<any>>;
   setconsistentCharacterNode: React.Dispatch<React.SetStateAction<any>>;
   setfluxDevNode: React.Dispatch<React.SetStateAction<any>>;
@@ -387,6 +417,7 @@ const InitialValues: ConnectionProviderProps = {
     content: "",
   },
   aiNode: {},
+  livePortraitNode:{},
   fluxDevNode: {},
   imageToImageNode: {},
   fluxLoraNode: {},
@@ -437,12 +468,15 @@ const InitialValues: ConnectionProviderProps = {
   setChatNode: () => undefined,
   setAINode: () => undefined,
   addAINode: () => undefined,
+  //TODO: i added this
+  setLivePortraitNode:() => undefined,
   setfluxDevNode: () => undefined,
   setimageToImageNode: () => undefined,
   setfluxLoraNode: () => undefined,
   setstableVideoNode: () => undefined,
   settrainFluxNode: () => undefined,
 };
+
 const generateDefaultAINode = (id: string) => ({
   id,
   system: "",
@@ -486,6 +520,8 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
   const [output, setOutput] = useState(InitialValues.output);
   const [chatNode, setChatNode] = useState(InitialValues.chatNode);
   const [triggerNode, setTriggerNode] = useState(InitialValues.triggerNode);
+  // i added this 
+  const [livePortraitNode,setLivePortraitNode] = useState(InitialValues.livePortraitNode);
   const [fluxDevNode, setfluxDevNode] = useState(InitialValues.fluxDevNode);
   const [CogVideoX5BNode, setCogVideoX5BNode] = useState(
     InitialValues.CogVideoX5BNode
@@ -558,7 +594,40 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           sync_mode: false,
         },
       }));
-    } else if (type === "image-to-image") {
+    } 
+    // todo : i added this 
+    else if (type === "live-portrait") {
+      setLivePortraitNode((prev) => ({
+        ...prev,
+        [id]: {
+          id,
+          video_url:"",
+          image_url:"",
+          blink:0,
+          eyebrow:0,
+          wink:0,
+          pupil_x:0,
+          pupil_y:0,
+          aaa:0,
+          eee:0,
+          woo:0,
+          smile:0,
+          flag_lip_zero:true,
+          flag_stitching:true,
+          flag_relative:true,
+          flag_pasteback:true,
+          flag_do_crop:true,
+          flag_do_rot:true,
+          dsize:512,
+          scale:2.3,
+          vx_ratio:0,
+          vy_ratio:-0.125,
+          batch_size:32,
+          enable_safety_checker:false,
+        },
+      }));
+    } 
+    else if (type === "image-to-image") {
       setimageToImageNode((prev) => ({
         ...prev,
         [id]: {
@@ -796,8 +865,8 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
           style: 0.3,
         },
       }));
-  };
-}
+    };
+  }
 
   const values = {
     discordNode,
@@ -822,6 +891,10 @@ export const ConnectionsProvider = ({ children }: ConnectionWithChildProps) => {
     chatNode,
     setChatNode,
     history,
+    //TODO: i added this 
+    livePortraitNode,
+    setLivePortraitNode,
+    //
     fluxDevNode,
     setfluxDevNode,
     imageToImageNode,

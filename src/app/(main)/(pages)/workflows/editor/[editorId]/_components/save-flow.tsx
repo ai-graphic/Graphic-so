@@ -10,6 +10,7 @@ import {
 import { toast } from "sonner";
 import { set } from "zod";
 import { useEditor } from "@/hooks/editor-provider";
+import { Target } from "lucide-react";
 
 type Props = {
   edges: any[];
@@ -21,7 +22,7 @@ type Props = {
 const SaveFlow = ({ edges, nodes, setNodes, setEdges }: Props) => {
   const pathname = usePathname();
   const { nodeConnection, } = useNodeConnections();
-  const {dispatch, state } = useEditor();
+  const { dispatch, state } = useEditor();
 
   const onFlowAutomation = useCallback(async () => {
     await onAutomateFlow();
@@ -44,6 +45,28 @@ const SaveFlow = ({ edges, nodes, setNodes, setEdges }: Props) => {
   const onAutomateFlow = async () => {
     const flows: any = [];
     const connectedEdges = edges.map((edge) => edge.target);
+
+    const temp__edges: { source: string; target: string ;type?:string}[] = [];
+    edges.forEach((edge) => {
+      temp__edges.push({ source: edge.source, target: edge.target });
+    });
+
+
+    console.log(edges)
+    console.log(nodes)
+
+
+    temp__edges.map((el) => {
+      nodes.map((target) => {
+        if(el.target === target.id){
+          el.type = target.type
+        }
+      }) 
+    })
+
+    console.log("These are temp edges ",temp__edges)
+
+    
     connectedEdges.map((target) => {
       nodes.map((node) => {
         if (node.id === target) {
@@ -51,6 +74,7 @@ const SaveFlow = ({ edges, nodes, setNodes, setEdges }: Props) => {
         }
       });
     });
+
     nodeConnection.setisFlow(flows);
   };
 
@@ -62,13 +86,13 @@ const SaveFlow = ({ edges, nodes, setNodes, setEdges }: Props) => {
     if (!window.confirm("Are you sure you want to delete this node and its connections?")) {
       return;
     }
-  
+
     const selectedNodeId = state.editor.selectedNode.id;
     const updatedNodes = nodes.filter((node) => node.id !== selectedNodeId);
     const updatedEdges = edges.filter(
       (edge) => edge.source !== selectedNodeId && edge.target !== selectedNodeId
     );
-  
+
     dispatch({
       type: "SELECTED_ELEMENT",
       payload: {
@@ -92,7 +116,7 @@ const SaveFlow = ({ edges, nodes, setNodes, setEdges }: Props) => {
     toast.success("Node and its connections deleted successfully");
     toast.message("Please save the workflow to apply changes permanently");
   }, [nodes, edges, state.editor.selectedNode.id, setNodes, setEdges]);
-  
+
   // ... existing code ...
 
   return (

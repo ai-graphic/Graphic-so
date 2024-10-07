@@ -20,6 +20,8 @@ import { useEffect, useState } from "react";
 // import SuperAgent from "./nodes/superagent";
 import { Button } from "@/components/ui/button";
 import FluxDev from "./nodes/FluxDev";
+// TODO: I added this
+import LivePortrait from "./nodes/LivePortrait";
 import ImageToImage from "./nodes/ImageToImage";
 import FluxLora from "./nodes/FluxLora";
 import TrainFlux from "./nodes/TrainFlux";
@@ -485,6 +487,15 @@ const SettingsContent = ({
           ) : (
             <div className="flex flex-col gap-4">
               <p className="text-lg underline">{title}</p>
+              {/* TODO : i added this */}
+
+              {title === "live-portrait" && (
+                <LivePortrait
+                  nodeConnectionType={nodeConnectionType}
+                  title={title}
+                />
+              )}
+
               {title === "flux-dev" && (
                 <FluxDev
                   nodeConnectionType={nodeConnectionType}

@@ -9,6 +9,7 @@ export default authMiddleware({
     "/api/ai/superagent/getoutput",
     "/api/ai/FLUX-image",
     "/api/ai/fal/flux-dev",
+    "/api/ai/fal/live-portrait",
     "/api/ai/fal/flux-general",
     "/api/ai/fal/flux-lora",
     "/api/ai/fal/image-to-image",
@@ -40,7 +41,6 @@ export default authMiddleware({
 export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
-
 // https://www.googleapis.com/auth/userinfo.email
 // https://www.googleapis.com/auth/userinfo.profile
 // https://www.googleapis.com/auth/drive.activity.readonly

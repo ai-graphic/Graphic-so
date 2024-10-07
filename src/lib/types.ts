@@ -40,6 +40,7 @@ export type EditorCanvasTypes =
   | "Trigger"
   | "Chat"
   | "Wait"
+  | "live-portrait"
   | "flux-dev"
   | "image-to-image"
   | "flux-lora"
@@ -81,30 +82,30 @@ export type EditorNode = EditorNodeType;
 
 export type EditorActions =
   | {
-      type: "LOAD_DATA";
-      payload: {
-        elements: EditorNode[];
-        edges: {
-          id: string;
-          source: string;
-          target: string;
-        }[];
-      };
-    }
+    type: "LOAD_DATA";
+    payload: {
+      elements: EditorNode[];
+      edges: {
+        id: string;
+        source: string;
+        target: string;
+      }[];
+    };
+  }
   | {
-      type: "UPDATE_NODE";
-      payload: {
-        elements: EditorNode[];
-      };
-    }
+    type: "UPDATE_NODE";
+    payload: {
+      elements: EditorNode[];
+    };
+  }
   | { type: "REDO" }
   | { type: "UNDO" }
   | {
-      type: "SELECTED_ELEMENT";
-      payload: {
-        element: EditorNode;
-      };
+    type: "SELECTED_ELEMENT";
+    payload: {
+      element: EditorNode;
     };
+  };
 
 export const nodeMapper: Record<string, string> = {
   Notion: "notionNode",
@@ -114,6 +115,7 @@ export const nodeMapper: Record<string, string> = {
   AI: "aiNode",
   Trigger: "triggerNode",
   Chat: "chatNode",
+  "live-portrait": "livePortraitNode",
   "flux-dev": "fluxDevNode",
   "image-to-image": "imageToImageNode",
   "flux-lora": "fluxLoraNode",

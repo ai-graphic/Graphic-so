@@ -52,7 +52,7 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
   const [edges, setEdges] = useState(initialEdges);
   const [isWorkFlowLoading, setIsWorkFlowLoading] = useState<boolean>(false);
   const [reactFlowInstance, setReactFlowInstance] =
-    useState<ReactFlowInstance>();
+    useState<any>();
   const pathname = usePathname();
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth);
@@ -237,6 +237,7 @@ const EditorCanvas = (workflow: any, setworkflow: any) => {
       Trigger: CanvasCardSingle,
       Email: CanvasCardSingle,
       Condition: CanvasCardSingle,
+      "live-portrait":CanvasCardSingle,
       "flux-dev": CanvasCardSingle,
       "image-to-image": CanvasCardSingle,
       "flux-lora": CanvasCardSingle,

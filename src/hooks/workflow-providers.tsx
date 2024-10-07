@@ -225,6 +225,119 @@ export const WorkflowProvider: React.FC<{ children: ReactNode }> = ({
               }
             }
           }
+
+          if (nodeType == "live-portrait") {
+            const livePortraitNode = JSON.parse(workflow.livePortraitTemplate!);
+            if (livePortraitNode[idNode]) {
+              console.log("livePortait Node:", idNode);
+              const edgesArray = JSON.parse(workflow.edges || "[]");
+              const nodeArray = JSON.parse(workflow.nodes || "[]");
+              const edge = edgesArray.find((e: any) => e.target === idNode);
+              const node = nodeArray.find((n: any) => n.id === edge.source);
+              let content;
+              let prompt = nodeConnection.livePortraitNode[idNode]?.prompt;
+              console.log("Prompt:", prompt);
+              if (node.type === "Trigger") {
+                const output = nodeConnection.output;
+                const contentarr = output[node.id];
+                const prmpt = contentarr.text[contentarr.text.length - 1];
+                content = prmpt;
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", prmpt);
+                  } else {
+                    content = prmpt;
+                  }
+                }
+                chatHistory.user = prmpt;
+              } else {
+                if (prompt) {
+                  if (prompt.includes(":input:")) {
+                    content = prompt.replace(":input:", latestOutputs[node.id]);
+                  } else {
+                    content = prompt;
+                  }
+                } else {
+                  content = latestOutputs[node.id];
+                }
+              }
+              try {
+                setIsLoading(idNode, true);
+                const output = await axios.post("/api/ai/fal/live-portrait", {
+                  video_url: livePortraitNode[idNode].video_url,
+                  image_url: livePortraitNode[idNode].image_url,
+                  userid: workflow.userId,
+                  blink: livePortraitNode[idNode].blink,
+                  eyebrow: livePortraitNode[idNode].eyebrow,
+                  wink: livePortraitNode[idNode].wink,
+                  pupil_x: livePortraitNode[idNode].pupil_x,
+                  pupil_y: livePortraitNode[idNode].pupil_y,
+                  aaa: livePortraitNode[idNode].aaa,
+                  eee: livePortraitNode[idNode].eee,
+                  woo: livePortraitNode[idNode].woo,
+                  smile: livePortraitNode[idNode].smile,
+                  flag_lip_zero: livePortraitNode[idNode].flag_lip_zero,
+                  flag_stitching: livePortraitNode[idNode].flag_stitching,
+                  flag_relative: livePortraitNode[idNode].flag_relative,
+                  flag_pasteback: livePortraitNode[idNode].flag_pasteback,
+                  flag_do_crop: livePortraitNode[idNode].flag_do_crop,
+                  flag_do_rot: livePortraitNode[idNode].flag_do_rot,
+                  dsize: livePortraitNode[idNode].dsize,
+                  scale: livePortraitNode[idNode].scale,
+                  vx_ratio: livePortraitNode[idNode].vx_ratio,
+                  vy_ratio: livePortraitNode[idNode].vy_ratio,
+                  batch_size: livePortraitNode[idNode].batch_size,
+                  enable_safety_checker: livePortraitNode[idNode].enable_safety_checker,
+                });
+                nodeConnection.setOutput((prev: any) => ({
+                  ...prev,
+                  ...(prev.output || {}),
+                  [idNode]: {
+                    video: [...(prev.output?.[idNode]?.video || []),
+                    output.data[0]],
+                    image: [
+                      ...(prev.output?.[idNode]?.image || []),
+                    ],
+                    text: [...(prev.output?.[idNode]?.text || [])],
+                  },
+                }));
+                latestOutputs[idNode] = output.data[0];
+              } catch (error) {
+                console.error("Error during fal livePortrait API call:", error);
+              } finally {
+                setIsLoading(idNode, false);
+              }
+            }
+            setHistory((prev: any) => [
+              ...prev,
+              { bot: latestOutputs[idNode] },
+            ]);
+            chatHistory.history.push(latestOutputs[idNode]);
+            const nextNodeType = flowPath[current + 3];
+            flowPath.splice(current, 2);
+            const isNextNotAI =
+              nextNodeType == "Slack" ||
+              nextNodeType == "Notion" ||
+              nextNodeType == "Chat" ||
+              nextNodeType == "Discord";
+            if (isNextNotAI) {
+              chatHistory.bot = latestOutputs[idNode];
+              console.log("chatHistory", chatHistory);
+              if (chatHistory.user && chatHistory.bot) {
+                const published = await onUpdateChatHistory(
+                  workflowId,
+                  chatHistory
+                );
+                const history = published?.map((item: string) =>
+                  JSON.parse(item)
+                );
+                if (setHistory) {
+                  setHistory(history);
+                }
+              }
+            }
+          }
+
           if (nodeType == "text-to-voice") {
             const TextToVoiceTemplate = JSON.parse(
               workflow.textToVoiceTemplate!

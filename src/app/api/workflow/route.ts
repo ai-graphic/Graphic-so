@@ -57,6 +57,8 @@ async function* makeIterator(
           clerkId: userid,
         },
       });
+
+      // get required credits to run 
       let requiredCredits = 0;
       flowPath.forEach((nodeType: string) => {
         if (
@@ -83,6 +85,7 @@ async function* makeIterator(
             "lumalabs-TextToVideo",
             "lumalabs-ImageToVideo",
             "video-to-video",
+            "live-portrait",
           ].includes(nodeType)
         ) {
           requiredCredits += 10;

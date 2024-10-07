@@ -278,9 +278,9 @@ export const products = [
 export const menuOptions = [
   { name: "Dashboard", Component: HomeIcon, href: "/dashboard" },
   { name: "Workflows", Component: Workflow, href: "/workflows" },
-  { name: "Settings", Component: SettingsIcon, href: "/settings" },
   { name: "Connections", Component: SparkleIcon, href: "/connections" },
   { name: "Billing", Component: CreditCard, href: "/billing" },
+  { name: "Settings", Component: SettingsIcon, href: "/settings" },
 ];
 
 export const EditorCanvasDefaultCardTypes = {
@@ -298,6 +298,11 @@ export const EditorCanvasDefaultCardTypes = {
   Discord: {
     description: "Post messages to your discord server",
     type: "Action",
+  },
+  // TODO: i added this
+  "live-portrait":{
+    description:"Transfer expression from a video to a portrait.",
+    type:"Action",
   },
   "flux-dev": {
     description: "Development tools for creating and testing flux models.",
@@ -448,6 +453,7 @@ export const creditsRequired = {
   sadTalker: 1,
   musicGen: 1,
   "CogVideoX-5B": 10,
+  "live-portrait":10,
   "flux-dev": 1,
   "flux-lora": 1,
   AI: 1,

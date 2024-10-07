@@ -23,10 +23,15 @@ import Image from "next/image";
 
 type Props = {};
 const MenuOptions = (props: Props) => {
+  // using server action to fetch user tier and credit
+
   const pathName = usePathname();
   const [isVisible, setIsVisible] = useState(
-    pathName.includes("chat") ? false : true
+    !pathName.includes("chat") ? true : false,
   );
+
+  // isvisible false
+
   const isControllable = pathName.includes("editor");
   const { credits, tier, setCredits, setTier } = useBilling();
 
@@ -36,6 +41,8 @@ const MenuOptions = (props: Props) => {
       setTier(response.tier!);
       setCredits(response.credits!);
     }
+
+        console.log(isVisible,isControllable)
   };
 
   useEffect(() => {
@@ -54,7 +61,9 @@ const MenuOptions = (props: Props) => {
   return (
     <div
       className={
-        pathName.includes("chat") ? "absolute top-0 left-0 z-10 border-2" : "relative"
+        pathName.includes("chat")
+          ? "absolute top-0 left-0 z-10 border-2"
+          : "relative"
       }
     >
       {!isVisible && isControllable ? (
@@ -87,28 +96,30 @@ const MenuOptions = (props: Props) => {
             <TooltipProvider>
               {menuOptions.map((menuItem) => (
                 <ul key={menuItem.name}>
-                  <Tooltip delayDuration={0}>
+                  <Tooltip delayDuration={300}>
                     <TooltipTrigger>
                       <li>
                         <Link
                           href={menuItem.href}
+                          //TODO: i dont understand this
                           className={clsx(
                             "group h-8 w-8 flex items-center justify-center scale-[1.5] rounded-lg p-[3px] cursor-pointer",
                             {
                               "dark:bg-[#2F006B] bg-[#EEE0FF]":
                                 pathName === menuItem.href,
-                            }
+                            },
                           )}
                         >
                           <menuItem.Component size={20} />
                         </Link>
                       </li>
                     </TooltipTrigger>
-                    <TooltipContent >{menuItem.name}</TooltipContent>
+                    <TooltipContent>{menuItem.name}</TooltipContent>
                   </Tooltip>
                 </ul>
               ))}
 
+              {/* This is true only when our pathname is on editor*/}
               {isControllable && (
                 <Button
                   variant="outline"
