@@ -1,17 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-        remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: 'img.clerk.com',
-            },
-            {
-                protocol: 'https',
-                hostname: 'ucarecdn.com',
-            },
-        ],
-    },
-}
+  experimental: {
+    serverActions: true,
+  },
+  images: {
+    domains: ['images.clerk.dev', 'uploadcare.com', 'ucarecdn.com'],
+  }
+};
 
 export default nextConfig;
